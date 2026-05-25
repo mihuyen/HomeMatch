@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Property Consignment Wizard - Step 1</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#0b1c30",
+                      "surface-bright": "#faf8ff",
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#eeedf4",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#1a1b21",
+                      "surface-dim": "#dad9e1",
+                      "background": "#faf8ff",
+                      "tertiary-container": "#6e2c00",
+                      "outline-variant": "#c5c5d3",
+                      "primary-container": "#1e3a8a",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "inverse-on-surface": "#f1f0f7",
+                      "on-surface-variant": "#444651",
+                      "inverse-surface": "#2f3036",
+                      "tertiary-fixed": "#ffdbcb",
+                      "secondary-fixed": "#d3e4fe",
+                      "primary-fixed": "#dce1ff",
+                      "on-tertiary-container": "#f39461",
+                      "on-primary-container": "#90a8ff",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "surface": "#faf8ff",
+                      "surface-container-high": "#e9e7ef",
+                      "surface-variant": "#e3e1e9",
+                      "outline": "#757682",
+                      "tertiary": "#4b1c00",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "primary": "#00236f",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#264191",
+                      "on-primary-fixed": "#00164e",
+                      "inverse-primary": "#b6c4ff",
+                      "surface-tint": "#4059aa",
+                      "surface-container-highest": "#e3e1e9",
+                      "on-background": "#1a1b21",
+                      "on-primary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "secondary": "#505f76",
+                      "on-tertiary-fixed": "#341100",
+                      "on-secondary-container": "#54647a",
+                      "secondary-container": "#d0e1fb",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#773205",
+                      "surface-container-low": "#f4f3fa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "md": "16px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "margin-desktop": "32px",
+                      "xs": "4px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "headline-xl-mobile": ["Inter"],
+                      "headline-xl": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                      "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                      "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                      "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                      "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                      "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f4f3fa; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5d3; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #757682; 
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row antialiased">
+<!-- SideNavBar -->
+<nav class="hidden lg:flex flex-col h-screen sticky top-0 p-md gap-base bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows w-72 flex-shrink-0 z-40">
+<div class="flex items-center gap-base mb-lg px-sm">
+<span class="material-symbols-outlined text-primary text-[32px] fill-icon">domain</span>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Consignment Wizard</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Step 1 of 3</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-sm">
+<!-- Tab 1: Owner Info (Active) -->
+<div class="flex items-center gap-md px-md py-sm rounded-full text-primary dark:text-primary-fixed-dim font-bold bg-secondary-container dark:bg-on-secondary-fixed-variant transition-all duration-200 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined fill-icon">person</span>
+<span class="font-label-md text-label-md">Thông tin cá nhân</span>
+</div>
+<!-- Tab 2: Property Details (Pending) -->
+<div class="flex items-center gap-md px-md py-sm rounded-full text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-label-md text-label-md">Chi tiết tài sản</span>
+</div>
+<!-- Tab 3: Photos & Confirm (Pending) -->
+<div class="flex items-center gap-md px-md py-sm rounded-full text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">add_a_photo</span>
+<span class="font-label-md text-label-md">Hình ảnh &amp; Xác nhận</span>
+</div>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<button class="w-full py-sm px-md rounded-full border border-outline text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                Save Draft
+            </button>
+</div>
+</nav>
+<!-- Mobile Top Header -->
+<header class="lg:hidden flex items-center justify-between p-md bg-surface-container-low border-b border-outline-variant sticky top-0 z-10">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[28px] fill-icon">domain</span>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary leading-tight">Consignment</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Step 1 of 3</p>
+</div>
+</div>
+<button class="text-primary p-sm">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Mobile Stepper -->
+<div class="lg:hidden bg-surface px-md py-sm border-b border-outline-variant flex justify-between items-center overflow-x-auto gap-md no-scrollbar">
+<div class="flex items-center gap-sm flex-shrink-0">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold">1</div>
+<span class="font-label-sm text-label-sm text-primary font-bold whitespace-nowrap">Cá nhân</span>
+</div>
+<div class="h-[1px] w-8 bg-outline-variant flex-shrink-0"></div>
+<div class="flex items-center gap-sm flex-shrink-0 opacity-50">
+<div class="w-6 h-6 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">2</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Tài sản</span>
+</div>
+<div class="h-[1px] w-8 bg-outline-variant flex-shrink-0"></div>
+<div class="flex items-center gap-sm flex-shrink-0 opacity-50">
+<div class="w-6 h-6 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">3</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Xác nhận</span>
+</div>
+</div>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col xl:flex-row overflow-y-auto">
+<!-- Form Section -->
+<div class="flex-1 p-md md:p-xl max-w-4xl mx-auto w-full">
+<div class="mb-lg">
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">Thông tin cá nhân</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Trở thành đối tác tin cậy của EstateSurvey Pro trong 3 bước đơn giản.</p>
+</div>
+<form class="space-y-lg bg-surface-container-lowest rounded-xl border border-outline-variant p-md md:p-lg shadow-sm" id="consignmentForm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Họ và tên <span class="text-error">*</span></label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="fullName" placeholder="Nguyễn Văn A" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Số điện thoại <span class="text-error">*</span></label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="phone" placeholder="090 000 0000" required="" type="tel"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Email</label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="email" placeholder="example@email.com" type="email"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Số CMND/CCCD <span class="text-error">*</span></label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="idCard" placeholder="001201234567" required="" type="text"/>
+</div>
+</div>
+<!-- Bottom Actions -->
+<div class="mt-xl flex items-center justify-end pt-md border-t border-outline-variant">
+<button class="px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-xs shadow-sm" type="button">
+                        Tiếp theo
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Right Panel: Info Context -->
+<aside class="w-full xl:w-80 p-md md:p-xl bg-surface-container-low border-l border-outline-variant flex flex-col gap-md">
+<div class="bg-primary-container text-white p-lg rounded-xl shadow-lg relative overflow-hidden group mb-md">
+<div class="absolute top-0 right-0 w-32 h-32 bg-on-tertiary-container/10 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform"></div>
+<h3 class="font-headline-md text-headline-md mb-md relative z-10 text-on-primary-container">Tại sao chọn chúng tôi?</h3>
+<ul class="space-y-md relative z-10">
+<li class="flex gap-sm">
+<span class="material-symbols-outlined text-primary-fixed" data-weight="fill">verified</span>
+<div>
+<p class="font-label-md text-label-md text-on-primary-container">Định giá chính xác</p>
+<p class="font-body-sm text-body-sm text-primary-fixed-dim">Hệ thống AI phân tích dữ liệu thị trường thực tế.</p>
+</div>
+</li>
+<li class="flex gap-sm">
+<span class="material-symbols-outlined text-primary-fixed" data-weight="fill">speed</span>
+<div>
+<p class="font-label-md text-label-md text-on-primary-container">Kết nối nhanh chóng</p>
+<p class="font-body-sm text-body-sm text-primary-fixed-dim">Mạng lưới 10,000+ nhà đầu tư sẵn sàng.</p>
+</div>
+</li>
+<li class="flex gap-sm">
+<span class="material-symbols-outlined text-primary-fixed" data-weight="fill">gavel</span>
+<div>
+<p class="font-label-md text-label-md text-on-primary-container">Pháp lý minh bạch</p>
+<p class="font-body-sm text-body-sm text-primary-fixed-dim">Đội ngũ chuyên gia hỗ trợ thủ tục từ A-Z.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-md">Cần hỗ trợ?</h3>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">headset_mic</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Hotline 24/7</p>
+<p class="font-headline-md text-headline-md text-primary font-bold">1900 6789</p>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</body></html>
