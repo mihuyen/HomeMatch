@@ -24,3 +24,6 @@ build/
 
 # Test files (tuỳ chọn)
 Backend/test.http
+
+# Database config (chứa mật khẩu)
+Backend/db.js

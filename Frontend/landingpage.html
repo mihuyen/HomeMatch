@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>HomeMatch - Rental Management System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "background": "#faf8ff",
+                        "surface-container-highest": "#e3e1e9",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e3e1e9",
+                        "inverse-surface": "#2f3036",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "secondary-container": "#d0e1fb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#b6c4ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#90a8ff",
+                        "on-tertiary-container": "#f39461",
+                        "outline-variant": "#c5c5d3",
+                        "surface": "#faf8ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "on-primary-fixed-variant": "#264191",
+                        "surface-container": "#eeedf4",
+                        "on-secondary-container": "#54647a",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dad9e1",
+                        "on-background": "#1a1b21",
+                        "error": "#ba1a1a",
+                        "tertiary": "#4b1c00",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-container-low": "#f4f3fa",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#505f76",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-tint": "#4059aa",
+                        "primary-fixed": "#dce1ff",
+                        "primary-container": "#1e3a8a",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#6e2c00",
+                        "surface-container-high": "#e9e7ef",
+                        "primary": "#00236f",
+                        "outline": "#757682",
+                        "on-surface-variant": "#444651",
+                        "on-surface": "#1a1b21",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-primary-fixed": "#00164e",
+                        "inverse-on-surface": "#f1f0f7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "base": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pt-[72px]">
+
+<nav class="bg-surface fixed top-0 w-full z-50 border-b border-outline-variant shadow-sm h-[72px]">
+    <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-[1440px] mx-auto h-full">
+        <div class="flex items-center gap-lg">
+            <a class="text-headline-lg font-headline-lg font-bold text-primary" href="#">HomeMatch</a>
+            <div class="hidden md:flex gap-md items-center">
+                <a class="text-body-md font-body-md text-primary border-b-2 border-primary pb-1" href="#">Trang chủ</a>
+                <a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer pb-1" href="#">Tính năng</a>
+                <a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer pb-1" href="#">Bảng giá</a>
+                <a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer pb-1" href="#">Tìm kiếm</a>
+            </div>
+        </div>
+        <div id="auth-container" class="flex gap-md items-center">
+            <button id="btnLogin" class="hidden md:block text-label-md font-label-md text-primary border border-outline-variant rounded-full px-lg py-sm hover:bg-surface-container-low transition-colors active:scale-95">Đăng nhập</button>
+            <button id="btnRegister" class="text-label-md font-label-md bg-primary-container text-on-primary rounded-full px-lg py-sm hover:bg-primary transition-colors active:scale-95 shadow-sm">Đăng ký miễn phí</button>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow flex flex-col">
+    <section class="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-xl md:py-[80px] flex flex-col md:flex-row gap-xl items-center">
+        <div class="flex-1 flex flex-col gap-lg z-10">
+            <h1 class="text-headline-xl-mobile md:text-headline-xl font-headline-xl-mobile md:font-headline-xl text-on-surface leading-tight">
+                Quản lý Bất động sản Thông minh & Dễ dàng
+            </h1>
+            <p class="text-body-lg font-body-lg text-on-surface-variant max-w-xl">
+                Giải pháp toàn diện giúp chủ nhà và khách thuê kết nối nhanh chóng, quản lý hợp đồng và lịch xem nhà chỉ với vài cú click. Tối ưu hóa quy trình quản lý của bạn ngay hôm nay.
+            </p>
+            <div class="pt-sm">
+                <button id="btnCta" class="text-label-md font-label-md bg-primary-container text-on-primary rounded-full px-xl py-md hover:bg-primary transition-all active:scale-95 shadow-md hover:shadow-lg flex items-center gap-sm w-fit">
+                    <span id="ctaText">Bắt đầu sử dụng ngay</span>
+                    <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+        <div class="flex-1 w-full relative">
+            <div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-lg border border-outline-variant/30">
+                <img alt="Modern Hanoi apartment interior" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ujewxfyfadC-KxKqNilciDLnSe2Uz_epKGJPMLwEaGAFxiLTctZGB-u6oyyRkf8tMSrO_-k5NNdZlnbJhzZ2-hIVPQh1YsPJD0LA8uPZIK2egIS1Qtccj5vACR634Ccyt9nrUuh94I0j5kBZY36Dj2cuJVmsg3paJKQtRJ-EXnz9XyS07jZoN4ld6ROpewnzLMHV9EM8WutpKpc7Bp8eI-B4pdvjnpM51j_IvHMTRKsbSb1pq2_aKZrJg"/>
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent pointer-events-none"></div>
+            </div>
+            <div class="absolute -bottom-xl -left-xl w-32 h-32 bg-primary-fixed/30 rounded-full blur-3xl -z-10"></div>
+            <div class="absolute -top-xl -right-xl w-40 h-40 bg-secondary-fixed/30 rounded-full blur-3xl -z-10"></div>
+        </div>
+    </section>
+
+    <section class="w-full bg-surface-container-lowest py-xl md:py-[80px]">
+        <div class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop flex flex-col gap-xl">
+            <div class="text-center max-w-2xl mx-auto flex flex-col gap-sm">
+                <h2 class="text-headline-lg font-headline-lg text-on-surface">Tính năng Nổi bật</h2>
+                <p class="text-body-md font-body-md text-on-surface-variant">Tất cả những công cụ bạn cần để quản lý bất động sản hiệu quả tại một nền tảng duy nhất.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                <div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-sm hover:shadow-md transition-shadow flex flex-col gap-md items-start group">
+                    <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed-variant group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined" data-icon="home">home</span>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <h3 class="text-headline-md font-headline-md text-on-surface">Tìm kiếm & Đăng tin</h3>
+                        <p class="text-body-sm font-body-sm text-on-surface-variant">Hệ thống thông minh giúp kết nối nhanh chóng giữa cung và cầu, với bộ lọc chi tiết và trực quan.</p>
+                    </div>
+                </div>
+                <div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-sm hover:shadow-md transition-shadow flex flex-col gap-md items-start group">
+                    <div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed-variant group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <h3 class="text-headline-md font-headline-md text-on-surface">Quản lý lịch xem tự động</h3>
+                        <p class="text-body-sm font-body-sm text-on-surface-variant">Sắp xếp, nhắc nhở và quản lý các cuộc hẹn xem nhà một cách trơn tru mà không cần can thiệp thủ công.</p>
+                    </div>
+                </div>
+                <div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-sm hover:shadow-md transition-shadow flex flex-col gap-md items-start group">
+                    <div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined" data-icon="description">description</span>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <h3 class="text-headline-md font-headline-md text-on-surface">Quản lý hợp đồng</h3>
+                        <p class="text-body-sm font-body-sm text-on-surface-variant">Bảo mật tuyệt đối mọi văn bản pháp lý và theo dõi dòng tiền hoa hồng rõ ràng, minh bạch.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-surface-container w-full py-xl px-margin-mobile md:px-margin-desktop border-t border-outline-variant">
+    <div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-gutter">
+        <div class="flex flex-col gap-sm">
+            <span class="text-headline-md font-headline-md font-bold text-primary">HomeMatch</span>
+            <span class="text-body-sm font-body-sm text-on-surface-variant">© 2024 HomeMatch Operations Inc. All rights reserved.</span>
+        </div>
+        <div class="flex flex-col gap-sm">
+            <span class="text-label-md font-label-md text-on-surface font-semibold mb-xs">Pháp lý</span>
+            <a class="text-body-sm font-body-sm text-on-secondary-container hover:text-primary hover:underline transition-all cursor-pointer" href="#">Chính sách bảo mật</a>
+            <a class="text-body-sm font-body-sm text-on-secondary-container hover:text-primary hover:underline transition-all cursor-pointer" href="#">Điều khoản sử dụng</a>
+        </div>
+        <div class="flex flex-col gap-sm">
+            <span class="text-label-md font-label-md text-on-surface font-semibold mb-xs">Liên hệ</span>
+            <a class="text-body-sm font-body-sm text-on-secondary-container hover:text-primary hover:underline transition-all cursor-pointer" href="#">Hỗ trợ khách hàng</a>
+            <a class="text-body-sm font-body-sm text-on-secondary-container hover:text-primary hover:underline transition-all cursor-pointer" href="#">Về chúng tôi</a>
+        </div>
+    </div>
+</footer>
+
+<script src="api.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const authContainer = document.getElementById('auth-container');
+        const btnCta = document.getElementById('btnCta');
+        const ctaText = document.getElementById('ctaText');
+
+        // Kiểm tra Token từ api.js (hoặc lấy trực tiếp từ localStorage)
+        const token = (typeof getToken === 'function') ? getToken() : localStorage.getItem('token');
+
+        if (token) {
+            // TRƯỜNG HỢP 1: NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP
+            // 1. Thay đổi các nút trên Navbar thành "Dashboard" và "Đăng xuất"
+            authContainer.innerHTML = `
+                <button onclick="window.location.href='home.html'" class="hidden md:block text-label-md font-label-md text-primary border border-outline-variant rounded-full px-lg py-sm hover:bg-surface-container-low transition-colors active:scale-95">
+                    Vào Dashboard
+                </button>
+                <button onclick="handleLogout()" class="text-label-md font-label-md bg-error text-on-error rounded-full px-lg py-sm hover:opacity-90 transition-colors active:scale-95 shadow-sm">
+                    Đăng xuất
+                </button>
+            `;
+
+            // 2. Thay đổi nút to ở Hero Banner trỏ thẳng vào hệ thống
+            if (btnCta) {
+                ctaText.innerText = "Đi tới Dashboard";
+                btnCta.onclick = () => {
+                    window.location.href = 'home.html';
+                };
+            }
+        } else {
+            // TRƯỜNG HỢP 2: NGƯỜI DÙNG CHƯA ĐĂNG NHẬP
+            const btnLogin = document.getElementById('btnLogin');
+            const btnRegister = document.getElementById('btnRegister');
+
+            // Gắn link chuyển hướng cho các nút
+            if (btnLogin) {
+                btnLogin.onclick = () => window.location.href = 'login.html';
+            }
+            if (btnRegister) {
+                btnRegister.onclick = () => window.location.href = 'register.html';
+            }
+            if (btnCta) {
+                btnCta.onclick = () => window.location.href = 'register.html';
+            }
+        }
+    });
+
+    // Hàm xử lý Đăng xuất
+    function handleLogout() {
+        // Xóa token khỏi bộ nhớ trình duyệt
+        localStorage.removeItem('token');
+
+        // Nếu trong api.js bạn có hàm gọi backend để hủy token, có thể gọi ở đây
+        // ví dụ: if(typeof logout === 'function') logout();
+
+        // Tải lại trang (Lúc này token đã mất, trang sẽ tự hiện lại nút Đăng nhập)
+        window.location.reload();
+    }
+</script>
+
+</body>
+</html>

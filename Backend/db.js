@@ -6,8 +6,8 @@ const pool = mysql.createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: '100420',   // ← thay bằng mật khẩu MySQL của bạn
-    database: dbName,
+    password: 'Quan@134',
+    database: 'property_schema',
     waitForConnections: true,
     connectionLimit: 10
 });

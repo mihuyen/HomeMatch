@@ -15,6 +15,10 @@ app.use(express.json());
 // Phục vụ frontend tĩnh từ thư mục ../frontend
 app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'Frontend', 'landingpage.html'));
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/consignments', consignmentRoutes);
@@ -31,5 +35,5 @@ app.get('/api/health', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server dang chay tai http://localhost:${PORT}`);
-    console.log(`Mo http://localhost:${PORT}/login.html de bat dau`);
+    console.log(`Mo http://localhost:${PORT}/landingpage.html de bat dau`);
 });

@@ -1,66 +1,285 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html class="light h-full" lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Đăng nhập</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Đăng nhập - HomeMatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dad9e1",
+                        "secondary": "#505f76",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "surface": "#faf8ff",
+                        "inverse-primary": "#b6c4ff",
+                        "on-background": "#1a1b21",
+                        "outline": "#757682",
+                        "on-surface": "#1a1b21",
+                        "on-primary-fixed-variant": "#264191",
+                        "outline-variant": "#c5c5d3",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "surface-container-high": "#e9e7ef",
+                        "inverse-on-surface": "#f1f0f7",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#d0e1fb",
+                        "primary-fixed": "#dce1ff",
+                        "on-primary-container": "#90a8ff",
+                        "surface-container-highest": "#e3e1e9",
+                        "primary": "#00236f",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-tertiary-container": "#f39461",
+                        "tertiary": "#4b1c00",
+                        "inverse-surface": "#2f3036",
+                        "surface-bright": "#faf8ff",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-primary-fixed": "#00164e",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-tint": "#4059aa",
+                        "surface-container-low": "#f4f3fa",
+                        "surface-variant": "#e3e1e9",
+                        "on-error": "#ffffff",
+                        "primary-container": "#1e3a8a",
+                        "tertiary-container": "#6e2c00",
+                        "surface-container": "#eeedf4",
+                        "on-secondary-container": "#54647a",
+                        "on-surface-variant": "#444651",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#faf8ff",
+                        "success": "#1a7f37",
+                        "success-container": "#dcfce7",
+                        "on-success-container": "#14532d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf8ff;
+        }
+        .bg-login-hero {
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCcG4PdB3wXH-WJdNgNqkTRxFSp9VDD5_9uDBUV8REBRhmS5YRezK7OfzOVzH0VA0pX7w2JAckgi-RvD66I35pB35YSKBOPLtcAAdXi1i4NxAX6stmRVDEMW-QxwVB-FFUv7FM_nlxo7F1KTOqYnRPlojukKBoww6fcQ5qqooszE05dS4mj5CjRokBw3kBcM3B4VLH0nNTWpP2JSTA44QW_sBAGOOp5umEvmgxYsTO7r8nMR6e021oOlgKDWl8o489Macq1sC30ow');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container" style="max-width: 420px; margin-top: 80px;">
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <h3 class="mb-4 text-center">Đăng nhập</h3>
+<body class="min-h-screen flex items-center justify-center bg-login-hero relative p-4">
 
-            <div id="alert" class="alert d-none" role="alert"></div>
+<!-- Atmospheric Overlay -->
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
 
-            <form id="loginForm">
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" id="email" class="form-control" required>
+<!-- Login Card Container -->
+<main class="relative z-10 w-full max-w-[440px] my-auto">
+    <div class="bg-surface-container-lowest rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-outline-variant overflow-hidden">
+        <div class="p-lg md:p-xl space-y-xl">
+
+            <!-- Brand Identity -->
+            <div class="flex flex-col items-center text-center space-y-md">
+                <div class="flex items-center justify-center w-16 h-16 rounded-full bg-primary-container mb-xs">
+                    <span class="material-symbols-outlined text-[32px] text-on-primary">apartment</span>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Mật khẩu</label>
-                    <input type="password" id="password" class="form-control" required>
+                <div class="space-y-xs">
+                    <h1 class="font-headline-md text-headline-md text-primary tracking-tight">HomeMatch</h1>
+                    <p class="font-body-md text-body-md text-secondary">Chào mừng trở lại</p>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+            </div>
+
+            <!-- Alert Box (ẩn mặc định) -->
+            <div id="alert" class="hidden p-md rounded-lg text-body-sm" role="alert"></div>
+
+            <!-- Login Form -->
+            <form class="space-y-lg" id="loginForm">
+
+                <!-- Email -->
+                <div class="space-y-xs">
+                    <label class="font-label-md text-label-md text-on-surface-variant block" for="email">Email</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-outline">person</span>
+                        <input class="w-full py-md bg-surface-container border border-outline-variant rounded-xl font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-all pl-12 pr-4"
+                               id="email" name="email" placeholder="email@example.com" type="email" required>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="space-y-xs">
+                    <label class="font-label-md text-label-md text-on-surface-variant block" for="password">Mật khẩu</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-outline">lock</span>
+                        <input class="w-full py-md bg-surface-container border border-outline-variant rounded-xl font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-all pl-12 pr-12"
+                               id="password" name="password" placeholder="••••••••" type="password" required>
+                        <button class="absolute right-4 text-outline hover:text-primary transition-colors focus:outline-none" onclick="togglePasswordVisibility()" type="button">
+                            <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Actions Row -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-xs cursor-pointer group">
+                        <input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox" id="remember">
+                        <span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-primary transition-colors">Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a class="font-label-md text-label-md text-primary-container hover:underline transition-all" href="#">Quên mật khẩu?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button class="w-full py-md bg-primary-container text-on-primary font-headline-md text-headline-md rounded-lg shadow-md hover:bg-primary transition-all active:scale-[0.98] focus:ring-4 focus:ring-primary-container/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                        type="submit" id="submitBtn">
+                    <span id="submitText">Đăng nhập</span>
+                </button>
             </form>
 
-            <hr>
-            <p class="text-center mb-0">
-                Chưa có tài khoản? <a href="register.html">Đăng ký</a>
-            </p>
+            <!-- Signup Prompt -->
+            <div class="pt-lg border-t border-outline-variant text-center">
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Bạn chưa có tài khoản?
+                    <a class="text-primary font-label-md text-label-md ml-xs hover:underline transition-all" href="register.html">Đăng ký ngay</a>
+                </p>
+            </div>
+
         </div>
     </div>
-</div>
 
+    <!-- System Footer -->
+    <div class="mt-lg flex flex-col items-center gap-xs">
+        <p class="font-label-sm text-label-sm text-on-primary/80">© 2024 HomeMatch</p>
+        <div class="flex gap-md">
+            <a class="font-label-sm text-label-sm text-on-primary/60 hover:text-on-primary transition-colors" href="#">Chính sách bảo mật</a>
+            <a class="font-label-sm text-label-sm text-on-primary/60 hover:text-on-primary transition-colors" href="#">Điều khoản dịch vụ</a>
+        </div>
+    </div>
+</main>
+
+<!-- Kết nối các hàm gọi API -->
 <script src="api.js"></script>
+
 <script>
+    // ========================================
+    // Toggle hiện/ẩn mật khẩu
+    // ========================================
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const passwordIcon = document.getElementById('passwordIcon');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.innerText = 'visibility_off';
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.innerText = 'visibility';
+        }
+    }
+
+    // ========================================
+    // Hiển thị thông báo
+    // ========================================
+    function showAlert(message, type = 'error') {
+        const alertBox = document.getElementById('alert');
+        alertBox.textContent = message;
+        alertBox.classList.remove('hidden');
+        if (type === 'error') {
+            alertBox.className = 'p-md rounded-lg text-body-sm bg-error-container text-on-error-container';
+        } else {
+            alertBox.className = 'p-md rounded-lg text-body-sm bg-success-container text-on-success-container';
+        }
+    }
+
+    function hideAlert() {
+        document.getElementById('alert').classList.add('hidden');
+    }
+
+    // ========================================
     // Nếu đã đăng nhập rồi thì chuyển về home
+    // ========================================
     if (getToken()) {
         window.location.href = 'home.html';
     }
 
+    // ========================================
+    // Xử lý submit form đăng nhập
+    // ========================================
     const form = document.getElementById('loginForm');
-    const alertBox = document.getElementById('alert');
-
-    function showAlert(message, type = 'danger') {
-        alertBox.className = `alert alert-${type}`;
-        alertBox.textContent = message;
-    }
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
+        hideAlert();
+
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+            showAlert('Vui lòng nhập đầy đủ email và mật khẩu');
+            return;
+        }
+
+        // Disable nút và đổi text trong lúc đợi
+        submitBtn.disabled = true;
+        submitText.textContent = 'Đang đăng nhập...';
 
         try {
             await login(email, password);
             showAlert('Đăng nhập thành công, đang chuyển trang...', 'success');
-            setTimeout(() => window.location.href = 'home.html', 500);
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 600);
         } catch (err) {
-            showAlert(err.message);
+            showAlert(err.message || 'Đăng nhập thất bại');
+            submitBtn.disabled = false;
+            submitText.textContent = 'Đăng nhập';
         }
     });
 </script>
+
 </body>
 </html>
