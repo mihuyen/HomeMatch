@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Environment / Secrets
+.env
+.env.local
+*.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+
+# Test files (tuỳ chọn)
+Backend/test.http
