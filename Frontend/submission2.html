@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Property Consignment Wizard - Step 2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#0b1c30",
+                      "surface-bright": "#faf8ff",
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#eeedf4",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#1a1b21",
+                      "surface-dim": "#dad9e1",
+                      "background": "#faf8ff",
+                      "tertiary-container": "#6e2c00",
+                      "outline-variant": "#c5c5d3",
+                      "primary-container": "#1e3a8a",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "inverse-on-surface": "#f1f0f7",
+                      "on-surface-variant": "#444651",
+                      "inverse-surface": "#2f3036",
+                      "tertiary-fixed": "#ffdbcb",
+                      "secondary-fixed": "#d3e4fe",
+                      "primary-fixed": "#dce1ff",
+                      "on-tertiary-container": "#f39461",
+                      "on-primary-container": "#90a8ff",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "surface": "#faf8ff",
+                      "surface-container-high": "#e9e7ef",
+                      "surface-variant": "#e3e1e9",
+                      "outline": "#757682",
+                      "tertiary": "#4b1c00",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "primary": "#00236f",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#264191",
+                      "on-primary-fixed": "#00164e",
+                      "inverse-primary": "#b6c4ff",
+                      "surface-tint": "#4059aa",
+                      "surface-container-highest": "#e3e1e9",
+                      "on-background": "#1a1b21",
+                      "on-primary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "secondary": "#505f76",
+                      "on-tertiary-fixed": "#341100",
+                      "on-secondary-container": "#54647a",
+                      "secondary-container": "#d0e1fb",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#773205",
+                      "surface-container-low": "#f4f3fa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "md": "16px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "margin-desktop": "32px",
+                      "xs": "4px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "headline-xl-mobile": ["Inter"],
+                      "headline-xl": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                      "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                      "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                      "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                      "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                      "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for textareas */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f4f3fa; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #c5c5d3; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #757682; 
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row antialiased">
+<!-- SideNavBar (Predicted Component) -->
+<nav class="hidden lg:flex flex-col h-screen sticky top-0 p-md gap-base bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows w-72 flex-shrink-0">
+<div class="flex items-center gap-base mb-lg px-sm">
+<span class="material-symbols-outlined text-primary text-[32px] fill-icon">domain</span>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Consignment Wizard</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Step 2 of 3</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-sm">
+<!-- Tab 1: Owner Info (Done) -->
+<div class="flex items-center gap-md px-md py-sm rounded-full text-on-surface-variant dark:text-surface-variant transition-all duration-200 ease-in-out opacity-70">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-label-md text-label-md">Thông tin cá nhân</span>
+</div>
+<!-- Tab 2: Property Details (Active) -->
+<div class="flex items-center gap-md px-md py-sm rounded-full text-primary dark:text-primary-fixed-dim font-bold bg-secondary-container dark:bg-on-secondary-fixed-variant transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined fill-icon">home_work</span>
+<span class="font-label-md text-label-md">Chi tiết tài sản</span>
+</div>
+<!-- Tab 3: Photos & Confirm (Pending) -->
+<div class="flex items-center gap-md px-md py-sm rounded-full text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined">add_a_photo</span>
+<span class="font-label-md text-label-md">Hình ảnh &amp; Xác nhận</span>
+</div>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<button class="w-full py-sm px-md rounded border border-outline text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                Save Draft
+            </button>
+</div>
+</nav>
+<!-- Mobile Top Header (Fallback for when sidebar is hidden) -->
+<header class="lg:hidden flex items-center justify-between p-md bg-surface-container-low border-b border-outline-variant sticky top-0 z-10">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[28px] fill-icon">domain</span>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary leading-tight">Consignment</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Step 2 of 3</p>
+</div>
+</div>
+<button class="text-primary p-sm">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Mobile Stepper (Only visible on small screens) -->
+<div class="lg:hidden bg-surface px-md py-sm border-b border-outline-variant flex justify-between items-center overflow-x-auto gap-md no-scrollbar">
+<div class="flex items-center gap-sm flex-shrink-0 opacity-70">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">1</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Cá nhân</span>
+</div>
+<div class="h-[1px] w-8 bg-outline-variant flex-shrink-0"></div>
+<div class="flex items-center gap-sm flex-shrink-0">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold">2</div>
+<span class="font-label-sm text-label-sm text-primary font-bold whitespace-nowrap">Tài sản</span>
+</div>
+<div class="h-[1px] w-8 bg-outline-variant flex-shrink-0"></div>
+<div class="flex items-center gap-sm flex-shrink-0 opacity-50">
+<div class="w-6 h-6 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">3</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Xác nhận</span>
+</div>
+</div>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col xl:flex-row overflow-y-auto">
+<!-- Form Section -->
+<div class="flex-1 p-md md:p-xl max-w-4xl mx-auto w-full">
+<div class="mb-lg">
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">Chi tiết tài sản</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Vui lòng cung cấp thông tin chính xác về tài sản để chúng tôi định giá tốt nhất.</p>
+</div>
+<form class="space-y-lg bg-surface-lowest rounded-xl border border-surface-variant p-md md:p-lg shadow-sm" id="propertyForm">
+<!-- Row 1: Type & Area -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="property-type">Loại hình BĐS <span class="text-error">*</span></label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" id="property-type">
+<option disabled="" selected="" value="">Chọn loại hình</option>
+<option value="nhapho">Nhà phố</option>
+<option value="canho">Căn hộ</option>
+<option value="datnen">Đất nền</option>
+<option value="bietthu">Biệt thự</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="area">Diện tích (m²) <span class="text-error">*</span></label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" id="area" placeholder="VD: 100" type="number"/>
+</div>
+</div>
+<!-- Row 2: Direction, Beds, Baths -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="direction">Hướng nhà</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" id="direction">
+<option disabled="" selected="" value="">Chọn hướng</option>
+<option value="dong">Đông</option>
+<option value="tay">Tây</option>
+<option value="nam">Nam</option>
+<option value="bac">Bắc</option>
+<option value="dongbac">Đông Bắc</option>
+<option value="dongnam">Đông Nam</option>
+<option value="taybac">Tây Bắc</option>
+<option value="taynam">Tây Nam</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="bedrooms">Số phòng ngủ</label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" id="bedrooms" min="0" placeholder="0" type="number"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="bathrooms">Số phòng vệ sinh</label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" id="bathrooms" min="0" placeholder="0" type="number"/>
+</div>
+</div>
+<!-- Row 3: Address -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="address">Địa chỉ chi tiết <span class="text-error">*</span></label>
+<textarea class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors resize-none" id="address" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố" rows="3"></textarea>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Địa chỉ chính xác giúp việc khảo sát nhanh chóng hơn.</p>
+</div>
+<!-- Row 4: Price -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="price">Giá đề xuất (VNĐ) <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant rounded pl-md pr-xl py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" id="price" placeholder="VD: 5,000,000,000" type="text"/>
+<span class="absolute right-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-on-surface-variant">VNĐ</span>
+</div>
+</div>
+</form>
+<!-- Bottom Actions -->
+<div class="mt-xl flex items-center justify-between pt-md border-t border-surface-variant">
+<button class="px-md py-sm rounded border border-outline text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center gap-xs" type="button" id="backStep2Button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                    Quay lại
+                </button>
+<button class="px-md py-sm rounded bg-primary-container text-on-primary-container font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center gap-xs" type="button" id="nextStep2Button">
+                    Tiếp theo
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Right Panel: Tips Context (Bento Grid Style) -->
+<aside class="w-full xl:w-80 p-md md:p-xl bg-surface-container-low border-l border-outline-variant flex flex-col gap-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary-container fill-icon">lightbulb</span>
+                Mẹo định giá
+            </h3>
+<!-- Tip Card 1 -->
+<div class="bg-surface rounded-lg p-md border border-surface-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="w-8 h-8 rounded bg-secondary-container text-on-secondary-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Giá đề xuất thực tế</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tham khảo giá thị trường khu vực xung quanh. Giá sát thực tế giúp tài sản được chú ý nhanh hơn gấp 3 lần.</p>
+</div>
+<!-- Tip Card 2 -->
+<div class="bg-surface rounded-lg p-md border border-surface-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="w-8 h-8 rounded bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-[20px]">straighten</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Diện tích chính xác</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Vui lòng nhập diện tích sử dụng thực tế theo sổ hồng/sổ đỏ để đảm bảo tính pháp lý khi giao dịch.</p>
+</div>
+<!-- Information Graphic Placeholder -->
+<div class="mt-auto pt-lg hidden xl:block">
+<div class="rounded-lg overflow-hidden border border-surface-variant h-40 relative group cursor-pointer">
+<div class="absolute inset-0 bg-primary opacity-10 group-hover:opacity-20 transition-opacity z-10"></div>
+<img alt="Modern architectural blueprint background showing property layout lines" class="w-full h-full object-cover grayscale opacity-80" data-alt="A macro close-up of an architectural blueprint lying flat on a well-lit modern desk. The blueprint features crisp, technical white lines on a rich navy blue background, indicating floor plans and property boundaries. Soft, natural daylight washes over the top left corner, creating a professional, pristine, and structured light-mode aesthetic suitable for a high-end real estate application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgIjIaoFGijomu9YIzzMopt_nfPgsov-LoaQnPnEK2_akHbOnn7AvCTwWW5jTzjh_KPSNoDgRciPV8GH_4IXJnC3TpU9cHggjPPQotN03qDvbjOsP2oJx_yBwUjNHeJKhK-GY7zDOfzTjCsipuYYerp4hhygB72MxeCM1wdkWqMX3JdYaYKrfVI1MQuHD2YR-dAttYZDQloqtJxwJjxGgwA5ELUw85J4DxhTvspo6Yjik7Su2oebUH_Yem2L1AhIpC_8ZStBzwXSg"/>
+<div class="absolute inset-0 p-md flex flex-col justify-end z-20 bg-gradient-to-t from-background/90 to-transparent">
+<span class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">map</span>
+                            Bản đồ quy hoạch
+                        </span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<script>
+        // Simple script to format currency input
+        const priceInput = document.getElementById('price');
+        if(priceInput) {
+            priceInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value) {
+                    value = parseInt(value, 10).toLocaleString('en-US');
+                    e.target.value = value;
+                }
+            });
+        }
+    </script>
+<script src="api.js"></script>
+<script>
+    const submissionId = localStorage.getItem('currentSubmissionId');
+    const backStep2Button = document.getElementById('backStep2Button');
+    const nextStep2Button = document.getElementById('nextStep2Button');
+
+    if (!submissionId) {
+        alert('Chưa có hồ sơ bước 1. Vui lòng nhập thông tin cá nhân trước.');
+        window.location.href = 'submission1.html';
+    }
+
+    if (backStep2Button) {
+        backStep2Button.addEventListener('click', () => {
+            window.location.href = 'submission1.html';
+        });
+    }
+
+    if (nextStep2Button) {
+        nextStep2Button.addEventListener('click', async () => {
+            const propertyType = document.getElementById('property-type').value;
+            const area = document.getElementById('area').value;
+            const direction = document.getElementById('direction').value;
+            const bedrooms = document.getElementById('bedrooms').value;
+            const bathrooms = document.getElementById('bathrooms').value;
+            const address = document.getElementById('address').value.trim();
+            const proposedPrice = document.getElementById('price').value;
+
+            try {
+                await updateConsignmentStep2(submissionId, {
+                    propertyType,
+                    area,
+                    direction,
+                    bedrooms,
+                    bathrooms,
+                    address,
+                    proposedPrice
+                });
+
+                localStorage.setItem('consignmentStep2Done', '1');
+                alert('Đã lưu bước 2. Chuyển sang bước 3.');
+                window.location.href = 'submission3.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    }
+</script>
+</body></html>

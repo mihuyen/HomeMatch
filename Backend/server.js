@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
+const consignmentRoutes = require('./routes/consignment');
 
 const app = express();
 const PORT = 5000;
@@ -16,6 +17,7 @@ app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/consignments', consignmentRoutes);
 
 // Test endpoints
 app.get('/api/health', async (req, res) => {
