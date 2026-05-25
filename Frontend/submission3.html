@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Property Consignment Wizard - Step 3</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+		.material-symbols-outlined {
+			font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+		}
+		.material-symbols-outlined.fill-icon {
+			font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+		}
+	</style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
+<main class="max-w-5xl mx-auto p-6 space-y-6">
+	<section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+		<div class="flex items-center justify-between gap-4 flex-wrap">
+			<div>
+				<p class="text-sm uppercase tracking-wider text-slate-500">Bước 3</p>
+				<h1 class="text-2xl font-bold">Hình ảnh &amp; xác nhận hồ sơ</h1>
+				<p class="text-slate-600 mt-1">Kiểm tra lại dữ liệu trước khi chuyển hồ sơ sang xử lý nội bộ.</p>
+			</div>
+			<div class="flex items-center gap-3">
+				<button id="backButton" class="px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Quay lại</button>
+				<button id="saveButton" class="px-4 py-2 rounded-lg bg-blue-700 text-white hover:bg-blue-800">Xác nhận &amp; lưu</button>
+			</div>
+		</div>
+	</section>
+
+	<section class="grid lg:grid-cols-2 gap-6">
+		<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+			<h2 class="text-lg font-semibold">Dữ liệu hồ sơ</h2>
+			<div id="statusBox" class="p-4 rounded-lg bg-slate-100 text-slate-700">Đang tải dữ liệu...</div>
+			<div id="submissionInfo" class="space-y-2 text-sm text-slate-700"></div>
+		</div>
+		<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+			<h2 class="text-lg font-semibold">Ảnh minh họa</h2>
+			<textarea id="imagesInput" class="w-full border border-slate-300 rounded-lg p-3 min-h-40" placeholder="Dán danh sách URL ảnh, mỗi dòng một URL hoặc phân tách bằng dấu phẩy"></textarea>
+			<p class="text-sm text-slate-500">Dữ liệu sẽ được lưu vào <code>images_uploaded</code> của hồ sơ.</p>
+		</div>
+	</section>
+
+	<section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+		<h2 class="text-lg font-semibold mb-3">Xác nhận cuối</h2>
+		<p class="text-slate-600">Khi bấm xác nhận, hệ thống sẽ lưu ảnh và trạng thái hồ sơ, sau đó bạn có thể xem lại dữ liệu từ backend ngay tại đây.</p>
+	</section>
+</main>
+<script src="api.js"></script>
+<script>
+	const submissionId = localStorage.getItem('currentSubmissionId');
+	const backButton = document.getElementById('backButton');
+	const saveButton = document.getElementById('saveButton');
+	const statusBox = document.getElementById('statusBox');
+	const submissionInfo = document.getElementById('submissionInfo');
+	const imagesInput = document.getElementById('imagesInput');
+
+	if (!submissionId) {
+		alert('Chưa có hồ sơ. Vui lòng thực hiện bước 1 và 2 trước.');
+		window.location.href = 'submission1.html';
+	}
+
+	async function loadSubmission() {
+		try {
+			const data = await getConsignment(submissionId);
+			const submission = data.submission;
+			const images = Array.isArray(submission.images_uploaded) ? submission.images_uploaded : [];
+
+			imagesInput.value = images.join('\n');
+			statusBox.textContent = `Trạng thái hiện tại: ${submission.status}`;
+			submissionInfo.innerHTML = `
+				<div><strong>Mã hồ sơ:</strong> ${submission.submission_id}</div>
+				<div><strong>Chủ nhà:</strong> ${data.owner ? data.owner.full_name : 'N/A'}</div>
+				<div><strong>Email:</strong> ${data.owner ? data.owner.email : 'N/A'}</div>
+				<div><strong>Loại BĐS:</strong> ${submission.property_type || 'Chưa nhập'}</div>
+				<div><strong>Diện tích:</strong> ${submission.area || 'Chưa nhập'}</div>
+				<div><strong>Địa chỉ:</strong> ${submission.address || 'Chưa nhập'}</div>
+				<div><strong>Giá đề xuất:</strong> ${submission.proposed_price || 'Chưa nhập'}</div>
+			`;
+		} catch (error) {
+			statusBox.textContent = error.message;
+		}
+	}
+
+	if (backButton) {
+		backButton.addEventListener('click', () => {
+			window.location.href = 'submission2.html';
+		});
+	}
+
+	if (saveButton) {
+		saveButton.addEventListener('click', async () => {
+			const rawImages = imagesInput.value
+				.split(/\n|,/)
+				.map(item => item.trim())
+				.filter(Boolean);
+
+			try {
+				const result = await finalizeConsignmentStep3(submissionId, {
+					imagesUploaded: rawImages,
+					status: 'pending',
+					assignSales: true
+				});
+
+				statusBox.textContent = `Đã lưu thành công. Trạng thái: ${result.submission.status}`;
+				await loadSubmission();
+				alert('Đã hoàn tất bước 3.');
+			} catch (error) {
+				alert(error.message);
+			}
+		});
+	}
+
+	loadSubmission();
+</script>
+</body></html>

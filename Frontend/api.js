@@ -80,6 +80,42 @@ async function fetchMe() {
     return apiCall('/auth/me');
 }
 
+async function createConsignmentStep1(payload) {
+    return apiCall('/consignments/step-1', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function updateConsignmentStep2(submissionId, payload) {
+    return apiCall(`/consignments/${submissionId}/step-2`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function finalizeConsignmentStep3(submissionId, payload) {
+    return apiCall(`/consignments/${submissionId}/step-3`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function getConsignment(submissionId) {
+    return apiCall(`/consignments/${submissionId}`);
+}
+
+async function listConsignments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.ownerId) query.set('ownerId', params.ownerId);
+    if (params.status) query.set('status', params.status);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/consignments${suffix}`);
+}
+
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {
     if (!getToken()) {

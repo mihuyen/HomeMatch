@@ -221,7 +221,7 @@
 </div>
 <!-- Bottom Actions -->
 <div class="mt-xl flex items-center justify-end pt-md border-t border-outline-variant">
-<button class="px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-xs shadow-sm" type="button">
+<button class="px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-xs shadow-sm" type="button" id="nextStep1Button">
                         Tiếp theo
                         <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
 </button>
@@ -271,4 +271,46 @@
 </div>
 </aside>
 </main>
+<script src="api.js"></script>
+<script>
+    const consignmentForm = document.getElementById('consignmentForm');
+    const nextStep1Button = document.getElementById('nextStep1Button');
+
+    async function loadOwnerFromAuth() {
+        try {
+            const user = await requireLogin();
+            if (!user) return;
+
+            const nameInput = consignmentForm.querySelector('input[name="fullName"]');
+            const phoneInput = consignmentForm.querySelector('input[name="phone"]');
+            const emailInput = consignmentForm.querySelector('input[name="email"]');
+
+            if (nameInput && user.full_name) nameInput.value = user.full_name;
+            if (emailInput && user.email) emailInput.value = user.email;
+            if (phoneInput && user.phone) phoneInput.value = user.phone;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    if (nextStep1Button) {
+        nextStep1Button.addEventListener('click', async () => {
+            const fullName = consignmentForm.querySelector('input[name="fullName"]').value.trim();
+            const phone = consignmentForm.querySelector('input[name="phone"]').value.trim();
+            const email = consignmentForm.querySelector('input[name="email"]').value.trim();
+            const idCard = consignmentForm.querySelector('input[name="idCard"]').value.trim();
+
+            try {
+                const result = await createConsignmentStep1({ fullName, phone, email, idCard });
+                localStorage.setItem('currentSubmissionId', String(result.submission.submission_id));
+                alert('Đã lưu bước 1. Chuyển sang bước 2.');
+                window.location.href = 'submission2.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    loadOwnerFromAuth();
+</script>
 </body></html>
