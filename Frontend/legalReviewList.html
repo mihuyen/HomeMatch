@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>LegalCore - Danh sách Hồ sơ Thẩm định</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f4f3fa",
+            "primary-fixed-dim": "#b6c4ff",
+            "on-primary-fixed": "#00164e",
+            "on-error-container": "#93000a",
+            "secondary-fixed-dim": "#b7c8e1",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#6e2c00",
+            "on-primary-fixed-variant": "#264191",
+            "error-container": "#ffdad6",
+            "on-surface-variant": "#444651",
+            "on-secondary-fixed": "#0b1c30",
+            "on-error": "#ffffff",
+            "surface-container": "#eeedf4",
+            "background": "#f8fafc",
+            "surface": "#ffffff",
+            "secondary-fixed": "#d3e4fe",
+            "secondary": "#505f76",
+            "tertiary": "#4b1c00",
+            "on-background": "#0f172a",
+            "surface-variant": "#e3e1e9",
+            "primary-container": "#1e3a8a",
+            "outline": "#94a3b8",
+            "surface-dim": "#f1f5f9",
+            "on-secondary-container": "#54647a",
+            "inverse-surface": "#1e293b",
+            "error": "#ba1a1a",
+            "surface-tint": "#4059aa",
+            "tertiary-fixed-dim": "#ffb691",
+            "on-tertiary-container": "#f39461",
+            "surface-bright": "#ffffff",
+            "surface-container-high": "#e2e8f0",
+            "surface-container-highest": "#cbd5e1",
+            "on-tertiary-fixed-variant": "#773205",
+            "on-tertiary-fixed": "#341100",
+            "inverse-on-surface": "#f8fafc",
+            "tertiary-fixed": "#ffdbcb",
+            "on-primary": "#ffffff",
+            "secondary-container": "#d3e4fe",
+            "inverse-primary": "#b6c4ff",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#dce1ff",
+            "on-secondary-fixed-variant": "#38485d",
+            "on-primary-container": "#90a8ff",
+            "on-surface": "#1a1b21",
+            "primary": "#1E3A8A",
+            "outline-variant": "#e2e8f0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.375rem",
+            "xl": "0.5rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "lg": "24px",
+            "margin-desktop": "32px",
+            "md": "16px",
+            "xs": "4px",
+            "base": "8px",
+            "sm": "8px",
+            "margin-mobile": "16px",
+            "xl": "32px",
+            "gutter": "24px"
+          },
+          "fontFamily": {
+            "label-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "headline-xl": ["Inter"]
+          },
+          "fontSize": {
+            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "headline-xl-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+  <div class="min-h-screen flex flex-col" id="layout-wrapper">
+    <div id="legal-sidebar"></div>
+    <main class="flex-1 min-w-0 overflow-y-auto px-lg md:px-xl py-lg">
+      <div class="max-w-7xl mx-auto flex flex-col min-h-full">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
+          <div>
+            <h1 class="text-headline-lg font-bold text-on-background">Danh sách Hồ sơ Thẩm định</h1>
+            <p class="text-body-sm text-secondary">Tổng cộng 24 hồ sơ đang chờ xử lý</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-md rounded-xl border border-outline-variant shadow-sm mb-lg">
+          <div class="flex flex-col lg:flex-row gap-md">
+            <div class="flex-1 relative">
+              <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">search</span>
+              <input class="w-full pl-xl pr-md py-sm border-outline-variant rounded-lg text-body-sm focus:ring-primary focus:border-primary" placeholder="Tìm kiếm theo mã hợp đồng hoặc người nộp..." type="text">
+            </div>
+            <div class="flex flex-wrap gap-md">
+              <select class="border-outline-variant rounded-lg text-body-sm py-sm pr-xl focus:ring-primary focus:border-primary">
+                <option>Tất cả trạng thái</option>
+                <option>Chờ thẩm định</option>
+                <option>Đang xử lý</option>
+                <option>Hoàn thành</option>
+              </select>
+              <select class="border-outline-variant rounded-lg text-body-sm py-sm pr-xl focus:ring-primary focus:border-primary">
+                <option>Tất cả loại thỏa thuận</option>
+                <option>Chuyển nhượng</option>
+                <option>Cho thuê</option>
+                <option>Ủy quyền</option>
+              </select>
+              <button class="flex items-center gap-xs px-md py-sm border border-outline-variant rounded-lg text-secondary hover:bg-slate-50">
+                <span class="material-symbols-outlined text-[20px]">filter_list</span>
+                Lọc nâng cao
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden flex-1">
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-outline-variant text-left">
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Mã hợp đồng</th>
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Người nộp hồ sơ</th>
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Ngày nộp</th>
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Loại thỏa thuận</th>
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Trạng thái</th>
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant">
+                <tr class="hover:bg-slate-50/50 transition-colors group">
+                  <td class="px-lg py-md"><span class="text-body-sm font-semibold text-primary">APP-2024-001</span></td>
+                  <td class="px-lg py-md">
+                    <div class="flex items-center gap-sm">
+                      <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-[12px]">NT</div>
+                      <div>
+                        <div class="text-body-sm font-medium">Nguyễn Văn Thuận</div>
+                        <div class="text-xs text-secondary">thuan.nv@email.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-lg py-md text-body-sm text-secondary">15/03/2024</td>
+                  <td class="px-lg py-md"><span class="px-base py-xs bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">Chuyển nhượng</span></td>
+                  <td class="px-lg py-md">
+                    <div class="flex items-center gap-xs text-amber-600">
+                      <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                      <span class="text-body-sm font-medium">Chờ thẩm định</span>
+                    </div>
+                  </td>
+                  <td class="px-lg py-md text-right">
+                    <button class="px-md py-sm bg-primary text-white rounded-lg text-label-sm font-semibold hover:bg-blue-900 transition-shadow">Thẩm định</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="px-lg py-md bg-white border-t border-outline-variant flex items-center justify-between">
+            <span class="text-body-sm text-secondary">Hiển thị 1-4 trên tổng số 24 hồ sơ</span>
+            <div class="flex items-center gap-xs">
+              <button class="p-xs rounded hover:bg-slate-100 text-secondary disabled:opacity-50" disabled>
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button class="w-8 h-8 rounded bg-primary text-white text-body-sm font-semibold">1</button>
+              <button class="w-8 h-8 rounded hover:bg-slate-100 text-secondary text-body-sm font-medium">2</button>
+              <button class="w-8 h-8 rounded hover:bg-slate-100 text-secondary text-body-sm font-medium">3</button>
+              <button class="p-xs rounded hover:bg-slate-100 text-secondary">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="mt-auto pt-xl pb-lg border-t border-outline-variant mt-xl">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-md">
+            <div class="text-body-sm text-secondary">© 2024 LegalCore. Tất cả các quyền được bảo hộ.</div>
+            <div class="flex items-center gap-lg">
+              <a class="text-body-sm text-secondary hover:text-primary transition-colors" href="#">Điều khoản dịch vụ</a>
+              <a class="text-body-sm text-secondary hover:text-primary transition-colors" href="#">Chính sách bảo mật</a>
+              <a class="text-body-sm text-secondary hover:text-primary transition-colors" href="#">Liên hệ</a>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="legalSidebar.js"></script>
+  <script>
+    async function initLegalPage() {
+      const user = await requireLogin();
+      if (!user) return;
+      if (user.role !== 'legal') {
+        window.location.href = 'home.html';
+      }
+    }
+
+    initLegalPage();
+  </script>
+</body>
+</html>

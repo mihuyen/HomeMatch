@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Danh sách Bất động sản đã khảo sát</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #faf8ff;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #c5c5d3;
+      border-radius: 10px;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid #e2e8f0;
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed-dim": "#b7c8e1",
+            "surface": "#faf8ff",
+            "secondary-container": "#d0e1fb",
+            "on-surface": "#1a1b21",
+            "surface-dim": "#dad9e1",
+            "surface-container": "#eeedf4",
+            "on-tertiary-fixed": "#341100",
+            "tertiary-fixed": "#ffdbcb",
+            "on-surface-variant": "#444651",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "background": "#faf8ff",
+            "primary-fixed-dim": "#b6c4ff",
+            "on-secondary-fixed-variant": "#38485d",
+            "tertiary-fixed-dim": "#ffb691",
+            "on-primary-container": "#90a8ff",
+            "on-secondary-container": "#54647a",
+            "on-primary-fixed-variant": "#264191",
+            "on-primary": "#ffffff",
+            "on-background": "#1a1b21",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#00236f",
+            "inverse-on-surface": "#f1f0f7",
+            "on-tertiary-fixed-variant": "#773205",
+            "surface-bright": "#faf8ff",
+            "surface-container-low": "#f4f3fa",
+            "inverse-primary": "#b6c4ff",
+            "primary-container": "#1e3a8a",
+            "outline-variant": "#c5c5d3",
+            "on-primary-fixed": "#00164e",
+            "tertiary-container": "#6e2c00",
+            "surface-container-high": "#e9e7ef",
+            "error": "#ba1a1a",
+            "inverse-surface": "#2f3036",
+            "on-tertiary-container": "#f39461",
+            "tertiary": "#4b1c00",
+            "surface-variant": "#e3e1e9",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#4059aa",
+            "secondary-fixed": "#d3e4fe",
+            "outline": "#757682",
+            "on-secondary-fixed": "#0b1c30",
+            "secondary": "#505f76",
+            "surface-container-highest": "#e3e1e9",
+            "primary-fixed": "#dce1ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-desktop": "32px",
+            "lg": "24px",
+            "md": "16px",
+            "xl": "32px",
+            "gutter": "24px",
+            "margin-mobile": "16px",
+            "xs": "4px",
+            "sm": "8px",
+            "base": "8px"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+            "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "headline-xl-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface">
+  <div class="min-h-screen flex flex-col">
+    <div id="broker-sidebar"></div>
+    <script src="brokerSidebar.js"></script>
+    <script src="api.js"></script>
+
+    <main class="flex-1 p-gutter custom-scrollbar">
+      <div class="mb-lg flex justify-between items-end">
+        <div>
+          <h3 class="font-headline-lg text-headline-lg text-on-surface">Xử lý Hợp đồng</h3>
+        </div>
+      </div>
+
+      <div class="glass-card p-md rounded-xl mb-lg grid grid-cols-1 md:grid-cols-4 gap-md items-end">
+        <div class="space-y-1">
+          <label class="font-label-sm text-on-surface-variant">Khu vực</label>
+          <select class="w-full bg-surface-container-lowest border-outline-variant rounded-lg font-body-sm focus:border-primary-container" id="filter-area">
+            <option value="">Tất cả khu vực</option>
+          </select>
+        </div>
+        <div class="space-y-1">
+          <label class="font-label-sm text-on-surface-variant">Ngày khảo sát</label>
+          <input class="w-full bg-surface-container-lowest border-outline-variant rounded-lg font-body-sm focus:border-primary-container" id="filter-date" type="date">
+        </div>
+        <div class="space-y-1">
+          <label class="font-label-sm text-on-surface-variant">Loại tài sản</label>
+          <select class="w-full bg-surface-container-lowest border-outline-variant rounded-lg font-body-sm focus:border-primary-container" id="filter-type">
+            <option value="">Tất cả loại</option>
+          </select>
+        </div>
+        <div class="flex gap-sm">
+          <button class="flex-1 bg-primary text-white py-2 rounded-lg font-label-md hover:bg-primary-container transition-all flex items-center justify-center gap-xs" id="applyFilter">
+            <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+            Lọc dữ liệu
+          </button>
+          <button class="px-3 py-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors" id="resetFilter">
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant">refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-surface-container-low border-b border-outline-variant">
+                <th class="p-md font-label-md text-on-surface-variant">Bất động sản</th>
+                <th class="p-md font-label-md text-on-surface-variant">Chủ sở hữu</th>
+                <th class="p-md font-label-md text-on-surface-variant">Ngày khảo sát</th>
+                <th class="p-md font-label-md text-on-surface-variant">Trạng thái</th>
+                <th class="p-md font-label-md text-on-surface-variant text-right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant" id="contract-list-body">
+              <tr>
+                <td class="p-md" colspan="5">Đang tải dữ liệu...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const listBody = document.getElementById('contract-list-body');
+      const applyFilterBtn = document.getElementById('applyFilter');
+      const resetFilterBtn = document.getElementById('resetFilter');
+      const filterArea = document.getElementById('filter-area');
+      const filterDate = document.getElementById('filter-date');
+      const filterType = document.getElementById('filter-type');
+
+      if (typeof requireLogin === 'function') {
+        await requireLogin();
+      }
+
+      function formatDate(value) {
+        if (!value) return '---';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '---';
+        return date.toLocaleDateString('vi-VN');
+      }
+
+      function formatStatusBadge(status) {
+        const normalized = String(status || '').toLowerCase();
+        if (!normalized) {
+          return {
+            label: 'Chờ tạo hợp đồng',
+            className: 'bg-surface-container-low text-on-surface-variant'
+          };
+        }
+        if (normalized.includes('documents') || normalized.includes('tai')) {
+          return {
+            label: 'Chờ tài liệu',
+            className: 'bg-yellow-100 text-yellow-800'
+          };
+        }
+        if (normalized.includes('approved') || normalized.includes('duyet')) {
+          return {
+            label: 'Chờ duyệt điều khoản',
+            className: 'bg-orange-100 text-orange-800'
+          };
+        }
+        if (normalized.includes('done') || normalized.includes('complete') || normalized.includes('hoan')) {
+          return {
+            label: 'Hoàn tất',
+            className: 'bg-emerald-100 text-emerald-800'
+          };
+        }
+        return {
+          label: status,
+          className: 'bg-emerald-100 text-emerald-800'
+        };
+      }
+
+      function buildContractUrl(item) {
+        const params = new URLSearchParams({
+          submissionId: item.submission_id || '',
+          address: item.address || '',
+          area: item.area || '',
+          bedrooms: item.num_bedrooms || '',
+          bathrooms: item.num_bathrooms || '',
+          proposedPrice: item.proposed_price || '',
+          direction: item.direction || '',
+          propertyType: item.property_type || ''
+        });
+        return `brokerContract.html?${params.toString()}`;
+      }
+
+      function renderRows(items) {
+        if (!items.length) {
+          listBody.innerHTML = '<tr><td class="p-md" colspan="5">Không có dữ liệu</td></tr>';
+          return;
+        }
+
+        listBody.innerHTML = items.map(item => {
+          const propertyTitle = item.property_type || '---';
+          const propertyLocation = item.direction || item.address || '---';
+          const ownerName = item.owner?.full_name || '---';
+          const ownerPhone = item.owner?.phone || '---';
+          const surveyDate = item.latest_survey?.completed_at || item.submitted_at;
+          const statusBadge = formatStatusBadge(item.contract_status);
+          const contractUrl = buildContractUrl(item);
+          return `
+            <tr class="hover:bg-primary-fixed/5 transition-colors group">
+              <td class="p-md">
+                <div class="flex items-center gap-md">
+                  <div>
+                    <p class="font-label-md text-on-surface font-bold">${propertyTitle}</p>
+                    <p class="text-[12px] text-on-surface-variant">${propertyLocation}</p>
+                    <p class="text-[12px] text-on-surface-variant">Mã hồ sơ: ${item.request_code || '---'}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="p-md">
+                <div class="flex flex-col">
+                  <span class="font-body-sm text-on-surface">${ownerName}</span>
+                  <span class="text-[12px] text-on-surface-variant">${ownerPhone}</span>
+                </div>
+              </td>
+              <td class="p-md font-body-sm text-on-surface">${formatDate(surveyDate)}</td>
+              <td class="p-md font-body-sm">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}">${statusBadge.label}</span>
+              </td>
+              <td class="p-md text-right">
+                <a class="bg-primary text-white px-md py-sm rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:shadow-md hover:scale-[1.02] transition-all inline-flex items-center justify-center" href="${contractUrl}">
+                  Tạo hợp đồng
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      async function loadData() {
+        listBody.innerHTML = '<tr><td class="p-md" colspan="5">Đang tải dữ liệu...</td></tr>';
+        const params = { status: 'surveyed' };
+        try {
+          const data = await listBrokerAssignments(params);
+          renderRows(data.items || []);
+        } catch (error) {
+          listBody.innerHTML = `<tr><td class="p-md" colspan="5">${error.message || 'Không thể tải dữ liệu'}</td></tr>`;
+        }
+      }
+
+      if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', () => {
+          loadData();
+        });
+      }
+
+      if (resetFilterBtn) {
+        resetFilterBtn.addEventListener('click', () => {
+          filterArea.value = '';
+          filterDate.value = '';
+          filterType.value = '';
+          loadData();
+        });
+      }
+
+      await loadData();
+    });
+  </script>
+</body>
+</html>

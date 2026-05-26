@@ -28,12 +28,63 @@ function mapSurveyToSubmissionStatus(surveyStatus) {
     return 'surveyed';
 }
 
+function generateContractCode(submissionId) {
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `HD-${String(submissionId).padStart(5, '0')}-${rand}`;
+}
+
+async function generateUniqueContractCode(connection, submissionId, maxAttempts = 10) {
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        const code = generateContractCode(submissionId);
+        const [rows] = await connection.query(
+            'SELECT submission_contract_id FROM submission_contracts WHERE contract_code = ? LIMIT 1',
+            [code]
+        );
+        if (rows.length === 0) return code;
+    }
+    throw new Error('Không thể tạo mã hợp đồng duy nhất');
+}
+
 async function getAssignedSubmission(submissionId, brokerId) {
     const [rows] = await db.query(
         `SELECT ps.*, u.full_name AS owner_name, u.phone AS owner_phone, u.email AS owner_email
          FROM property_submissions ps
          LEFT JOIN users u ON u.user_id = ps.owner_id
          WHERE ps.submission_id = ? AND ps.assigned_sales_id = ?
+         LIMIT 1`,
+        [submissionId, brokerId]
+    );
+    return rows[0] || null;
+}
+
+async function getAssignedSubmissionContractDraft(submissionId, brokerId) {
+    const [rows] = await db.query(
+        `SELECT
+            ps.submission_id,
+            ps.address AS property_address,
+            ps.direction AS property_direction,
+            ps.proposed_price AS property_proposed_price,
+            u.full_name AS owner_full_name,
+            u.phone AS owner_phone,
+            u.id_card AS owner_id_card
+         FROM property_submissions ps
+         LEFT JOIN users u ON u.user_id = ps.owner_id
+         WHERE ps.submission_id = ? AND ps.assigned_sales_id = ?
+         LIMIT 1`,
+        [submissionId, brokerId]
+    );
+    return rows[0] || null;
+}
+
+async function getLatestSubmissionContract(submissionId, brokerId) {
+    const [rows] = await db.query(
+        `SELECT sc.submission_contract_id, sc.contract_code, sc.contract_type, sc.signed_scan_url AS contract_scan_url,
+            sc.status, sc.signed_at, u.full_name AS owner_full_name
+         FROM submission_contracts sc
+         INNER JOIN property_submissions ps ON ps.submission_id = sc.submission_id
+         LEFT JOIN users u ON u.user_id = ps.owner_id
+         WHERE sc.submission_id = ? AND ps.assigned_sales_id = ?
+         ORDER BY sc.submission_contract_id DESC
          LIMIT 1`,
         [submissionId, brokerId]
     );
@@ -78,22 +129,34 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
                 ps.submission_id,
                 ps.status,
                 ps.address,
+                ps.direction,
                 ps.property_type,
+                ps.area,
+                ps.num_bedrooms,
+                ps.num_bathrooms,
                 ps.proposed_price,
                 ps.submitted_at,
                 ps.owner_id,
                 u.full_name AS owner_name,
                 u.phone AS owner_phone,
+                sc.status AS contract_status,
                 MAX(ap.scheduled_time) AS latest_appointment_time,
                 SUBSTRING_INDEX(GROUP_CONCAT(ap.status ORDER BY ap.scheduled_time DESC SEPARATOR ','), ',', 1) AS latest_appointment_status,
                 MAX(sr.completed_at) AS latest_survey_time,
                 SUBSTRING_INDEX(GROUP_CONCAT(sr.survey_status ORDER BY sr.completed_at DESC SEPARATOR ','), ',', 1) AS latest_survey_status
              FROM property_submissions ps
              LEFT JOIN users u ON u.user_id = ps.owner_id
+             LEFT JOIN submission_contracts sc
+               ON sc.submission_id = ps.submission_id
+              AND sc.submission_contract_id = (
+                 SELECT MAX(sc2.submission_contract_id)
+                 FROM submission_contracts sc2
+                 WHERE sc2.submission_id = ps.submission_id
+             )
              LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id AND ap.appointment_type = 'khảo sát'
              LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
              WHERE ${whereSql}
-             GROUP BY ps.submission_id, u.user_id
+             GROUP BY ps.submission_id, u.user_id, sc.status
              ORDER BY ps.submitted_at DESC, ps.submission_id DESC
              LIMIT ? OFFSET ?`,
             [...params, Number(limit), Number(offset)]
@@ -107,9 +170,14 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
                 submission_id: row.submission_id,
                 status: row.status,
                 address: row.address,
+                direction: row.direction,
                 property_type: row.property_type,
+                area: row.area,
+                num_bedrooms: row.num_bedrooms,
+                num_bathrooms: row.num_bathrooms,
                 proposed_price: row.proposed_price,
                 submitted_at: row.submitted_at,
+                contract_status: row.contract_status,
                 owner: {
                     user_id: row.owner_id,
                     full_name: row.owner_name,
@@ -219,6 +287,253 @@ router.get('/appointments', requireAuth, requireRole('broker', 'sale', 'agent', 
         });
     } catch (err) {
         console.error('broker appointments error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/broker/contracts/:submissionId
+// Lấy dữ liệu khởi tạo hợp đồng cho hồ sơ được phân công
+router.get('/contracts/:submissionId', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+    try {
+        const brokerId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        const draft = await getAssignedSubmissionContractDraft(submissionId, brokerId);
+        if (!draft) {
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+        }
+
+        res.json({
+            submission_id: draft.submission_id,
+            owner: {
+                full_name: draft.owner_full_name,
+                phone: draft.owner_phone,
+                id_card: draft.owner_id_card,
+                address: null
+            },
+            property: {
+                address: draft.property_address,
+                direction: draft.property_direction,
+                proposed_price: draft.property_proposed_price
+            }
+        });
+    } catch (err) {
+        console.error('broker contract draft error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/broker/contracts
+// Tạo hợp đồng ký gửi cho hồ sơ đã phân công
+router.post('/contracts', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+    const connection = await db.getConnection();
+    try {
+        const brokerId = req.user.user_id;
+        const { submissionId, contractDurationMonths, contractType, specialTerms } = req.body;
+        const parsedSubmissionId = Number(submissionId);
+        const parsedDuration = Number(contractDurationMonths);
+
+        if (!Number.isInteger(parsedSubmissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
+            return res.status(400).json({ message: 'Thời hạn hợp đồng không hợp lệ' });
+        }
+
+        if (!['standard', 'custom'].includes(contractType)) {
+            return res.status(400).json({ message: 'Loại hợp đồng không hợp lệ' });
+        }
+
+        if (contractType === 'custom' && (!specialTerms || String(specialTerms).trim() === '')) {
+            return res.status(400).json({ message: 'Vui lòng nhập điều khoản bổ sung' });
+        }
+
+        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, brokerId);
+        if (!assignedSubmission) {
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+        }
+
+        await connection.beginTransaction();
+
+        const contractCode = await generateUniqueContractCode(connection, parsedSubmissionId);
+        const [contractResult] = await connection.query(
+            `INSERT INTO submission_contracts (submission_id, contract_code, contract_duration_months, contract_type, status, signed_at)
+             VALUES (?, ?, ?, ?, 'pending_documents', NOW())`,
+            [parsedSubmissionId, contractCode, parsedDuration, contractType]
+        );
+
+        const submissionContractId = contractResult.insertId;
+
+        if (contractType === 'custom') {
+            await connection.query(
+                `INSERT INTO contract_legal_approvals (submission_contract_id, special_terms_requested, status)
+                 VALUES (?, ?, 'pending')`,
+                [submissionContractId, String(specialTerms).trim()]
+            );
+        }
+
+        await connection.commit();
+
+        res.status(201).json({
+            message: contractType === 'custom'
+                ? 'Đã gửi cho bộ phận pháp lý phê duyệt điều khoản riêng'
+                : 'Tạo hợp đồng thành công',
+            submission_contract_id: submissionContractId,
+            contract_code: contractCode
+        });
+    } catch (err) {
+        await connection.rollback();
+        console.error('broker create contract error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    } finally {
+        connection.release();
+    }
+});
+
+// GET /api/broker/contracts/:submissionId/summary
+// Lấy thông tin tóm tắt hợp đồng cho bước 2
+router.get('/contracts/:submissionId/summary', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+    try {
+        const brokerId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        const contract = await getLatestSubmissionContract(submissionId, brokerId);
+        if (!contract) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng cho hồ sơ này' });
+        }
+
+        res.json({
+            submission_contract_id: contract.submission_contract_id,
+            contract_code: contract.contract_code,
+            contract_type: contract.contract_type,
+            images_uploaded: contract.images_uploaded,
+            status: contract.status,
+            signed_at: contract.signed_at,
+            owner: {
+                full_name: contract.owner_full_name
+            }
+        });
+    } catch (err) {
+        console.error('broker contract summary error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// PATCH /api/broker/contracts/:submissionId
+// Cập nhật loại hợp đồng (ky gui/gia han)
+router.patch('/contracts/:submissionId', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+    try {
+        const brokerId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+        const { contractType } = req.body;
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        if (!['consignment', 'renewal'].includes(contractType)) {
+            return res.status(400).json({ message: 'Loại hợp đồng không hợp lệ' });
+        }
+
+        const contract = await getLatestSubmissionContract(submissionId, brokerId);
+        if (!contract) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng cho hồ sơ này' });
+        }
+
+        await db.query(
+            'UPDATE submission_contracts SET contract_type = ? WHERE submission_contract_id = ?',
+            [contractType, contract.submission_contract_id]
+        );
+
+        res.json({ message: 'Cập nhật loại hợp đồng thành công' });
+    } catch (err) {
+        console.error('broker update contract type error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/broker/contracts/:submissionId/scan
+// Upload file scan hợp đồng và cập nhật trạng thái hồ sơ
+router.post('/contracts/:submissionId/scan', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        const brokerId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+        const { fileName, mimeType, fileDataBase64 } = req.body;
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        if (!fileDataBase64) {
+            return res.status(400).json({ message: 'Thiếu dữ liệu tệp tin' });
+        }
+
+        const contract = await getLatestSubmissionContract(submissionId, brokerId);
+        if (!contract) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng cho hồ sơ này' });
+        }
+
+        let dataBase64 = fileDataBase64;
+        let resolvedMime = mimeType || null;
+
+        const dataUrlMatch = String(fileDataBase64).match(/^data:([^;]+);base64,(.*)$/);
+        if (dataUrlMatch) {
+            resolvedMime = resolvedMime || dataUrlMatch[1];
+            dataBase64 = dataUrlMatch[2];
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (resolvedMime && !allowedTypes.includes(resolvedMime)) {
+            return res.status(400).json({ message: 'Định dạng tệp tin không hợp lệ' });
+        }
+
+        const extMap = {
+            'image/jpeg': '.jpg',
+            'image/png': '.png',
+            'application/pdf': '.pdf'
+        };
+
+        const fallbackExt = fileName ? path.extname(fileName) : '';
+        const extension = resolvedMime ? extMap[resolvedMime] : fallbackExt || '.bin';
+        const safeExt = extension.startsWith('.') ? extension : `.${extension}`;
+        const uploadDir = path.join(__dirname, '..', 'uploads', 'contracts');
+
+        await fs.promises.mkdir(uploadDir, { recursive: true });
+
+        const fileId = `${submissionId}-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const storedFileName = `contract_${fileId}${safeExt}`;
+        const storedPath = path.join(uploadDir, storedFileName);
+
+        await fs.promises.writeFile(storedPath, Buffer.from(dataBase64, 'base64'));
+
+        const publicUrl = `/uploads/contracts/${storedFileName}`;
+
+        await db.query(
+            `UPDATE submission_contracts
+             SET signed_scan_url = ?, status = 'documents_submitted'
+             WHERE submission_contract_id = ?`,
+            [publicUrl, contract.submission_contract_id]
+        );
+
+        res.json({
+            message: 'Tải hồ sơ hợp đồng thành công',
+            contract_scan_url: publicUrl,
+            status: 'documents_submitted'
+        });
+    } catch (err) {
+        console.error('broker upload contract scan error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });

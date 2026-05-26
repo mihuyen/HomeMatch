@@ -179,6 +179,35 @@ async function listBrokerSurveys(submissionId) {
     return apiCall(`/broker/surveys/${submissionId}`);
 }
 
+async function getBrokerContractDraft(submissionId) {
+    return apiCall(`/broker/contracts/${submissionId}`);
+}
+
+async function createBrokerContract(payload) {
+    return apiCall('/broker/contracts', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function getBrokerContractSummary(submissionId) {
+    return apiCall(`/broker/contracts/${submissionId}/summary`);
+}
+
+async function updateBrokerContractType(submissionId, contractType) {
+    return apiCall(`/broker/contracts/${submissionId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ contractType })
+    });
+}
+
+async function uploadBrokerContractScan(submissionId, payload) {
+    return apiCall(`/broker/contracts/${submissionId}/scan`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {
     if (!getToken()) {
