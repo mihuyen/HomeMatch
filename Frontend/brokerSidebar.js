@@ -28,48 +28,21 @@
     } catch (error) {
       console.warn('Using fallback broker sidebar.', error);
       html = `
-<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-[280px] bg-surface-container border-r border-outline-variant p-md space-y-sm z-20">
-  <div class="flex-1 space-y-xs pt-lg">
-    <a class="flex items-center space-x-md px-md py-sm rounded-lg font-label-md text-label-md" href="brokerAssign.html">
-      <span class="material-symbols-outlined">assignment</span>
-      <span>Bảng điều khiển</span>
+<nav class="w-full bg-surface border-b border-outline-variant sticky top-0 z-40">
+  <div class="flex items-center justify-between h-16 px-6">
+    <a class="flex items-center gap-2 text-primary font-bold" href="home.html">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">real_estate_agent</span>
+      <span>HomeMatch</span>
     </a>
-  </div>
-  <div class="space-y-sm">
-    <div class="relative group">
-      <button type="button" class="w-full flex items-center gap-sm px-sm py-sm rounded-xl border border-outline-variant bg-surface-container-low hover:bg-surface-container-high transition-colors">
-        <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant shrink-0 bg-primary-fixed">
-          <img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY">
-        </div>
-        <div class="flex-1 text-left min-w-0">
-          <p class="font-label-md text-label-md text-on-surface truncate">Tài khoản Broker</p>
-          <p class="font-label-sm text-label-sm text-secondary truncate">broker@gmail.com</p>
-        </div>
-        <span class="material-symbols-outlined text-secondary">expand_more</span>
-      </button>
-      <div class="absolute left-0 bottom-full mb-2 w-full bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
-        <a class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-variant flex items-center space-x-2" href="#">
-          <span class="material-symbols-outlined text-sm">person</span>
-          <span>Hồ sơ cá nhân</span>
-        </a>
-        <a class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-variant flex items-center space-x-2" href="#">
-          <span class="material-symbols-outlined text-sm">settings</span>
-          <span>Cài đặt tài khoản</span>
-        </a>
-        <div class="border-t border-outline-variant my-1"></div>
-        <a class="block px-4 py-2 text-sm text-error hover:bg-error-container flex items-center space-x-2" href="#" onclick="return window.handleBrokerSidebarLogout && window.handleBrokerSidebarLogout();">
-          <span class="material-symbols-outlined text-sm">logout</span>
-          <span>Đăng xuất</span>
-        </a>
-      </div>
+    <div class="hidden md:flex items-center gap-6">
+      <a class="nav-link text-on-surface-variant hover:text-primary transition-colors pb-1" href="home.html">Trang chủ</a>
+      <a class="nav-link text-on-surface-variant hover:text-primary transition-colors pb-1" href="brokerAssign.html">Phân công</a>
     </div>
-  </div>
-  <div class="mt-auto space-y-sm">
-    <div class="flex items-center space-x-sm px-sm mb-md">
-      <div>
-        <h1 class="font-headline-md text-headline-md font-extrabold text-primary">HomeMatch</h1>
-        <p class="font-label-sm text-label-sm text-secondary">Broker Portal</p>
-      </div>
+    <div class="flex items-center gap-3">
+      <button class="px-4 py-1.5 rounded-full border border-outline-variant text-secondary hover:bg-surface-container-low transition-colors" type="button" onclick="return window.handleBrokerSidebarLogout && window.handleBrokerSidebarLogout();">Đăng xuất</button>
+      <button class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant" type="button">
+        <img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY">
+      </button>
     </div>
   </div>
 </nav>`;
@@ -80,19 +53,11 @@
     const nav = container.querySelector('nav');
     if (!nav) return;
 
-    nav.classList.remove('z-50');
-    nav.classList.add('z-20');
-    nav.classList.remove('relative');
-    nav.classList.add('fixed');
-    nav.style.position = 'fixed';
-    nav.style.left = '0';
-    nav.style.top = '0';
-
     const currentPath = location.pathname.split('/').pop() || '';
     nav.querySelectorAll('a[href]').forEach((link) => {
       const target = (link.getAttribute('href') || '').split('?')[0].split('/').pop();
       if (target && target === currentPath) {
-        link.classList.add('bg-primary-container', 'text-on-primary', 'font-bold');
+        link.classList.add('text-primary', 'border-b-2', 'border-primary', 'font-bold');
       }
     });
   }

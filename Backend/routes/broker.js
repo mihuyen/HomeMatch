@@ -22,8 +22,9 @@ function normalizeTextField(value) {
 
 function mapSurveyToSubmissionStatus(surveyStatus) {
     const text = String(surveyStatus || '').toLowerCase();
+    if (text.includes('draft') || text.includes('nháp')) return null;
     if (text.includes('không') || text.includes('fail') || text.includes('reject')) return 'cancelled';
-    if (text.includes('đạt') || text.includes('pass') || text.includes('complete')) return 'surveyed';
+    if (text.includes('đạt') || text.includes('pass') || text.includes('complete') || text.includes('hoàn tất')) return 'surveyed';
     return 'surveyed';
 }
 
@@ -323,6 +324,7 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
         const parsedAppointmentId = appointmentId === undefined || appointmentId === null || appointmentId === ''
             ? null
             : Number(appointmentId);
+        const submissionStatus = mapSurveyToSubmissionStatus(surveyStatus);
 
         if (!Number.isInteger(parsedSubmissionId)) {
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
@@ -384,7 +386,7 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
             ]
         );
 
-        if (parsedAppointmentId !== null) {
+        if (parsedAppointmentId !== null && submissionStatus) {
             await db.query(
                 `UPDATE appointments
                  SET status = 'completed',
@@ -394,10 +396,12 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
             );
         }
 
-        await db.query(
-            'UPDATE property_submissions SET status = ? WHERE submission_id = ?',
-            [mapSurveyToSubmissionStatus(surveyStatus), parsedSubmissionId]
-        );
+        if (submissionStatus) {
+            await db.query(
+                'UPDATE property_submissions SET status = ? WHERE submission_id = ?',
+                [submissionStatus, parsedSubmissionId]
+            );
+        }
 
         res.status(201).json({
             message: 'Đã ghi nhận kết quả khảo sát',
