@@ -244,6 +244,8 @@
         const currentUser = getCurrentUser();
         if (currentUser && currentUser.role === 'broker') {
             window.location.href = 'brokerAssign.html';
+        } else if (currentUser && currentUser.role === 'legal') {
+            window.location.href = 'legalReviewList.html';
         } else {
             window.location.href = 'home.html';
         }
@@ -252,6 +254,10 @@
     function redirectAfterLogin(user) {
         if (user && user.role === 'broker') {
             window.location.href = 'brokerAssign.html';
+            return;
+        }
+        if (user && user.role === 'legal') {
+            window.location.href = 'legalReviewList.html';
             return;
         }
         window.location.href = 'home.html';
