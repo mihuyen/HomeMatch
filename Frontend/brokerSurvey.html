@@ -147,34 +147,13 @@
     </style>
 </head>
 <body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary">
-<!-- TopNavBar (Mobile Only) -->
-<nav class="md:hidden bg-surface flex justify-between items-center w-full px-md h-16 border-b border-outline-variant fixed top-0 z-50">
-<div class="flex items-center gap-sm">
-<button class="text-on-surface">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-<span class="font-headline-md text-headline-md font-bold text-primary">HomeMatch</span>
-</div>
-<div class="flex items-center gap-sm text-secondary">
-<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
-<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="help">help</span>
-</div>
-</nav>
 <div id="broker-sidebar"></div>
 <script src="brokerSidebar.js"></script>
 <!-- Main Content Area -->
-<main class="flex-1 w-full md:pl-[280px] pt-16 md:pt-0 pb-24 md:pb-lg flex flex-col bg-background">
+<main class="flex-1 w-full md:pl-[280px] pb-24 md:pb-lg flex flex-col bg-background">
 <!-- Header & Breadcrumb -->
-<header class="px-margin-mobile md:px-margin-desktop py-lg border-b border-surface-variant bg-surface-container-lowest sticky top-16 md:top-0 z-30 flex flex-col gap-sm">
-<nav class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
-<span class="">Broker Portal</span>
-<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
-<span class="">Phân công</span>
-<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
-<span class="text-on-surface">Nhập kết quả khảo sát</span>
-</nav>
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
-<div>
+<div class="mt-1 md:mt-2">
 <h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Ghi nhận Kết quả Khảo sát</h1>
 <p class="font-body-sm text-body-sm text-secondary mt-1">Hoàn thành biểu mẫu dưới đây sau khi khảo sát thực tế bất động sản.</p>
 </div>
@@ -183,7 +162,6 @@
 <span class="font-label-md text-label-md text-on-surface-variant">Bản nháp tự động lưu lúc 14:32</span>
 </div>
 </div>
-</header>
 <!-- Form Content Container -->
 <div class="p-margin-mobile md:p-margin-desktop flex-1">
 <form class="w-full max-w-none flex flex-col grid-24">
