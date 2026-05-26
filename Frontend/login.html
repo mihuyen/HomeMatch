@@ -241,6 +241,19 @@
     // Nếu đã đăng nhập rồi thì chuyển về home
     // ========================================
     if (getToken()) {
+        const currentUser = getCurrentUser();
+        if (currentUser && currentUser.role === 'broker') {
+            window.location.href = 'brokerAssign.html';
+        } else {
+            window.location.href = 'home.html';
+        }
+    }
+
+    function redirectAfterLogin(user) {
+        if (user && user.role === 'broker') {
+            window.location.href = 'brokerAssign.html';
+            return;
+        }
         window.location.href = 'home.html';
     }
 
@@ -268,10 +281,10 @@
         submitText.textContent = 'Đang đăng nhập...';
 
         try {
-            await login(email, password);
+            const data = await login(email, password);
             showAlert('Đăng nhập thành công, đang chuyển trang...', 'success');
             setTimeout(() => {
-                window.location.href = 'home.html';
+                redirectAfterLogin(data.user);
             }, 600);
         } catch (err) {
             showAlert(err.message || 'Đăng nhập thất bại');

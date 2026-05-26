@@ -1,0 +1,503 @@
+<!DOCTYPE html><html class="light" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Ghi nhận Kết quả Khảo sát - HomeMatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1a1b21",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "secondary": "#505f76",
+                        "on-primary-fixed-variant": "#264191",
+                        "inverse-primary": "#b6c4ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "inverse-surface": "#2f3036",
+                        "primary-container": "#1e3a8a",
+                        "on-tertiary-fixed": "#341100",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#faf8ff",
+                        "on-background": "#1a1b21",
+                        "surface-container": "#eeedf4",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#4b1c00",
+                        "surface-tint": "#4059aa",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-on-surface": "#f1f0f7",
+                        "on-primary-fixed": "#00164e",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dad9e1",
+                        "on-primary-container": "#90a8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dce1ff",
+                        "on-surface-variant": "#444651",
+                        "tertiary-container": "#6e2c00",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e9e7ef",
+                        "surface-container-highest": "#e3e1e9",
+                        "outline": "#757682",
+                        "secondary-container": "#d0e1fb",
+                        "outline-variant": "#c5c5d3",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary": "#00236f",
+                        "surface-container-low": "#f4f3fa",
+                        "on-tertiary-container": "#f39461",
+                        "surface": "#faf8ff",
+                        "background": "#faf8ff",
+                        "surface-variant": "#e3e1e9",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#54647a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "primary-fixed-dim": "#b6c4ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom styles for precise 8px grid alignment and modern input states */
+        .grid-8 {
+            gap: 8px;
+        }
+        .grid-16 {
+            gap: 16px;
+        }
+        .grid-24 {
+            gap: 24px;
+        }
+        
+        /* Segmented Control Styles */
+        .segmented-control input:checked + div {
+            background-color: theme('colors.primary-container');
+            color: theme('colors.on-primary');
+            border-color: theme('colors.primary-container');
+        }
+        
+        /* Modern Input Focus Focus */
+        .modern-input:focus {
+            border-color: theme('colors.primary-container');
+            box-shadow: 0 0 0 1px theme('colors.primary-container');
+            outline: none;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface flex justify-between items-center w-full px-md h-16 border-b border-outline-variant fixed top-0 z-50">
+<div class="flex items-center gap-sm">
+<button class="text-on-surface">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary">HomeMatch</span>
+</div>
+<div class="flex items-center gap-sm text-secondary">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="help">help</span>
+</div>
+</nav>
+<div id="broker-sidebar"></div>
+<script src="brokerSidebar.js"></script>
+<!-- Main Content Area -->
+<main class="flex-1 w-full md:pl-[280px] pt-16 md:pt-0 pb-24 md:pb-lg flex flex-col bg-background">
+<!-- Header & Breadcrumb -->
+<header class="px-margin-mobile md:px-margin-desktop py-lg border-b border-surface-variant bg-surface-container-lowest sticky top-16 md:top-0 z-30 flex flex-col gap-sm">
+<nav class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+<span class="">Broker Portal</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="">Phân công</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface">Nhập kết quả khảo sát</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Ghi nhận Kết quả Khảo sát</h1>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Hoàn thành biểu mẫu dưới đây sau khi khảo sát thực tế bất động sản.</p>
+</div>
+<div class="flex items-center gap-sm bg-surface-container px-md py-sm rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Bản nháp tự động lưu lúc 14:32</span>
+</div>
+</div>
+</header>
+<!-- Form Content Container -->
+<div class="p-margin-mobile md:p-margin-desktop flex-1">
+<form class="w-full max-w-none flex flex-col grid-24">
+<!-- Phần 1: Thông tin chung (Read-only Card) -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="flex items-center justify-between border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="info">info</span>
+                            Thông tin chung
+                        </h2>
+<span class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-2 py-1 rounded">Tự động điền</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-secondary">Mã yêu cầu</label>
+<p class="font-body-md text-body-md font-medium text-on-surface">#KG-29042</p>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-secondary">Chủ nhà</label>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-sm text-label-sm">SJ</div>
+<p class="font-body-md text-body-md font-medium text-on-surface">Sarah Jenkins</p>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-secondary">Địa chỉ</label>
+<p class="font-body-md text-body-md font-medium text-on-surface truncate" title="142 Kensington High St, W8 7SA">142 Kensington High St, W8 7SA</p>
+</div>
+</div>
+</section>
+<!-- Phần 2: Checklist Hạ tầng (Bento Grid Style) -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="construction">construction</span>
+                            Hạ tầng &amp; Tiện nghi
+                        </h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Điện -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="bolt">bolt</span> Điện
+                            </label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only" name="infra_elec" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Ổn định</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_elec" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không ổn định</div>
+</label>
+</div>
+</div>
+<!-- Nước -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="water_drop">water_drop</span> Nước
+                            </label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only" name="infra_water" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Đầy đủ</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_water" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Thiếu</div>
+</label>
+</div>
+</div>
+<!-- Wifi -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="wifi">wifi</span> Wifi
+                            </label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_wifi" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_wifi" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_wifi" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Yếu</div>
+</label>
+</div>
+</div>
+<!-- PCCC -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="fire_extinguisher">fire_extinguisher</span> PCCC
+                            </label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_fire" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có bình chữa cháy</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_fire" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
+</label>
+</div>
+</div>
+<!-- Điều hòa (Complex Input) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="ac_unit">ac_unit</span> Điều hòa
+                            </label>
+<div class="flex flex-col md:flex-row gap-md">
+<div class="flex-1 relative">
+<input class="modern-input w-full bg-surface border border-outline-variant rounded-lg px-md py-2 font-body-sm text-body-sm text-on-surface placeholder:text-outline transition-colors" min="0" placeholder="Nhập số lượng" type="number">
+<span class="absolute right-md top-1/2 -translate-y-1/2 text-secondary font-label-sm text-label-sm pointer-events-none">Máy</span>
+</div>
+<div class="flex-1 flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_ac_state" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Hoạt động tốt</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_ac_state" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Hỏng</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Nội thất -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="chair">chair</span> Nội thất
+                            </label>
+<div class="flex flex-col gap-md">
+<div class="flex gap-2 segmented-control max-w-sm">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only" name="infra_furniture" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Đầy đủ</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="infra_furniture" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Thiếu</div>
+</label>
+</div>
+<textarea class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-sm text-body-sm text-on-surface placeholder:text-outline transition-colors resize-y min-h-[80px]" placeholder="Mô tả chi tiết tình trạng nội thất (ví dụ: giường tủ mới 90%, sô pha xước nhẹ...)"></textarea>
+</div>
+</div>
+</div>
+</section>
+<!-- Phần 3 & 4: Khu vực & Pháp lý (Side-by-side on desktop) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-24">
+<!-- Phần 3: Khu vực -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="location_city">location_city</span>
+                                Khu vực
+                            </h2>
+</div>
+<div class="flex flex-col gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">An ninh</label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_security" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Tốt</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_security" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Bình thường</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_security" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Kém</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Giao thông</label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_traffic" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Thuận tiện</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_traffic" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Bình thường</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_traffic" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Khó khăn</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Gần tiện ích (chợ, siêu thị...)</label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_amenities" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="area_amenities" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Phần 4: Pháp lý -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="gavel">gavel</span>
+                                Pháp lý
+                            </h2>
+</div>
+<div class="flex flex-col gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Sổ đỏ</label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="legal_deed" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Chính chủ</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="legal_deed" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Tranh chấp</label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only" name="legal_dispute" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="legal_dispute" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">CCCD khớp sổ đỏ</label>
+<div class="flex gap-2 segmented-control">
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="legal_id_match" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="legal_id_match" type="radio">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
+</label>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Phần 5: Ảnh chụp thực tế (Glassmorphism upload area) -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="border-b border-surface-variant pb-sm flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="photo_camera">photo_camera</span>
+                            Ảnh chụp thực tế
+                        </h2>
+<span class="font-label-sm text-label-sm text-secondary">Yêu cầu tối thiểu 3 ảnh</span>
+</div>
+<!-- Upload Dropzone -->
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group min-h-[160px]">
+<div class="w-16 h-16 rounded-full bg-primary-container/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]" data-icon="add_a_photo">add_a_photo</span>
+</div>
+<div class="text-center">
+<p class="font-label-md text-label-md text-on-surface">Nhấn để tải ảnh lên hoặc kéo thả vào đây</p>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Hỗ trợ JPG, PNG (Max 5MB/ảnh)</p>
+</div>
+</div>
+<!-- Preview Area (Empty state simulation) -->
+<!-- <div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-sm">...</div> -->
+</section>
+<!-- Phần 6: Ghi chú -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="edit_note">edit_note</span>
+                            Ghi chú bổ sung
+                        </h2>
+</div>
+<textarea class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface placeholder:text-outline transition-colors resize-y min-h-[120px]" placeholder="Nhập ưu điểm, nhược điểm, hoặc đề xuất của Broker về bất động sản này..."></textarea>
+</section>
+</form>
+</div>
+</main>
+<!-- Bottom Action Bar (Sticky) -->
+<div class="fixed bottom-0 md:bottom-0 left-0 md:left-[280px] right-0 bg-surface-container-lowest border-t border-surface-variant p-md md:py-md md:px-lg z-50 flex flex-col md:flex-row justify-between items-center gap-md shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<!-- Validation Hint (Optional logic placeholder) -->
+<div class="hidden md:flex items-center gap-sm text-error bg-error-container px-sm py-1.5 rounded-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="error">error</span>
+<span class="font-label-sm text-label-sm">Vui lòng điền các trường bắt buộc ở phần Pháp lý.</span>
+</div>
+<div class="flex gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none px-lg py-2.5 rounded-lg border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors active:opacity-80" type="button">
+                Lưu tạm
+            </button>
+<button class="flex-1 md:flex-none px-lg py-2.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors active:opacity-80 shadow-sm flex justify-center items-center gap-2" type="button">
+                Hoàn thành khảo sát
+            </button>
+</div>
+</div>
+<!-- Padding for bottom bar on mobile to prevent content overlap -->
+<div class="h-24 md:hidden"></div>
+
+
+</body></html>

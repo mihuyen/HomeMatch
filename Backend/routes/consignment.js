@@ -1,9 +1,74 @@
 const express = require('express');
 const db = require('../db');
+const { requireAuth, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
 const VALID_ROLES_FOR_ASSIGNMENT = ['sale', 'agent'];
+
+const STATUS_LABELS = {
+    draft: 'Bản nháp',
+    pending: 'Chờ xử lý',
+    surveyed: 'Đã khảo sát',
+    approved: 'Đã phê duyệt',
+    active: 'Đang hoạt động',
+    cancelled: 'Đã hủy',
+    rejected: 'Đã từ chối',
+    listed: 'Đã lên tin',
+    rented: 'Đã cho thuê',
+    expired: 'Hết hạn'
+};
+
+function toRequestCode(submissionId) {
+    const n = Number(submissionId);
+    if (!Number.isFinite(n)) return 'KG-00000';
+    return `KG-${String(n).padStart(5, '0')}`;
+}
+
+function toStatusLabel(status) {
+    return STATUS_LABELS[status] || status || 'Chưa xác định';
+}
+
+function buildTrackingSteps(data) {
+    const hasSurvey = data.survey_count > 0;
+    const hasContract = data.contract_count > 0;
+    const hasDeposit = data.deposit_count > 0;
+    const hasListing = data.listing_count > 0;
+    const isDone = data.listing_status === 'rented';
+
+    return [
+        {
+            key: 'received',
+            label: 'Đã nhận yêu cầu',
+            state: 'done',
+            at: data.submitted_at
+        },
+        {
+            key: 'survey',
+            label: 'Khảo sát bất động sản',
+            state: hasSurvey ? 'done' : (data.next_survey_time ? 'current' : 'pending'),
+            at: hasSurvey ? data.last_survey_completed_at : data.next_survey_time
+        },
+        {
+            key: 'contract',
+            label: 'Hợp đồng ký gửi',
+            state: hasContract ? 'done' : 'pending',
+            at: data.latest_contract_signed_at
+        },
+        {
+            key: 'deposit',
+            label: 'Đối soát tiền đảm bảo',
+            state: hasDeposit ? 'done' : 'pending',
+            at: data.latest_deposit_verified_at
+        },
+        {
+            key: 'listing',
+            label: 'Đăng tin & xử lý thuê',
+            state: isDone ? 'done' : (hasListing ? 'current' : 'pending'),
+            at: data.latest_listing_activated_at
+        }
+    ];
+}
 
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -158,6 +223,251 @@ async function buildSubmissionResponse(submissionId) {
     };
 }
 
+async function getOwnerTrackingList(ownerId, { status, search, limit = 20, offset = 0 }) {
+    const conditions = ['ps.owner_id = ?'];
+    const params = [ownerId];
+
+    if (status) {
+        conditions.push('ps.status = ?');
+        params.push(status);
+    }
+
+    if (search) {
+        conditions.push('(ps.address LIKE ? OR ps.property_type LIKE ? OR CAST(ps.submission_id AS CHAR) LIKE ?)');
+        const keyword = `%${search}%`;
+        params.push(keyword, keyword, keyword);
+    }
+
+    const [rows] = await db.query(
+        `SELECT
+            ps.submission_id,
+            ps.owner_id,
+            ps.property_type,
+            ps.address,
+            ps.area,
+            ps.direction,
+            ps.num_bedrooms,
+            ps.num_bathrooms,
+            ps.proposed_price,
+            ps.status,
+            ps.submitted_at,
+            ps.assigned_sales_id,
+            s.full_name AS assigned_sales_full_name,
+            s.email AS assigned_sales_email,
+            s.phone AS assigned_sales_phone,
+            COUNT(DISTINCT sr.survey_id) AS survey_count,
+            MAX(sr.completed_at) AS last_survey_completed_at,
+            COUNT(DISTINCT sc.submission_contract_id) AS contract_count,
+            MAX(sc.signed_at) AS latest_contract_signed_at,
+            COUNT(DISTINCT dt.transaction_id) AS deposit_count,
+            MAX(dt.verified_at) AS latest_deposit_verified_at,
+            COUNT(DISTINCT pl.listing_id) AS listing_count,
+            MAX(pl.activated_at) AS latest_listing_activated_at,
+            MAX(pl.status) AS listing_status,
+            MIN(CASE WHEN ap.status = 'scheduled' AND ap.appointment_type = 'khảo sát' THEN ap.scheduled_time END) AS next_survey_time
+         FROM property_submissions ps
+         LEFT JOIN users s ON s.user_id = ps.assigned_sales_id
+         LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
+         LEFT JOIN submission_contracts sc ON sc.submission_id = ps.submission_id
+         LEFT JOIN deposit_transactions dt ON dt.submission_contract_id = sc.submission_contract_id
+         LEFT JOIN property_listings pl ON pl.submission_id = ps.submission_id
+         LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id
+         WHERE ${conditions.join(' AND ')}
+         GROUP BY ps.submission_id, s.user_id
+         ORDER BY ps.submitted_at DESC, ps.submission_id DESC
+         LIMIT ? OFFSET ?`,
+        [...params, Number(limit), Number(offset)]
+    );
+
+    return rows.map(row => ({
+        request_code: toRequestCode(row.submission_id),
+        submission_id: row.submission_id,
+        owner_id: row.owner_id,
+        property_type: row.property_type,
+        address: row.address,
+        area: row.area,
+        direction: row.direction,
+        num_bedrooms: row.num_bedrooms,
+        num_bathrooms: row.num_bathrooms,
+        proposed_price: row.proposed_price,
+        status: row.status,
+        status_label: toStatusLabel(row.status),
+        submitted_at: row.submitted_at,
+        assigned_sales: row.assigned_sales_id ? {
+            user_id: row.assigned_sales_id,
+            full_name: row.assigned_sales_full_name,
+            email: row.assigned_sales_email,
+            phone: row.assigned_sales_phone
+        } : null,
+        next_survey_time: row.next_survey_time,
+        steps: buildTrackingSteps(row)
+    }));
+}
+
+async function getOwnerTrackingDetail(ownerId, submissionId) {
+    const [baseRows] = await db.query(
+        `SELECT
+            ps.submission_id,
+            ps.owner_id,
+            ps.property_type,
+            ps.address,
+            ps.area,
+            ps.direction,
+            ps.num_bedrooms,
+            ps.num_bathrooms,
+            ps.proposed_price,
+            ps.status,
+            ps.images_uploaded,
+            ps.submitted_at,
+            ps.assigned_sales_id,
+            s.full_name AS assigned_sales_full_name,
+            s.email AS assigned_sales_email,
+            s.phone AS assigned_sales_phone
+         FROM property_submissions ps
+         LEFT JOIN users s ON s.user_id = ps.assigned_sales_id
+         WHERE ps.submission_id = ? AND ps.owner_id = ?
+         LIMIT 1`,
+        [submissionId, ownerId]
+    );
+
+    if (baseRows.length === 0) {
+        return null;
+    }
+
+    const base = baseRows[0];
+
+    const [surveyRows] = await db.query(
+        'SELECT survey_id, survey_status, survey_notes, completed_at FROM survey_records WHERE submission_id = ? ORDER BY completed_at DESC, survey_id DESC',
+        [submissionId]
+    );
+
+    const [appointmentRows] = await db.query(
+        `SELECT appointment_id, appointment_type, scheduled_time, location, status, result_note, created_at
+         FROM appointments
+         WHERE submission_id = ?
+         ORDER BY scheduled_time DESC, appointment_id DESC`,
+        [submissionId]
+    );
+
+    const [contractRows] = await db.query(
+        `SELECT submission_contract_id, contract_code, final_price, contract_duration_months,
+                contract_type, status, signed_at
+         FROM submission_contracts
+         WHERE submission_id = ?
+         ORDER BY signed_at DESC, submission_contract_id DESC`,
+        [submissionId]
+    );
+
+    const [depositRows] = await db.query(
+        `SELECT dt.transaction_id, dt.amount, dt.payment_method, dt.status, dt.transaction_code, dt.verified_at,
+                dr.return_id, dr.return_amount, dr.reason, dr.returned_at
+         FROM submission_contracts sc
+         LEFT JOIN deposit_transactions dt ON dt.submission_contract_id = sc.submission_contract_id
+         LEFT JOIN deposit_returns dr ON dr.transaction_id = dt.transaction_id
+         WHERE sc.submission_id = ?
+         ORDER BY dt.verified_at DESC, dt.transaction_id DESC`,
+        [submissionId]
+    );
+
+    const [listingRows] = await db.query(
+        `SELECT listing_id, title, description, price_display, status, view_count, activated_at, expired_at
+         FROM property_listings
+         WHERE submission_id = ?
+         ORDER BY activated_at DESC, listing_id DESC`,
+        [submissionId]
+    );
+
+    let images = [];
+    if (base.images_uploaded) {
+        try {
+            images = JSON.parse(base.images_uploaded);
+        } catch {
+            images = String(base.images_uploaded)
+                .split(',')
+                .map(item => item.trim())
+                .filter(Boolean);
+        }
+    }
+
+    const timeline = [
+        {
+            type: 'submission',
+            title: 'Đã nhận yêu cầu ký gửi',
+            status: 'done',
+            at: base.submitted_at,
+            note: `Hồ sơ #${toRequestCode(base.submission_id)}`
+        },
+        ...appointmentRows.map(ap => ({
+            type: 'appointment',
+            title: `Lịch ${ap.appointment_type || 'hẹn'}`,
+            status: ap.status,
+            at: ap.scheduled_time || ap.created_at,
+            note: ap.location || ap.result_note || null
+        })),
+        ...surveyRows.map(sv => ({
+            type: 'survey',
+            title: 'Cập nhật khảo sát',
+            status: sv.survey_status || 'done',
+            at: sv.completed_at,
+            note: sv.survey_notes || null
+        })),
+        ...contractRows.map(ct => ({
+            type: 'contract',
+            title: 'Hợp đồng ký gửi',
+            status: ct.status || 'pending',
+            at: ct.signed_at,
+            note: ct.contract_code || null
+        })),
+        ...depositRows
+            .filter(dp => dp.transaction_id)
+            .map(dp => ({
+                type: 'deposit',
+                title: 'Đối soát tiền đảm bảo',
+                status: dp.status || 'pending',
+                at: dp.verified_at || dp.returned_at,
+                note: dp.transaction_code || null
+            })),
+        ...listingRows.map(ls => ({
+            type: 'listing',
+            title: 'Cập nhật tin đăng',
+            status: ls.status || 'pending',
+            at: ls.activated_at || ls.expired_at,
+            note: ls.title || null
+        }))
+    ].sort((a, b) => new Date(b.at || 0) - new Date(a.at || 0));
+
+    return {
+        request_code: toRequestCode(base.submission_id),
+        submission: {
+            submission_id: base.submission_id,
+            owner_id: base.owner_id,
+            property_type: base.property_type,
+            address: base.address,
+            area: base.area,
+            direction: base.direction,
+            num_bedrooms: base.num_bedrooms,
+            num_bathrooms: base.num_bathrooms,
+            proposed_price: base.proposed_price,
+            status: base.status,
+            status_label: toStatusLabel(base.status),
+            submitted_at: base.submitted_at,
+            images_uploaded: images
+        },
+        assigned_sales: base.assigned_sales_id ? {
+            user_id: base.assigned_sales_id,
+            full_name: base.assigned_sales_full_name,
+            email: base.assigned_sales_email,
+            phone: base.assigned_sales_phone
+        } : null,
+        survey_records: surveyRows,
+        appointments: appointmentRows,
+        submission_contracts: contractRows,
+        deposit_transactions: depositRows,
+        property_listings: listingRows,
+        timeline
+    };
+}
+
 // POST /api/consignments/step-1
 // Tạo/cập nhật chủ nhà và tạo hồ sơ ký gửi bản nháp
 router.post('/step-1', async (req, res) => {
@@ -299,6 +609,45 @@ router.post('/:submissionId/step-3', async (req, res) => {
     }
 });
 
+// GET /api/consignments/owner/me/tracking
+// Danh sách theo dõi cho owner đang đăng nhập
+router.get('/owner/me/tracking', requireAuth, requireRole('owner'), async (req, res) => {
+    try {
+        const { status, search, limit = 20, offset = 0 } = req.query;
+        const items = await getOwnerTrackingList(req.user.user_id, { status, search, limit, offset });
+
+        res.json({
+            owner_id: req.user.user_id,
+            items
+        });
+    } catch (err) {
+        console.error('owner tracking list error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/consignments/owner/me/tracking/:submissionId
+// Chi tiết tiến trình 1 hồ sơ cho owner
+router.get('/owner/me/tracking/:submissionId', requireAuth, requireRole('owner'), async (req, res) => {
+    try {
+        const submissionId = Number(req.params.submissionId);
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        const detail = await getOwnerTrackingDetail(req.user.user_id, submissionId);
+        if (!detail) {
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ ký gửi của owner hiện tại' });
+        }
+
+        res.json(detail);
+    } catch (err) {
+        console.error('owner tracking detail error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
 // GET /api/consignments
 // Danh sách hồ sơ ký gửi
 router.get('/', async (req, res) => {
@@ -396,7 +745,7 @@ router.get('/:submissionId', async (req, res) => {
 });
 
 // PATCH /api/consignments/:submissionId/status
-router.patch('/:submissionId/status', async (req, res) => {
+router.patch('/:submissionId/status', requireAuth, async (req, res) => {
     try {
         const submissionId = Number(req.params.submissionId);
         const { status } = req.body;
@@ -412,6 +761,10 @@ router.patch('/:submissionId/status', async (req, res) => {
         const existingSubmission = await getSubmissionOr404(submissionId);
         if (!existingSubmission) {
             return res.status(404).json({ message: 'Không tìm thấy hồ sơ ký gửi' });
+        }
+
+        if (req.user.role === 'owner' && Number(existingSubmission.owner_id) !== Number(req.user.user_id)) {
+            return res.status(403).json({ message: 'Owner chỉ được cập nhật hồ sơ của chính mình' });
         }
 
         await db.query('UPDATE property_submissions SET status = ? WHERE submission_id = ?', [status, submissionId]);

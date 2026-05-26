@@ -1,0 +1,288 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lập Lịch Hẹn Khảo Sát - Consignment Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#dce1ff",
+                    "surface-container-highest": "#e3e1e9",
+                    "outline": "#757682",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-surface-variant": "#444651",
+                    "inverse-primary": "#b6c4ff",
+                    "primary-fixed-dim": "#b6c4ff",
+                    "outline-variant": "#c5c5d3",
+                    "tertiary": "#4b1c00",
+                    "on-error": "#ffffff",
+                    "on-surface": "#1a1b21",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-tertiary-container": "#f39461",
+                    "on-background": "#1a1b21",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#dad9e1",
+                    "secondary": "#505f76",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#eeedf4",
+                    "secondary-container": "#d0e1fb",
+                    "inverse-surface": "#2f3036",
+                    "tertiary-fixed-dim": "#ffb691",
+                    "tertiary-fixed": "#ffdbcb",
+                    "primary": "#00236f",
+                    "surface-container-low": "#f4f3fa",
+                    "on-tertiary-fixed-variant": "#773205",
+                    "surface-bright": "#faf8ff",
+                    "surface-container-high": "#e9e7ef",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#4059aa",
+                    "on-tertiary-fixed": "#341100",
+                    "background": "#faf8ff",
+                    "on-primary-fixed-variant": "#264191",
+                    "on-primary-fixed": "#00164e",
+                    "on-primary-container": "#90a8ff",
+                    "tertiary-container": "#6e2c00",
+                    "secondary-fixed": "#d3e4fe",
+                    "inverse-on-surface": "#f1f0f7",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "surface": "#faf8ff",
+                    "primary-container": "#1e3a8a",
+                    "surface-variant": "#e3e1e9",
+                    "on-secondary-container": "#54647a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "margin-mobile": "16px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "margin-desktop": "32px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "base": "8px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-xl-mobile": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                    "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                    "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                    "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                    "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        /* Custom Scrollbar for side nav if needed */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-on-surface bg-background flex h-screen overflow-hidden">
+<div id="broker-sidebar"></div>
+<script src="brokerSidebar.js"></script>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative md:pl-[280px]">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface docked full-width top-0 sticky border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-lg py-md h-16 z-10">
+<!-- Left: Mobile Menu Toggle & Breadcrumbs -->
+<div class="flex items-center gap-md">
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="hidden md:flex items-center text-on-surface-variant font-body-sm text-body-sm gap-2">
+<span class="material-symbols-outlined text-[18px]">web</span>
+<span class="">Broker Portal &gt; Lập lịch hẹn</span>
+</div>
+</div>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors hidden sm:block">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="relative group">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a mature male estate manager in a tailored navy blue suit and crisp white shirt. The lighting is bright and even, set in a modern, light-filled corporate office environment. The mood is confident, experienced, and trustworthy, perfectly suited for high-stakes institutional real estate management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqY4iC8U8fvu_JrE4qiAmmZl1wV2o4-L8F7z_6mAbX4nOirLUWiqG2OdXf9A_Yk563MsLQurg0DsBP_EVM7eAWuk9MGCgQ3GNVstw8os607VvIjXMOypFJeohlvnnAf2tuw3ATYC9LxB9qsvk1DerryatFntnSj47C90wdtF7os6nhQg9zUdR61fUViJEscA2lZqcDihdnFQvkNWODw907UidGllMD_Bj-SxZDyd3xP3Mu3oAtH2DsmKO9_hwk-DkGcrJ9Gyc3fnU">
+</div>
+<div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+<a class="block px-4 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-primary font-label-md" href="#">Đăng xuất</a>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-[#F8FAFC]">
+<!-- Max Width Container for Content -->
+<div class="w-full max-w-none">
+<!-- Header -->
+<div class="mb-lg">
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Lập Lịch Khảo Sát</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Sắp xếp thời gian khảo sát thực tế tại bất động sản.</p>
+</div>
+<!-- Main Form Layout (Grid/Bento approach) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Left Column: Context Information -->
+<div class="lg:col-span-1 space-y-lg">
+<!-- Request Info Card (Glassmorphism inspired, subtle) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">info</span>
+                                Thông tin yêu cầu
+                            </h3>
+<div class="space-y-4">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Chủ nhà</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container font-bold font-body-md">
+                                            SJ
+                                        </div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Sarah Jenkins</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">+44 7700 900077</p>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-surface-variant">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Tài sản</p>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] mt-0.5">location_on</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-tight">
+                                            142 Kensington High St,<br>
+                                            Kensington, London,<br>
+                                            W8 7SA, UK
+                                        </p>
+</div>
+</div>
+<div class="pt-2 border-t border-surface-variant">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Trạng thái</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#fef3c7] text-[#92400e] border border-[#fcd34d]">
+                                        Chờ xếp lịch
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Scheduling Form -->
+<div class="lg:col-span-2">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg shadow-sm">
+<form action="#" method="POST">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-lg">
+<!-- Date Picker Field -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="appointment_date">Chọn ngày <span class="text-error">*</span></label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">calendar_month</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-bright text-on-surface font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow" id="appointment_date" name="appointment_date" required="" type="date">
+</div>
+</div>
+<!-- Time Picker Field -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="appointment_time">Chọn giờ <span class="text-error">*</span></label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">schedule</span>
+</div>
+<select class="block w-full pl-10 pr-10 py-2 border border-outline-variant rounded-lg bg-surface-bright text-on-surface font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow appearance-none" id="appointment_time" name="appointment_time" required="">
+<option disabled="" selected="" value="">Chọn khung giờ...</option>
+<option value="09:00">09:00 AM</option>
+<option value="10:00">10:00 AM</option>
+<option value="11:00">11:00 AM</option>
+<option value="13:00">01:00 PM</option>
+<option value="14:00">02:00 PM</option>
+<option value="15:00">03:00 PM</option>
+<option value="16:00">04:00 PM</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Location Field -->
+<div class="mb-lg">
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="appointment_location">Địa điểm hẹn <span class="text-error">*</span></label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 pt-2.5 pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">pin_drop</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-bright text-on-surface font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow" id="appointment_location" name="appointment_location" required="" type="text" value="142 Kensington High St, W8 7SA">
+</div>
+<p class="mt-1 font-body-sm text-body-sm text-on-surface-variant">Mặc định là địa chỉ bất động sản, có thể thay đổi nếu hẹn gặp ở nơi khác trước.</p>
+</div>
+<!-- Notes Field -->
+<div class="mb-lg">
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="appointment_notes">Ghi chú (Tùy chọn)</label>
+<textarea class="block w-full p-3 border border-outline-variant rounded-lg bg-surface-bright text-on-surface font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow resize-y" id="appointment_notes" name="appointment_notes" placeholder="Nhập hướng dẫn đi lại, hoặc yêu cầu đặc biệt cho chủ nhà..." rows="4"></textarea>
+</div>
+<!-- Notification Indicator -->
+<div class="bg-[#eff6ff] rounded-lg p-3 flex items-start gap-3 border border-[#bfdbfe] mb-xl">
+<span class="material-symbols-outlined text-[#1d4ed8] mt-0.5 text-[20px]">notifications_active</span>
+<p class="font-body-sm text-body-sm text-[#1e3a8a] leading-tight pt-0.5">
+                                        Hệ thống sẽ tự động gửi email và tin nhắn thông báo (SMS) xác nhận lịch hẹn cho chủ nhà (Sarah Jenkins) ngay sau khi bạn lưu.
+                                    </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-end gap-md pt-4 border-t border-surface-variant">
+<button class="px-6 py-2 border border-outline text-on-surface-variant hover:bg-surface-variant rounded-lg font-label-md text-label-md transition-colors" type="button">
+                                        Hủy
+                                    </button>
+<button class="px-6 py-2 bg-[#1e3a8a] text-white hover:bg-[#152e73] rounded-lg font-label-md text-label-md transition-colors flex items-center gap-2 shadow-sm" type="submit">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                                        Lưu lịch hẹn
+                                    </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Bottom spacing for scroll -->
+<div class="h-xl"></div>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

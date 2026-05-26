@@ -4,9 +4,11 @@ const path = require('path');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const consignmentRoutes = require('./routes/consignment');
+const brokerRoutes = require('./routes/broker');
 
 const app = express();
 const PORT = 5000;
+
 
 // Middleware
 app.use(cors());
@@ -22,6 +24,7 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/consignments', consignmentRoutes);
+app.use('/api/broker', brokerRoutes);
 
 // Test endpoints
 app.get('/api/health', async (req, res) => {

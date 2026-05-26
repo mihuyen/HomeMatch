@@ -116,6 +116,69 @@ async function listConsignments(params = {}) {
     return apiCall(`/consignments${suffix}`);
 }
 
+async function listOwnerTracking(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/consignments/owner/me/tracking${suffix}`);
+}
+
+async function getOwnerTrackingDetail(submissionId) {
+    return apiCall(`/consignments/owner/me/tracking/${submissionId}`);
+}
+
+// Broker API helpers
+async function listBrokerAssignments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/broker/assignments${suffix}`);
+}
+
+async function listBrokerAppointments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/broker/appointments${suffix}`);
+}
+
+async function createBrokerAppointment(payload) {
+    return apiCall('/broker/appointments', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function updateBrokerAppointment(appointmentId, payload) {
+    return apiCall(`/broker/appointments/${appointmentId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function submitBrokerSurvey(payload) {
+    return apiCall('/broker/surveys', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function listBrokerSurveys(submissionId) {
+    return apiCall(`/broker/surveys/${submissionId}`);
+}
+
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {
     if (!getToken()) {
