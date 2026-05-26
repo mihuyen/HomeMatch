@@ -146,35 +146,15 @@
         }
     </style>
 </head>
-<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary">
-<!-- TopNavBar (Mobile Only) -->
-<nav class="md:hidden bg-surface flex justify-between items-center w-full px-md h-16 border-b border-outline-variant fixed top-0 z-50">
-<div class="flex items-center gap-sm">
-<button class="text-on-surface">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-<span class="font-headline-md text-headline-md font-bold text-primary">HomeMatch</span>
-</div>
-<div class="flex items-center gap-sm text-secondary">
-<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
-<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="help">help</span>
-</div>
-</nav>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary">
 <div id="broker-sidebar"></div>
 <script src="brokerSidebar.js"></script>
+<script src="api.js"></script>
 <!-- Main Content Area -->
-<main class="flex-1 w-full md:pl-[280px] pt-16 md:pt-0 pb-24 md:pb-lg flex flex-col bg-background">
+<main class="flex-1 w-full pb-24 md:pb-lg flex flex-col bg-background">
 <!-- Header & Breadcrumb -->
-<header class="px-margin-mobile md:px-margin-desktop py-lg border-b border-surface-variant bg-surface-container-lowest sticky top-16 md:top-0 z-30 flex flex-col gap-sm">
-<nav class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
-<span class="">Broker Portal</span>
-<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
-<span class="">Phân công</span>
-<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
-<span class="text-on-surface">Nhập kết quả khảo sát</span>
-</nav>
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
-<div>
+<div class="mt-1 md:mt-2">
 <h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Ghi nhận Kết quả Khảo sát</h1>
 <p class="font-body-sm text-body-sm text-secondary mt-1">Hoàn thành biểu mẫu dưới đây sau khi khảo sát thực tế bất động sản.</p>
 </div>
@@ -183,7 +163,6 @@
 <span class="font-label-md text-label-md text-on-surface-variant">Bản nháp tự động lưu lúc 14:32</span>
 </div>
 </div>
-</header>
 <!-- Form Content Container -->
 <div class="p-margin-mobile md:p-margin-desktop flex-1">
 <form class="w-full max-w-none flex flex-col grid-24">
@@ -230,11 +209,11 @@
                             </label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input checked="" class="sr-only" name="infra_elec" type="radio">
+<input checked="" class="sr-only" name="infra_elec" type="radio" value="Ổn định">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Ổn định</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_elec" type="radio">
+<input class="sr-only" name="infra_elec" type="radio" value="Không ổn định">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không ổn định</div>
 </label>
 </div>
@@ -246,11 +225,11 @@
                             </label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input checked="" class="sr-only" name="infra_water" type="radio">
+<input checked="" class="sr-only" name="infra_water" type="radio" value="Đầy đủ">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Đầy đủ</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_water" type="radio">
+<input class="sr-only" name="infra_water" type="radio" value="Thiếu">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Thiếu</div>
 </label>
 </div>
@@ -262,15 +241,15 @@
                             </label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_wifi" type="radio">
+<input class="sr-only" name="infra_wifi" type="radio" value="Có">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_wifi" type="radio">
+<input class="sr-only" name="infra_wifi" type="radio" value="Không">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_wifi" type="radio">
+<input class="sr-only" name="infra_wifi" type="radio" value="Yếu">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Yếu</div>
 </label>
 </div>
@@ -282,11 +261,11 @@
                             </label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_fire" type="radio">
+<input class="sr-only" name="infra_fire" type="radio" value="Có bình chữa cháy">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có bình chữa cháy</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_fire" type="radio">
+<input class="sr-only" name="infra_fire" type="radio" value="Không">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
 </label>
 </div>
@@ -298,16 +277,16 @@
                             </label>
 <div class="flex flex-col md:flex-row gap-md">
 <div class="flex-1 relative">
-<input class="modern-input w-full bg-surface border border-outline-variant rounded-lg px-md py-2 font-body-sm text-body-sm text-on-surface placeholder:text-outline transition-colors" min="0" placeholder="Nhập số lượng" type="number">
+<input name="infra_ac_count" class="modern-input w-full bg-surface border border-outline-variant rounded-lg px-md py-2 font-body-sm text-body-sm text-on-surface placeholder:text-outline transition-colors" min="0" placeholder="Nhập số lượng" type="number">
 <span class="absolute right-md top-1/2 -translate-y-1/2 text-secondary font-label-sm text-label-sm pointer-events-none">Máy</span>
 </div>
 <div class="flex-1 flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_ac_state" type="radio">
+<input class="sr-only" name="infra_ac_state" type="radio" value="Hoạt động tốt">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Hoạt động tốt</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_ac_state" type="radio">
+<input class="sr-only" name="infra_ac_state" type="radio" value="Hỏng">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Hỏng</div>
 </label>
 </div>
@@ -321,15 +300,15 @@
 <div class="flex flex-col gap-md">
 <div class="flex gap-2 segmented-control max-w-sm">
 <label class="flex-1 cursor-pointer">
-<input checked="" class="sr-only" name="infra_furniture" type="radio">
+<input checked="" class="sr-only" name="infra_furniture" type="radio" value="Đầy đủ">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Đầy đủ</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="infra_furniture" type="radio">
+<input class="sr-only" name="infra_furniture" type="radio" value="Thiếu">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Thiếu</div>
 </label>
 </div>
-<textarea class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-sm text-body-sm text-on-surface placeholder:text-outline transition-colors resize-y min-h-[80px]" placeholder="Mô tả chi tiết tình trạng nội thất (ví dụ: giường tủ mới 90%, sô pha xước nhẹ...)"></textarea>
+<textarea name="infra_furniture_desc" class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-sm text-body-sm text-on-surface placeholder:text-outline transition-colors resize-y min-h-[80px]" placeholder="Mô tả chi tiết tình trạng nội thất (ví dụ: giường tủ mới 90%, sô pha xước nhẹ...)"></textarea>
 </div>
 </div>
 </div>
@@ -349,15 +328,15 @@
 <label class="font-label-md text-label-md text-on-surface">An ninh</label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_security" type="radio">
+<input class="sr-only" name="area_security" type="radio" value="Tốt">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Tốt</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_security" type="radio">
+<input class="sr-only" name="area_security" type="radio" value="Bình thường">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Bình thường</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_security" type="radio">
+<input class="sr-only" name="area_security" type="radio" value="Kém">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Kém</div>
 </label>
 </div>
@@ -366,15 +345,15 @@
 <label class="font-label-md text-label-md text-on-surface">Giao thông</label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_traffic" type="radio">
+<input class="sr-only" name="area_traffic" type="radio" value="Thuận tiện">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Thuận tiện</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_traffic" type="radio">
+<input class="sr-only" name="area_traffic" type="radio" value="Bình thường">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Bình thường</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_traffic" type="radio">
+<input class="sr-only" name="area_traffic" type="radio" value="Khó khăn">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Khó khăn</div>
 </label>
 </div>
@@ -383,11 +362,11 @@
 <label class="font-label-md text-label-md text-on-surface">Gần tiện ích (chợ, siêu thị...)</label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_amenities" type="radio">
+<input class="sr-only" name="area_amenities" type="radio" value="Có">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="area_amenities" type="radio">
+<input class="sr-only" name="area_amenities" type="radio" value="Không">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
 </label>
 </div>
@@ -407,11 +386,11 @@
 <label class="font-label-md text-label-md text-on-surface">Sổ đỏ</label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="legal_deed" type="radio">
+<input class="sr-only" name="legal_deed" type="radio" value="Chính chủ">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Chính chủ</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="legal_deed" type="radio">
+<input class="sr-only" name="legal_deed" type="radio" value="Không">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
 </label>
 </div>
@@ -420,11 +399,11 @@
 <label class="font-label-md text-label-md text-on-surface">Tranh chấp</label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input checked="" class="sr-only" name="legal_dispute" type="radio">
+<input checked="" class="sr-only" name="legal_dispute" type="radio" value="Không">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="legal_dispute" type="radio">
+<input class="sr-only" name="legal_dispute" type="radio" value="Có">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
 </label>
 </div>
@@ -433,11 +412,11 @@
 <label class="font-label-md text-label-md text-on-surface">CCCD khớp sổ đỏ</label>
 <div class="flex gap-2 segmented-control">
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="legal_id_match" type="radio">
+<input class="sr-only" name="legal_id_match" type="radio" value="Có">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Có</div>
 </label>
 <label class="flex-1 cursor-pointer">
-<input class="sr-only" name="legal_id_match" type="radio">
+<input class="sr-only" name="legal_id_match" type="radio" value="Không">
 <div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không</div>
 </label>
 </div>
@@ -475,23 +454,23 @@
                             Ghi chú bổ sung
                         </h2>
 </div>
-<textarea class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface placeholder:text-outline transition-colors resize-y min-h-[120px]" placeholder="Nhập ưu điểm, nhược điểm, hoặc đề xuất của Broker về bất động sản này..."></textarea>
+<textarea name="survey_notes" class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface placeholder:text-outline transition-colors resize-y min-h-[120px]" placeholder="Nhập ưu điểm, nhược điểm, hoặc đề xuất của Broker về bất động sản này..."></textarea>
 </section>
 </form>
 </div>
 </main>
 <!-- Bottom Action Bar (Sticky) -->
-<div class="fixed bottom-0 md:bottom-0 left-0 md:left-[280px] right-0 bg-surface-container-lowest border-t border-surface-variant p-md md:py-md md:px-lg z-50 flex flex-col md:flex-row justify-between items-center gap-md shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="fixed bottom-0 md:bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-surface-variant p-md md:py-md md:px-lg z-50 flex flex-col md:flex-row justify-between items-center gap-md shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
 <!-- Validation Hint (Optional logic placeholder) -->
 <div class="hidden md:flex items-center gap-sm text-error bg-error-container px-sm py-1.5 rounded-md">
 <span class="material-symbols-outlined text-[18px]" data-icon="error">error</span>
 <span class="font-label-sm text-label-sm">Vui lòng điền các trường bắt buộc ở phần Pháp lý.</span>
 </div>
 <div class="flex gap-sm w-full md:w-auto">
-<button class="flex-1 md:flex-none px-lg py-2.5 rounded-lg border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors active:opacity-80" type="button">
+<button id="btn-save-draft" class="flex-1 md:flex-none px-lg py-2.5 rounded-lg border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors active:opacity-80" type="button">
                 Lưu tạm
             </button>
-<button class="flex-1 md:flex-none px-lg py-2.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors active:opacity-80 shadow-sm flex justify-center items-center gap-2" type="button">
+<button id="btn-submit-survey" class="flex-1 md:flex-none px-lg py-2.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors active:opacity-80 shadow-sm flex justify-center items-center gap-2" type="button">
                 Hoàn thành khảo sát
             </button>
 </div>
@@ -501,3 +480,120 @@
 
 
 </body></html>
+<script>
+// Client-side handler for broker survey page
+(async function(){
+    await requireLogin();
+
+    const params = new URLSearchParams(window.location.search);
+    const submissionId = params.get('submissionId');
+    const appointmentId = params.get('appointmentId') || null;
+
+    function collectByPrefix(prefix){
+        const data = {};
+        const inputs = document.querySelectorAll('[name]');
+        inputs.forEach(inp=>{
+            const name = inp.getAttribute('name');
+            if(!name) return;
+            if(!name.startsWith(prefix)) return;
+            if(inp.type === 'radio'){
+                if(inp.checked) data[name] = inp.nextElementSibling ? inp.nextElementSibling.textContent.trim() : inp.value;
+            } else if(inp.tagName.toLowerCase() === 'textarea' || inp.type === 'text' || inp.type === 'number'){
+                data[name] = inp.value || null;
+            }
+        });
+        return data;
+    }
+
+    function collectChecklist(){
+        const infra = {};
+        // collect inputs whose name start with infra_
+        const inputs = document.querySelectorAll('[name^="infra_"]');
+        inputs.forEach(inp=>{
+            const name = inp.getAttribute('name');
+            if(inp.type === 'radio'){
+                if(inp.checked){
+                    infra[name] = inp.nextElementSibling ? inp.nextElementSibling.textContent.trim() : inp.value;
+                }
+            } else if(inp.tagName.toLowerCase() === 'input' || inp.tagName.toLowerCase() === 'textarea'){
+                infra[name] = inp.value || null;
+            }
+        });
+        return infra;
+    }
+
+    function collectArea(){
+        const area = {};
+        const inputs = document.querySelectorAll('[name^="area_"]');
+        inputs.forEach(inp=>{
+            const name = inp.getAttribute('name');
+            if(inp.type === 'radio'){
+                if(inp.checked) area[name] = inp.nextElementSibling ? inp.nextElementSibling.textContent.trim() : inp.value;
+            }
+        });
+        return area;
+    }
+
+    function collectLegal(){
+        const legal = {};
+        const inputs = document.querySelectorAll('[name^="legal_"]');
+        inputs.forEach(inp=>{
+            const name = inp.getAttribute('name');
+            if(inp.type === 'radio'){
+                if(inp.checked) legal[name] = inp.nextElementSibling ? inp.nextElementSibling.textContent.trim() : inp.value;
+            }
+        });
+        return legal;
+    }
+
+    const btnSave = document.getElementById('btn-save-draft');
+    const btnSubmit = document.getElementById('btn-submit-survey');
+
+    btnSave && btnSave.addEventListener('click', async ()=>{
+        try{
+            const payload = {
+                submissionId: submissionId,
+                appointmentId: appointmentId,
+                infrastructureChecklist: collectChecklist(),
+                areaChecklist: collectArea(),
+                legalChecklist: collectLegal(),
+                imageChecklist: null,
+                surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
+                surveyStatus: 'draft'
+            };
+            // save as draft by calling survey endpoint (surveyStatus = 'draft')
+            await submitBrokerSurvey(payload);
+            alert('Lưu tạm thành công');
+        }catch(err){
+            console.error(err);
+            alert('Lưu tạm thất bại: ' + err.message);
+        }
+    });
+
+    btnSubmit && btnSubmit.addEventListener('click', async ()=>{
+        try{
+            // Ask user to confirm final status
+            const ok = confirm('Bạn chắc chắn muốn hoàn thành khảo sát và gửi kết quả chứ?');
+            if(!ok) return;
+            const payload = {
+                submissionId: submissionId,
+                appointmentId: appointmentId,
+                infrastructureChecklist: collectChecklist(),
+                areaChecklist: collectArea(),
+                legalChecklist: collectLegal(),
+                imageChecklist: null,
+                surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
+                surveyStatus: 'đạt'
+            };
+            await submitBrokerSurvey(payload);
+            alert('Gửi kết quả khảo sát thành công');
+            // redirect to assignments
+            window.location.href = 'brokerAssign.html';
+        }catch(err){
+            console.error(err);
+            alert('Gửi kết quả thất bại: ' + err.message);
+        }
+    });
+
+})();
+</script>

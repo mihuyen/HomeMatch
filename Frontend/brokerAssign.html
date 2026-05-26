@@ -129,59 +129,12 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex antialiased">
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
 <!-- SideNavBar (Desktop) -->
 <div id="broker-sidebar"></div>
 <script src="brokerSidebar.js"></script>
 <!-- Main Content Area -->
-<main class="flex-1 flex flex-col min-w-0 md:ml-[280px]">
-<!-- TopNavBar (Mobile & Desktop overrides) -->
-<header class="flex justify-between items-center px-gutter w-full h-16 sticky top-0 z-40 bg-surface md:border-b md:border-outline-variant shadow-sm md:shadow-none">
-<!-- Mobile Brand / Desktop spacer if needed -->
-<div class="md:hidden flex items-center space-x-sm">
-<span class="material-symbols-outlined fill text-primary text-2xl">home_work</span>
-<span class="font-headline-lg text-headline-lg font-bold text-primary">HomeMatch</span>
-</div>
-<!-- Desktop Context (Optional) -->
-<div class="hidden md:flex items-center text-on-surface-variant font-label-md text-label-md">
-<span class="material-symbols-outlined text-sm mr-xs">assignment</span>
-                Broker Portal &gt; Phân công
-            </div>
-<!-- Actions -->
-<div class="flex items-center space-x-sm text-secondary relative">
-<button class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:opacity-80">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<button class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:opacity-80">
-<span class="material-symbols-outlined">help</span>
-</button>
-<button class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:opacity-80 md:hidden">
-<span class="material-symbols-outlined">menu</span>
-</button>
-<!-- Profile Avatar & Dropdown Container -->
-<div class="relative hidden md:block group">
-<button class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant ml-sm focus:outline-none focus:ring-2 focus:ring-primary">
-<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a real estate broker smiling warmly, set against a neutral, well-lit background. The style is crisp and corporate, suitable for a modern business application light mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY">
-</button>
-<!-- Dropdown Menu -->
-<div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-md shadow-lg py-1 border border-outline-variant opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-<a class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-variant flex items-center space-x-2" href="#">
-<span class="material-symbols-outlined text-sm">person</span>
-<span class="">Hồ sơ cá nhân</span>
-</a>
-<a class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-variant flex items-center space-x-2" href="#">
-<span class="material-symbols-outlined text-sm">settings</span>
-<span class="">Cài đặt tài khoản</span>
-</a>
-<div class="border-t border-outline-variant my-1"></div>
-<a class="block px-4 py-2 text-sm text-error hover:bg-error-container flex items-center space-x-2" href="#">
-<span class="material-symbols-outlined text-sm">logout</span>
-<span class="">Đăng xuất</span>
-</a>
-</div>
-</div>
-</div>
-</header>
+<main class="flex-1 flex flex-col min-w-0">
 <!-- Page Canvas -->
 <div class="flex-1 p-margin-mobile md:p-margin-desktop overflow-auto custom-scrollbar">
 <!-- Page Header -->
@@ -290,7 +243,7 @@
                     const tr = document.createElement('tr');
                     tr.className = 'bg-surface-container-lowest hover:bg-surface-container-low transition-colors group';
                     const submittedAt = it.submitted_at ? new Date(it.submitted_at).toLocaleString() : '-';
-                    const statusLabel = (it.status === 'surveyed') ? 'Đã khảo sát' : (it.status === 'cancelled' ? 'Đã hủy' : 'Chờ xử lý');
+                    const statusLabel = (it.status === 'surveyed') ? 'Hoàn tất' : (it.status === 'cancelled' ? 'Đã hủy' : 'Chờ xử lý');
                     tr.innerHTML = `
 <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">${it.request_code}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface">${(it.owner && it.owner.full_name) || '-'}</td>
@@ -298,8 +251,9 @@
 <td class="p-md font-body-sm text-body-sm text-on-surface-variant">${submittedAt}</td>
 <td class="p-md"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${it.status==='cancelled' ? 'bg-error-container text-on-error-container' : it.status==='surveyed' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEF3C7] text-[#92400E]'} border border-[#FDE68A]">${statusLabel}</span></td>
 <td class="p-md text-right space-x-sm">
-    <a href="brokerMeet.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
-    <a href="brokerSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
+                    <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
+                    <a href="brokerAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
+                    <a href="brokerSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
 </td>
                     `;
                     tbody.appendChild(tr);
@@ -321,6 +275,13 @@
                     btn.addEventListener('click', e=>{
                         const id = e.currentTarget.dataset.submission;
                         window.location.href = `brokerSurvey.html?submissionId=${id}`;
+                    });
+                });
+                document.querySelectorAll('.create-appointment').forEach(btn=>{
+                    btn.addEventListener('click', e=>{
+                        const id = e.currentTarget.dataset.submission;
+                        // open brokerMeet with create flag
+                        window.location.href = `brokerMeet.html?submissionId=${id}&create=1`;
                     });
                 });
 
