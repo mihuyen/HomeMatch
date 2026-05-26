@@ -16,6 +16,36 @@ function isValidEmail(email) {
 }
 
 // ========================================
+// MIDDLEWARE: Xác thực Token
+// ========================================
+const authenticateToken = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ message: 'Chưa đăng nhập' });
+        }
+
+        // Lấy thông tin user (bao gồm cả password_hash để dùng cho đổi mật khẩu)
+        const [rows] = await db.query(
+            `SELECT user_id, full_name, email, phone, role, created_at, password_hash
+             FROM users WHERE token = ? AND token_expires_at > NOW()`,
+            [token]
+        );
+
+        if (rows.length === 0) {
+            return res.status(401).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+        }
+
+        // Lưu thông tin user vào request để các API phía sau sử dụng
+        req.user = rows[0];
+        next();
+    } catch (err) {
+        console.error('Auth middleware error:', err);
+        res.status(500).json({ message: 'Lỗi server xác thực: ' + err.message });
+    }
+};
+
+// ========================================
 // POST /api/auth/register - Đăng ký tài khoản
 // ========================================
 router.post('/register', async (req, res) => {
@@ -133,31 +163,69 @@ router.post('/login', async (req, res) => {
 });
 
 // ========================================
-// GET /api/auth/me - Lấy thông tin user hiện tại (cần token)
+// GET /api/auth/me - Lấy thông tin user hiện tại
 // ========================================
-router.get('/me', async (req, res) => {
-    try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+router.get('/me', authenticateToken, async (req, res) => {
+    // Đã qua middleware authenticateToken nên req.user chắc chắn có dữ liệu
+    // Tách bỏ password_hash ra trước khi gửi về frontend để bảo mật
+    const { password_hash, ...userInfo } = req.user;
+    res.json({ user: userInfo });
+});
 
-        if (!token) {
-            return res.status(401).json({ message: 'Chưa đăng nhập' });
+// ========================================
+// PUT /api/auth/update-profile - Cập nhật thông tin cá nhân
+// ========================================
+router.put('/update-profile', authenticateToken, async (req, res) => {
+    const { full_name, phone } = req.body;
+
+    if (!full_name) {
+        return res.status(400).json({ message: 'Họ và tên không được để trống' });
+    }
+
+    try {
+        await db.query(
+            'UPDATE users SET full_name = ?, phone = ? WHERE user_id = ?',
+            [full_name, phone, req.user.user_id]
+        );
+        res.json({ message: 'Cập nhật thông tin thành công!' });
+    } catch (err) {
+        console.error('Update profile error:', err);
+        res.status(500).json({ message: 'Lỗi khi lưu dữ liệu cập nhật: ' + err.message });
+    }
+});
+
+// ========================================
+// PUT /api/auth/change-password - Đổi mật khẩu
+// ========================================
+router.put('/change-password', authenticateToken, async (req, res) => {
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+        return res.status(400).json({ message: 'Vui lòng điền đầy đủ mật khẩu cũ và mới' });
+    }
+
+    if (new_password.length < 6) {
+        return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 6 ký tự' });
+    }
+
+    try {
+        // So khớp mật khẩu hiện tại với mật khẩu trong DB
+        const match = await bcrypt.compare(current_password, req.user.password_hash);
+        if (!match) {
+            return res.status(400).json({ message: 'Mật khẩu hiện tại không chính xác' });
         }
 
-        const [rows] = await db.query(
-            `SELECT user_id, full_name, email, phone, role, created_at
-       FROM users
-       WHERE token = ? AND token_expires_at > NOW()`,
-            [token]
+        // Băm mật khẩu mới và lưu
+        const password_hash = await bcrypt.hash(new_password, 10);
+        await db.query(
+            'UPDATE users SET password_hash = ? WHERE user_id = ?',
+            [password_hash, req.user.user_id]
         );
 
-        if (rows.length === 0) {
-            return res.status(401).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
-        }
-
-        res.json({ user: rows[0] });
+        res.json({ message: 'Thay đổi mật khẩu thành công!' });
     } catch (err) {
-        console.error('Me error:', err);
-        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+        console.error('Change password error:', err);
+        res.status(500).json({ message: 'Lỗi khi xử lý đổi mật khẩu: ' + err.message });
     }
 });
 
