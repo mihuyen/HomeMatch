@@ -60,6 +60,18 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
             params.push(keyword, keyword, keyword);
         }
 
+        const whereSql = conditions.join(' AND ');
+
+        const [totalRows] = await db.query(
+            `SELECT COUNT(*) AS total
+             FROM property_submissions ps
+             LEFT JOIN users u ON u.user_id = ps.owner_id
+             WHERE ${whereSql}`,
+            params
+        );
+
+        const total = Number(totalRows[0]?.total || 0);
+
         const [rows] = await db.query(
             `SELECT
                 ps.submission_id,
@@ -79,7 +91,7 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
              LEFT JOIN users u ON u.user_id = ps.owner_id
              LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id AND ap.appointment_type = 'khảo sát'
              LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
-             WHERE ${conditions.join(' AND ')}
+             WHERE ${whereSql}
              GROUP BY ps.submission_id, u.user_id
              ORDER BY ps.submitted_at DESC, ps.submission_id DESC
              LIMIT ? OFFSET ?`,
@@ -88,6 +100,7 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
 
         res.json({
             broker_id: brokerId,
+            total,
             items: rows.map(row => ({
                 request_code: toRequestCode(row.submission_id),
                 submission_id: row.submission_id,

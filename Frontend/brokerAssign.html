@@ -228,7 +228,7 @@
 </div>
 <!-- Pagination Footer -->
 <div class="p-md border-t border-outline-variant bg-surface flex justify-between items-center">
-<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 1 to 4 of 12 entries</span>
+<span id="assign-page-summary" class="font-body-sm text-body-sm text-on-surface-variant">Showing 0 to 0 of 0 entries</span>
 <div class="flex space-x-sm">
 <button class="p-xs rounded border border-outline text-secondary disabled:opacity-50" disabled="">
 <span class="material-symbols-outlined text-sm">chevron_left</span>
@@ -250,6 +250,25 @@
 <script src="api.js"></script>
 <script>
     (async function(){
+        let currentStatus = '';
+        let currentSearch = '';
+
+        function getTabButtons(){
+            return Array.from(document.querySelectorAll('div.mb-lg.flex.space-x-md.border-b button'));
+        }
+
+        function setActiveTab(activeIndex){
+            getTabButtons().forEach((btn, index)=>{
+                const isActive = index === activeIndex;
+                btn.classList.toggle('text-primary', isActive);
+                btn.classList.toggle('font-bold', isActive);
+                btn.classList.toggle('border-b-2', isActive);
+                btn.classList.toggle('border-primary', isActive);
+                btn.classList.toggle('text-on-secondary-container', !isActive);
+                btn.classList.toggle('hover:bg-surface-container-low', !isActive);
+            });
+        }
+
         try{
             await requireLogin();
         }catch(e){
@@ -258,7 +277,11 @@
         }
         async function loadAssignments(){
             try{
-                const data = await listBrokerAssignments({ limit: 50 });
+                const data = await listBrokerAssignments({
+                    limit: 50,
+                    status: currentStatus || undefined,
+                    search: currentSearch || undefined
+                });
                 const items = data.items || [];
                 document.getElementById('assign-count').textContent = `${items.length} Requests Found`;
                 const tbody = document.getElementById('assign-tbody');
@@ -277,11 +300,15 @@
 <td class="p-md text-right space-x-sm">
     <a href="brokerMeet.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
     <a href="brokerSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
-    <button data-submission="${it.submission_id}" class="view-reason font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lý do</button>
 </td>
                     `;
                     tbody.appendChild(tr);
                 }
+
+                const total = Number(data.total || items.length);
+                const visibleFrom = total > 0 ? 1 : 0;
+                const visibleTo = items.length;
+                document.getElementById('assign-page-summary').textContent = `Showing ${visibleFrom} to ${visibleTo} of ${total} entries`;
 
                 // attach handlers
                 document.querySelectorAll('.view-appointments').forEach(btn=>{
@@ -296,28 +323,34 @@
                         window.location.href = `brokerSurvey.html?submissionId=${id}`;
                     });
                 });
-                document.querySelectorAll('.view-reason').forEach(btn=>{
-                    btn.addEventListener('click', async e=>{
-                        const id = Number(e.currentTarget.dataset.submission);
-                        try{
-                            const hist = await listBrokerSurveys(id);
-                            const latest = (hist.items && hist.items[0]) || null;
-                            if(latest){
-                                alert('Trạng thái: ' + latest.survey_status + '\nGhi chú: ' + (latest.survey_notes || '-'));
-                            } else {
-                                alert('Không có lịch sử khảo sát/ghi chú cho hồ sơ này.');
-                            }
-                        }catch(err){
-                            alert('Lấy lý do thất bại: ' + (err.message||err));
-                        }
-                    });
-                });
 
             }catch(err){
                 console.error('loadAssignments error', err);
                 document.getElementById('assign-count').textContent = 'Lỗi tải dữ liệu';
             }
         }
+
+        const tabButtons = getTabButtons();
+        const tabStatusMap = ['', 'pending', 'surveyed', 'cancelled'];
+        tabButtons.forEach((btn, index)=>{
+            btn.addEventListener('click', async ()=>{
+                currentStatus = tabStatusMap[index] || '';
+                setActiveTab(index);
+                await loadAssignments();
+            });
+        });
+
+        const filterButton = document.querySelector('div.p-md.border-b.border-outline-variant button');
+        if (filterButton) {
+            filterButton.addEventListener('click', async ()=>{
+                const keyword = window.prompt('Nhập từ khóa tìm kiếm theo mã hồ sơ, chủ sở hữu hoặc địa chỉ:', currentSearch);
+                if (keyword === null) return;
+                currentSearch = keyword.trim();
+                await loadAssignments();
+            });
+        }
+
+        setActiveTab(0);
 
         loadAssignments();
     })();
