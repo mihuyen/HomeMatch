@@ -259,6 +259,20 @@
         return `brokerContract.html?${params.toString()}`;
       }
 
+      function buildResponseUrl(item) {
+        const params = new URLSearchParams({
+          submissionId: item.submission_id || '',
+          address: item.address || '',
+          area: item.area || '',
+          bedrooms: item.num_bedrooms || '',
+          bathrooms: item.num_bathrooms || '',
+          proposedPrice: item.proposed_price || '',
+          direction: item.direction || '',
+          propertyType: item.property_type || ''
+        });
+        return `brokerCResponse.html?${params.toString()}`;
+      }
+
       function renderRows(items) {
         if (!items.length) {
           listBody.innerHTML = '<tr><td class="p-md" colspan="5">Không có dữ liệu</td></tr>';
@@ -273,6 +287,8 @@
           const surveyDate = item.latest_survey?.completed_at || item.submitted_at;
           const statusBadge = formatStatusBadge(item.contract_status);
           const contractUrl = buildContractUrl(item);
+          const responseUrl = buildResponseUrl(item);
+          const hasLegalResponse = Boolean(item.legal_status || item.legal_review_comment || item.legal_reviewed_at);
           return `
             <tr class="hover:bg-primary-fixed/5 transition-colors group">
               <td class="p-md">
@@ -295,9 +311,16 @@
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}">${statusBadge.label}</span>
               </td>
               <td class="p-md text-right">
-                <a class="bg-primary text-white px-md py-sm rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:shadow-md hover:scale-[1.02] transition-all inline-flex items-center justify-center" href="${contractUrl}">
-                  Tạo hợp đồng
-                </a>
+                <div class="flex items-center justify-end gap-sm">
+                  ${hasLegalResponse ? `
+                    <a class="border border-outline-variant text-on-surface-variant px-md py-sm rounded-lg font-label-md hover:bg-surface-container-high transition-all inline-flex items-center justify-center" href="${responseUrl}">
+                      Xem phản hồi
+                    </a>
+                  ` : ''}
+                  <a class="bg-primary text-white px-md py-sm rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:shadow-md hover:scale-[1.02] transition-all inline-flex items-center justify-center" href="${contractUrl}">
+                    Tạo hợp đồng
+                  </a>
+                </div>
               </td>
             </tr>
           `;
