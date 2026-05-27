@@ -555,7 +555,7 @@
             document.getElementById('profileEmailDisplay').innerText = currentUserData.email || 'Chưa cập nhật';
             document.getElementById('profilePhoneDisplay').innerText = currentUserData.phone || 'Chưa cập nhật';
 
-            const roleLabels = { 'tenant': 'Người đi thuê', 'owner': 'Chủ nhà', 'broker': 'Môi giới' };
+            const roleLabels = { 'tenant': 'Người đi thuê', 'owner': 'Chủ nhà', 'sale': 'Môi giới' };
             document.getElementById('profileRoleBadge').innerText = roleLabels[currentUserData.role] || currentUserData.role;
 
             document.getElementById('profileModal').classList.remove('hidden');

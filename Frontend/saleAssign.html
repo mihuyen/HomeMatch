@@ -131,8 +131,8 @@
 </head>
 <body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
 <!-- SideNavBar (Desktop) -->
-<div id="broker-sidebar"></div>
-<script src="brokerSidebar.js"></script>
+<div id="sale-sidebar"></div>
+<script src="saleSidebar.js"></script>
 <!-- Main Content Area -->
 <main class="flex-1 flex flex-col min-w-0">
 <!-- Page Canvas -->
@@ -230,7 +230,7 @@
         }
         async function loadAssignments(){
             try{
-                const data = await listBrokerAssignments({
+                const data = await listSaleAssignments({
                     limit: 50,
                     status: currentStatus || undefined,
                     search: currentSearch || undefined
@@ -252,8 +252,8 @@
 <td class="p-md"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${it.status==='cancelled' ? 'bg-error-container text-on-error-container' : it.status==='surveyed' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEF3C7] text-[#92400E]'} border border-[#FDE68A]">${statusLabel}</span></td>
 <td class="p-md text-right space-x-sm">
                     <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
-                    <a href="brokerAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
-                    <a href="brokerSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
+                    <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
+                    <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
 </td>
                     `;
                     tbody.appendChild(tr);
@@ -268,20 +268,20 @@
                 document.querySelectorAll('.view-appointments').forEach(btn=>{
                     btn.addEventListener('click', e=>{
                         const id = e.currentTarget.dataset.submission;
-                        window.location.href = `brokerMeet.html?submissionId=${id}`;
+                        window.location.href = `saleMeet.html?submissionId=${id}`;
                     });
                 });
                 document.querySelectorAll('.enter-result').forEach(btn=>{
                     btn.addEventListener('click', e=>{
                         const id = e.currentTarget.dataset.submission;
-                        window.location.href = `brokerSurvey.html?submissionId=${id}`;
+                        window.location.href = `saleSurvey.html?submissionId=${id}`;
                     });
                 });
                 document.querySelectorAll('.create-appointment').forEach(btn=>{
                     btn.addEventListener('click', e=>{
                         const id = e.currentTarget.dataset.submission;
-                        // open brokerMeet with create flag
-                        window.location.href = `brokerMeet.html?submissionId=${id}&create=1`;
+                        // open saleMeet with create flag
+                        window.location.href = `saleMeet.html?submissionId=${id}&create=1`;
                     });
                 });
 

@@ -45,19 +45,19 @@ async function generateUniqueContractCode(connection, submissionId, maxAttempts 
     throw new Error('Không thể tạo mã hợp đồng duy nhất');
 }
 
-async function getAssignedSubmission(submissionId, brokerId) {
+async function getAssignedSubmission(submissionId, saleId) {
     const [rows] = await db.query(
         `SELECT ps.*, u.full_name AS owner_name, u.phone AS owner_phone, u.email AS owner_email
          FROM property_submissions ps
          LEFT JOIN users u ON u.user_id = ps.owner_id
          WHERE ps.submission_id = ? AND ps.assigned_sales_id = ?
          LIMIT 1`,
-        [submissionId, brokerId]
+        [submissionId, saleId]
     );
     return rows[0] || null;
 }
 
-async function getAssignedSubmissionContractDraft(submissionId, brokerId) {
+async function getAssignedSubmissionContractDraft(submissionId, saleId) {
     const [rows] = await db.query(
         `SELECT
             ps.submission_id,
@@ -71,12 +71,12 @@ async function getAssignedSubmissionContractDraft(submissionId, brokerId) {
          LEFT JOIN users u ON u.user_id = ps.owner_id
          WHERE ps.submission_id = ? AND ps.assigned_sales_id = ?
          LIMIT 1`,
-        [submissionId, brokerId]
+        [submissionId, saleId]
     );
     return rows[0] || null;
 }
 
-async function getLatestSubmissionContract(submissionId, brokerId) {
+async function getLatestSubmissionContract(submissionId, saleId) {
     const [rows] = await db.query(
         `SELECT sc.submission_contract_id, sc.contract_code, sc.contract_type, sc.signed_scan_url AS contract_scan_url,
             sc.status, sc.signed_at, u.full_name AS owner_full_name
@@ -86,20 +86,20 @@ async function getLatestSubmissionContract(submissionId, brokerId) {
          WHERE sc.submission_id = ? AND ps.assigned_sales_id = ?
          ORDER BY sc.submission_contract_id DESC
          LIMIT 1`,
-        [submissionId, brokerId]
+        [submissionId, saleId]
     );
     return rows[0] || null;
 }
 
-// GET /api/broker/assignments
-// Danh sách hồ sơ được phân công cho broker/sale hiện tại
-router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+// GET /api/sale/assignments
+// Danh sách hồ sơ được phân công cho sale hiện tại
+router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
         const { status, search, limit = 20, offset = 0 } = req.query;
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
 
         const conditions = ['ps.assigned_sales_id = ?'];
-        const params = [brokerId];
+        const params = [saleId];
 
         if (status) {
             conditions.push('ps.status = ?');
@@ -168,7 +168,7 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
         );
 
         res.json({
-            broker_id: brokerId,
+            sale_id: saleId,
             total,
             items: rows.map(row => ({
                 request_code: toRequestCode(row.submission_id),
@@ -203,25 +203,25 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
             }))
         });
     } catch (err) {
-        console.error('broker assignments error:', err);
+        console.error('sale assignments error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// GET /api/broker/contracts/:submissionId/legal-response
+// GET /api/sale/contracts/:submissionId/legal-response
 // Lay phan hoi tu bo phan phap ly cho ho so hop dong moi nhat
-router.get('/contracts/:submissionId/legal-response', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.get('/contracts/:submissionId/legal-response', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
 
         if (!Number.isInteger(submissionId)) {
             return res.status(400).json({ message: 'submissionId khong hop le' });
         }
 
-        const assignedSubmission = await getAssignedSubmission(submissionId, brokerId);
+        const assignedSubmission = await getAssignedSubmission(submissionId, saleId);
         if (!assignedSubmission) {
-            return res.status(404).json({ message: 'Khong tim thay ho so duoc phan cong cho broker hien tai' });
+            return res.status(404).json({ message: 'Khong tim thay ho so duoc phan cong cho sale hien tai' });
         }
 
         const [rows] = await db.query(
@@ -284,23 +284,23 @@ router.get('/contracts/:submissionId/legal-response', requireAuth, requireRole('
             }
         });
     } catch (err) {
-        console.error('broker legal response error:', err);
+        console.error('sale legal response error:', err);
         res.status(500).json({ message: 'Loi server: ' + err.message });
     }
 });
 
-// GET /api/broker/appointments
-// Danh sách lịch khảo sát của broker hiện tại
-router.get('/appointments', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+// GET /api/sale/appointments
+// Danh sách lịch khảo sát của sale hiện tại
+router.get('/appointments', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
         const { status, search, from, to, limit = 30, offset = 0 } = req.query;
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
 
         const conditions = [
             'ps.assigned_sales_id = ?',
             "ap.appointment_type = 'khảo sát'"
         ];
-        const params = [brokerId];
+        const params = [saleId];
 
         if (status) {
             conditions.push('ap.status = ?');
@@ -351,7 +351,7 @@ router.get('/appointments', requireAuth, requireRole('broker', 'sale', 'agent', 
         );
 
         res.json({
-            broker_id: brokerId,
+            sale_id: saleId,
             items: rows.map(row => ({
                 appointment_id: row.appointment_id,
                 submission_id: row.submission_id,
@@ -376,25 +376,25 @@ router.get('/appointments', requireAuth, requireRole('broker', 'sale', 'agent', 
             }))
         });
     } catch (err) {
-        console.error('broker appointments error:', err);
+        console.error('sale appointments error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// GET /api/broker/contracts/:submissionId
+// GET /api/sale/contracts/:submissionId
 // Lấy dữ liệu khởi tạo hợp đồng cho hồ sơ được phân công
-router.get('/contracts/:submissionId', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.get('/contracts/:submissionId', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
 
         if (!Number.isInteger(submissionId)) {
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
         }
 
-        const draft = await getAssignedSubmissionContractDraft(submissionId, brokerId);
+        const draft = await getAssignedSubmissionContractDraft(submissionId, saleId);
         if (!draft) {
-            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
         res.json({
@@ -412,17 +412,17 @@ router.get('/contracts/:submissionId', requireAuth, requireRole('broker', 'sale'
             }
         });
     } catch (err) {
-        console.error('broker contract draft error:', err);
+        console.error('sale contract draft error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// POST /api/broker/contracts
+// POST /api/sale/contracts
 // Tạo hợp đồng ký gửi cho hồ sơ đã phân công
-router.post('/contracts', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.post('/contracts', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     const connection = await db.getConnection();
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const { submissionId, contractDurationMonths, contractType, specialTerms } = req.body;
         const parsedSubmissionId = Number(submissionId);
         const parsedDuration = Number(contractDurationMonths);
@@ -443,9 +443,9 @@ router.post('/contracts', requireAuth, requireRole('broker', 'sale', 'agent', 'm
             return res.status(400).json({ message: 'Vui lòng nhập điều khoản bổ sung' });
         }
 
-        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, brokerId);
+        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, saleId);
         if (!assignedSubmission) {
-            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
         await connection.beginTransaction();
@@ -478,25 +478,25 @@ router.post('/contracts', requireAuth, requireRole('broker', 'sale', 'agent', 'm
         });
     } catch (err) {
         await connection.rollback();
-        console.error('broker create contract error:', err);
+        console.error('sale create contract error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     } finally {
         connection.release();
     }
 });
 
-// GET /api/broker/contracts/:submissionId/summary
+// GET /api/sale/contracts/:submissionId/summary
 // Lấy thông tin tóm tắt hợp đồng cho bước 2
-router.get('/contracts/:submissionId/summary', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.get('/contracts/:submissionId/summary', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
 
         if (!Number.isInteger(submissionId)) {
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
         }
 
-        const contract = await getLatestSubmissionContract(submissionId, brokerId);
+        const contract = await getLatestSubmissionContract(submissionId, saleId);
         if (!contract) {
             return res.status(404).json({ message: 'Không tìm thấy hợp đồng cho hồ sơ này' });
         }
@@ -513,16 +513,16 @@ router.get('/contracts/:submissionId/summary', requireAuth, requireRole('broker'
             }
         });
     } catch (err) {
-        console.error('broker contract summary error:', err);
+        console.error('sale contract summary error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// PATCH /api/broker/contracts/:submissionId
+// PATCH /api/sale/contracts/:submissionId
 // Cập nhật loại hợp đồng (ky gui/gia han)
-router.patch('/contracts/:submissionId', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.patch('/contracts/:submissionId', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
         const { contractType } = req.body;
 
@@ -534,7 +534,7 @@ router.patch('/contracts/:submissionId', requireAuth, requireRole('broker', 'sal
             return res.status(400).json({ message: 'Loại hợp đồng không hợp lệ' });
         }
 
-        const contract = await getLatestSubmissionContract(submissionId, brokerId);
+        const contract = await getLatestSubmissionContract(submissionId, saleId);
         if (!contract) {
             return res.status(404).json({ message: 'Không tìm thấy hợp đồng cho hồ sơ này' });
         }
@@ -546,19 +546,19 @@ router.patch('/contracts/:submissionId', requireAuth, requireRole('broker', 'sal
 
         res.json({ message: 'Cập nhật loại hợp đồng thành công' });
     } catch (err) {
-        console.error('broker update contract type error:', err);
+        console.error('sale update contract type error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// POST /api/broker/contracts/:submissionId/scan
+// POST /api/sale/contracts/:submissionId/scan
 // Upload file scan hợp đồng và cập nhật trạng thái hồ sơ
-router.post('/contracts/:submissionId/scan', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.post('/contracts/:submissionId/scan', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     const fs = require('fs');
     const path = require('path');
 
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
         const { fileName, mimeType, fileDataBase64 } = req.body;
 
@@ -570,7 +570,7 @@ router.post('/contracts/:submissionId/scan', requireAuth, requireRole('broker', 
             return res.status(400).json({ message: 'Thiếu dữ liệu tệp tin' });
         }
 
-        const contract = await getLatestSubmissionContract(submissionId, brokerId);
+        const contract = await getLatestSubmissionContract(submissionId, saleId);
         if (!contract) {
             return res.status(404).json({ message: 'Không tìm thấy hợp đồng cho hồ sơ này' });
         }
@@ -623,16 +623,16 @@ router.post('/contracts/:submissionId/scan', requireAuth, requireRole('broker', 
             status: 'documents_submitted'
         });
     } catch (err) {
-        console.error('broker upload contract scan error:', err);
+        console.error('sale upload contract scan error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// POST /api/broker/appointments
+// POST /api/sale/appointments
 // Tạo lịch khảo sát cho 1 hồ sơ đã được phân công
-router.post('/appointments', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.post('/appointments', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const { submissionId, scheduledTime, location, note } = req.body;
         const parsedSubmissionId = Number(submissionId);
 
@@ -644,9 +644,9 @@ router.post('/appointments', requireAuth, requireRole('broker', 'sale', 'agent',
             return res.status(400).json({ message: 'Vui lòng nhập thời gian và địa điểm lịch hẹn' });
         }
 
-        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, brokerId);
+        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, saleId);
         if (!assignedSubmission) {
-            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
         const [result] = await db.query(
@@ -661,16 +661,16 @@ router.post('/appointments', requireAuth, requireRole('broker', 'sale', 'agent',
             submission_id: parsedSubmissionId
         });
     } catch (err) {
-        console.error('broker create appointment error:', err);
+        console.error('sale create appointment error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// PATCH /api/broker/appointments/:appointmentId
+// PATCH /api/sale/appointments/:appointmentId
 // Cập nhật trạng thái lịch hẹn khảo sát
-router.patch('/appointments/:appointmentId', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.patch('/appointments/:appointmentId', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const appointmentId = Number(req.params.appointmentId);
         const { status, resultNote, scheduledTime, location } = req.body;
 
@@ -685,11 +685,11 @@ router.patch('/appointments/:appointmentId', requireAuth, requireRole('broker', 
              WHERE ap.appointment_id = ?
                AND ps.assigned_sales_id = ?
                AND ap.appointment_type = 'khảo sát'`,
-            [appointmentId, brokerId]
+            [appointmentId, saleId]
         );
 
         if (existingRows.length === 0) {
-            return res.status(404).json({ message: 'Không tìm thấy lịch hẹn của broker hiện tại' });
+            return res.status(404).json({ message: 'Không tìm thấy lịch hẹn của sale hiện tại' });
         }
 
         await db.query(
@@ -704,16 +704,16 @@ router.patch('/appointments/:appointmentId', requireAuth, requireRole('broker', 
 
         res.json({ message: 'Cập nhật lịch hẹn thành công' });
     } catch (err) {
-        console.error('broker update appointment error:', err);
+        console.error('sale update appointment error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// POST /api/broker/surveys
+// POST /api/sale/surveys
 // Ghi nhận kết quả khảo sát
-router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.post('/surveys', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const {
             submissionId,
             appointmentId,
@@ -739,9 +739,9 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
             return res.status(400).json({ message: 'Vui lòng nhập trạng thái khảo sát' });
         }
 
-        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, brokerId);
+        const assignedSubmission = await getAssignedSubmission(parsedSubmissionId, saleId);
         if (!assignedSubmission) {
-            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
         if (parsedAppointmentId !== null && !Number.isInteger(parsedAppointmentId)) {
@@ -757,7 +757,7 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
                    AND ap.submission_id = ?
                    AND ps.assigned_sales_id = ?
                    AND ap.appointment_type = 'khảo sát'`,
-                [parsedAppointmentId, parsedSubmissionId, brokerId]
+                [parsedAppointmentId, parsedSubmissionId, saleId]
             );
 
             if (appointmentRows.length === 0) {
@@ -780,7 +780,7 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
             [
                 parsedSubmissionId,
-                brokerId,
+                saleId,
                 parsedAppointmentId,
                 normalizeTextField(infrastructureChecklist),
                 normalizeTextField(areaChecklist),
@@ -814,25 +814,25 @@ router.post('/surveys', requireAuth, requireRole('broker', 'sale', 'agent', 'man
             submission_id: parsedSubmissionId
         });
     } catch (err) {
-        console.error('broker submit survey error:', err);
+        console.error('sale submit survey error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
-// GET /api/broker/surveys/:submissionId
+// GET /api/sale/surveys/:submissionId
 // Lấy lịch sử khảo sát của hồ sơ được phân công
-router.get('/surveys/:submissionId', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+router.get('/surveys/:submissionId', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const brokerId = req.user.user_id;
+        const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
 
         if (!Number.isInteger(submissionId)) {
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
         }
 
-        const assignedSubmission = await getAssignedSubmission(submissionId, brokerId);
+        const assignedSubmission = await getAssignedSubmission(submissionId, saleId);
         if (!assignedSubmission) {
-            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho broker hiện tại' });
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
         const [rows] = await db.query(
@@ -851,7 +851,7 @@ router.get('/surveys/:submissionId', requireAuth, requireRole('broker', 'sale', 
             items: rows
         });
     } catch (err) {
-        console.error('broker survey history error:', err);
+        console.error('sale survey history error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });

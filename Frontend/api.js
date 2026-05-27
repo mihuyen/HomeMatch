@@ -131,18 +131,18 @@ async function getOwnerTrackingDetail(submissionId) {
     return apiCall(`/consignments/owner/me/tracking/${submissionId}`);
 }
 
-// Broker API helpers
-async function listBrokerAssignments(params = {}) {
+// Sale API helpers
+async function listSaleAssignments(params = {}) {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);
     if (params.search) query.set('search', params.search);
     if (params.limit) query.set('limit', params.limit);
     if (params.offset) query.set('offset', params.offset);
     const suffix = query.toString() ? `?${query.toString()}` : '';
-    return apiCall(`/broker/assignments${suffix}`);
+    return apiCall(`/sale/assignments${suffix}`);
 }
 
-async function listBrokerAppointments(params = {}) {
+async function listSaleAppointments(params = {}) {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);
     if (params.search) query.set('search', params.search);
@@ -151,65 +151,65 @@ async function listBrokerAppointments(params = {}) {
     if (params.limit) query.set('limit', params.limit);
     if (params.offset) query.set('offset', params.offset);
     const suffix = query.toString() ? `?${query.toString()}` : '';
-    return apiCall(`/broker/appointments${suffix}`);
+    return apiCall(`/sale/appointments${suffix}`);
 }
 
-async function createBrokerAppointment(payload) {
-    return apiCall('/broker/appointments', {
+async function createSaleAppointment(payload) {
+    return apiCall('/sale/appointments', {
         method: 'POST',
         body: JSON.stringify(payload)
     });
 }
 
-async function updateBrokerAppointment(appointmentId, payload) {
-    return apiCall(`/broker/appointments/${appointmentId}`, {
+async function updateSaleAppointment(appointmentId, payload) {
+    return apiCall(`/sale/appointments/${appointmentId}`, {
         method: 'PATCH',
         body: JSON.stringify(payload)
     });
 }
 
-async function submitBrokerSurvey(payload) {
-    return apiCall('/broker/surveys', {
+async function submitSaleSurvey(payload) {
+    return apiCall('/sale/surveys', {
         method: 'POST',
         body: JSON.stringify(payload)
     });
 }
 
-async function listBrokerSurveys(submissionId) {
-    return apiCall(`/broker/surveys/${submissionId}`);
+async function listSaleSurveys(submissionId) {
+    return apiCall(`/sale/surveys/${submissionId}`);
 }
 
-async function getBrokerContractDraft(submissionId) {
-    return apiCall(`/broker/contracts/${submissionId}`);
+async function getSaleContractDraft(submissionId) {
+    return apiCall(`/sale/contracts/${submissionId}`);
 }
 
-async function createBrokerContract(payload) {
-    return apiCall('/broker/contracts', {
+async function createSaleContract(payload) {
+    return apiCall('/sale/contracts', {
         method: 'POST',
         body: JSON.stringify(payload)
     });
 }
 
-async function getBrokerContractSummary(submissionId) {
-    return apiCall(`/broker/contracts/${submissionId}/summary`);
+async function getSaleContractSummary(submissionId) {
+    return apiCall(`/sale/contracts/${submissionId}/summary`);
 }
 
-async function updateBrokerContractType(submissionId, contractType) {
-    return apiCall(`/broker/contracts/${submissionId}`, {
+async function updateSaleContractType(submissionId, contractType) {
+    return apiCall(`/sale/contracts/${submissionId}`, {
         method: 'PATCH',
         body: JSON.stringify({ contractType })
     });
 }
 
-async function uploadBrokerContractScan(submissionId, payload) {
-    return apiCall(`/broker/contracts/${submissionId}/scan`, {
+async function uploadSaleContractScan(submissionId, payload) {
+    return apiCall(`/sale/contracts/${submissionId}/scan`, {
         method: 'POST',
         body: JSON.stringify(payload)
     });
 }
 
-async function getBrokerLegalResponse(submissionId) {
-    return apiCall(`/broker/contracts/${submissionId}/legal-response`);
+async function getSaleLegalResponse(submissionId) {
+    return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }
 // Legal review API helpers
 async function listLegalApprovals(params = {}) {

@@ -12,8 +12,8 @@
 </style>
 </head>
 <body class="flex flex-col min-h-screen">
-  <div id="broker-sidebar"></div>
-  <script src="brokerSidebar.js"></script>
+  <div id="sale-sidebar"></div>
+  <script src="saleSidebar.js"></script>
   <main class="flex-1 p-6">
     <div class="max-w-5xl mx-auto">
       <div class="mb-6 flex items-center justify-between">
@@ -22,7 +22,7 @@
           <p class="text-sm text-slate-600">Chi tiết lịch hẹn và thông tin bất động sản</p>
         </div>
         <div>
-          <a href="brokerAssign.html" class="px-4 py-2 border rounded-md">Quay lại phân công</a>
+          <a href="saleAssign.html" class="px-4 py-2 border rounded-md">Quay lại phân công</a>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
   const list = document.getElementById('appointments-list');
   const noAppt = document.getElementById('no-appointments');
   const createLink = document.getElementById('create-link');
-  createLink.href = `brokerMeet.html?submissionId=${submissionId}&create=1`;
+  createLink.href = `saleMeet.html?submissionId=${submissionId}&create=1`;
 
   propCard.innerHTML = `<div class="text-sm text-slate-500">Đang tải thông tin...</div>`;
   propCard.classList.remove('hidden');
@@ -84,7 +84,7 @@
 
   list.innerHTML = '<div class="p-4">Đang tải lịch hẹn...</div>';
   try{
-    const resp = await listBrokerAppointments({ submissionId });
+    const resp = await listSaleAppointments({ submissionId });
     let appts = (resp && resp.items) ? resp.items : (Array.isArray(resp) ? resp : []);
     if (submissionId) {
       appts = appts.filter(a => String(a.submission_id || '') === String(submissionId));
