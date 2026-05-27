@@ -207,6 +207,10 @@ async function uploadBrokerContractScan(submissionId, payload) {
         body: JSON.stringify(payload)
     });
 }
+
+async function getBrokerLegalResponse(submissionId) {
+    return apiCall(`/broker/contracts/${submissionId}/legal-response`);
+}
 // Legal review API helpers
 async function listLegalApprovals(params = {}) {
     const query = new URLSearchParams();

@@ -139,7 +139,11 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
                 ps.owner_id,
                 u.full_name AS owner_name,
                 u.phone AS owner_phone,
+                sc.submission_contract_id,
                 sc.status AS contract_status,
+                cla.status AS legal_status,
+                cla.review_comment AS legal_review_comment,
+                cla.reviewed_at AS legal_reviewed_at,
                 MAX(ap.scheduled_time) AS latest_appointment_time,
                 SUBSTRING_INDEX(GROUP_CONCAT(ap.status ORDER BY ap.scheduled_time DESC SEPARATOR ','), ',', 1) AS latest_appointment_status,
                 MAX(sr.completed_at) AS latest_survey_time,
@@ -153,10 +157,11 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
                  FROM submission_contracts sc2
                  WHERE sc2.submission_id = ps.submission_id
              )
+                         LEFT JOIN contract_legal_approvals cla ON cla.submission_contract_id = sc.submission_contract_id
              LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id AND ap.appointment_type = 'khảo sát'
              LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
              WHERE ${whereSql}
-             GROUP BY ps.submission_id, u.user_id, sc.status
+                         GROUP BY ps.submission_id, u.user_id, sc.submission_contract_id, sc.status, cla.status, cla.review_comment, cla.reviewed_at
              ORDER BY ps.submitted_at DESC, ps.submission_id DESC
              LIMIT ? OFFSET ?`,
             [...params, Number(limit), Number(offset)]
@@ -177,7 +182,11 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
                 num_bathrooms: row.num_bathrooms,
                 proposed_price: row.proposed_price,
                 submitted_at: row.submitted_at,
+                submission_contract_id: row.submission_contract_id,
                 contract_status: row.contract_status,
+                legal_status: row.legal_status,
+                legal_review_comment: row.legal_review_comment,
+                legal_reviewed_at: row.legal_reviewed_at,
                 owner: {
                     user_id: row.owner_id,
                     full_name: row.owner_name,
@@ -196,6 +205,87 @@ router.get('/assignments', requireAuth, requireRole('broker', 'sale', 'agent', '
     } catch (err) {
         console.error('broker assignments error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/broker/contracts/:submissionId/legal-response
+// Lay phan hoi tu bo phan phap ly cho ho so hop dong moi nhat
+router.get('/contracts/:submissionId/legal-response', requireAuth, requireRole('broker', 'sale', 'agent', 'manager'), async (req, res) => {
+    try {
+        const brokerId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId khong hop le' });
+        }
+
+        const assignedSubmission = await getAssignedSubmission(submissionId, brokerId);
+        if (!assignedSubmission) {
+            return res.status(404).json({ message: 'Khong tim thay ho so duoc phan cong cho broker hien tai' });
+        }
+
+        const [rows] = await db.query(
+            `SELECT
+                sc.submission_contract_id,
+                sc.contract_code,
+                sc.contract_type,
+                sc.contract_duration_months,
+                sc.final_price,
+                ps.submission_id,
+                ps.address,
+                ps.property_type,
+                ps.area,
+                ps.direction,
+                cla.status AS legal_status,
+                cla.review_comment,
+                cla.reviewed_at,
+                cla.special_terms_requested,
+                reviewer.user_id AS reviewer_id,
+                reviewer.full_name AS reviewer_name,
+                reviewer.email AS reviewer_email
+             FROM submission_contracts sc
+             INNER JOIN property_submissions ps ON ps.submission_id = sc.submission_id
+             LEFT JOIN contract_legal_approvals cla ON cla.submission_contract_id = sc.submission_contract_id
+             LEFT JOIN users reviewer ON reviewer.user_id = cla.reviewed_by
+             WHERE sc.submission_id = ?
+             ORDER BY sc.submission_contract_id DESC
+             LIMIT 1`,
+            [submissionId]
+        );
+
+        const row = rows[0];
+        if (!row) {
+            return res.status(404).json({ message: 'Khong tim thay hop dong cho ho so nay' });
+        }
+
+        res.json({
+            submission_contract_id: row.submission_contract_id,
+            submission_id: row.submission_id,
+            contract_code: row.contract_code,
+            contract_type: row.contract_type,
+            contract_duration_months: row.contract_duration_months,
+            final_price: row.final_price,
+            property: {
+                address: row.address,
+                property_type: row.property_type,
+                area: row.area,
+                direction: row.direction
+            },
+            legal_response: {
+                status: row.legal_status,
+                review_comment: row.review_comment,
+                reviewed_at: row.reviewed_at,
+                special_terms_requested: row.special_terms_requested,
+                reviewer: row.reviewer_id ? {
+                    user_id: row.reviewer_id,
+                    full_name: row.reviewer_name,
+                    email: row.reviewer_email
+                } : null
+            }
+        });
+    } catch (err) {
+        console.error('broker legal response error:', err);
+        res.status(500).json({ message: 'Loi server: ' + err.message });
     }
 });
 
