@@ -5,6 +5,7 @@ const db = require('./db');
 const authRoutes = require('./routes/auth');
 const consignmentRoutes = require('./routes/consignment');
 const brokerRoutes = require('./routes/broker');
+const legalRoutes = require('./routes/legal');
 
 const app = express();
 const PORT = 5000;
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/consignments', consignmentRoutes);
 app.use('/api/broker', brokerRoutes);
+app.use('/api/legal', legalRoutes);
 
 // Test endpoints
 app.get('/api/health', async (req, res) => {
