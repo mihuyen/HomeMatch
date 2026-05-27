@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thẩm định hồ sơ Pháp lý - EstateSync Pro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-high": "#e9e7ef",
+            "on-secondary-fixed": "#0b1c30",
+            "secondary-fixed-dim": "#b7c8e1",
+            "surface-tint": "#4059aa",
+            "surface-container-highest": "#e3e1e9",
+            "on-tertiary-fixed": "#341100",
+            "surface-dim": "#dad9e1",
+            "primary-fixed": "#dce1ff",
+            "on-tertiary-fixed-variant": "#773205",
+            "surface-bright": "#faf8ff",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#faf8ff",
+            "tertiary-container": "#6e2c00",
+            "on-primary-fixed-variant": "#264191",
+            "tertiary-fixed-dim": "#ffb691",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#f1f0f7",
+            "primary-container": "#1e3a8a",
+            "on-error-container": "#93000a",
+            "secondary-container": "#d0e1fb",
+            "primary-fixed-dim": "#b6c4ff",
+            "on-tertiary-container": "#f39461",
+            "on-primary-fixed": "#00164e",
+            "on-surface-variant": "#444651",
+            "background": "#faf8ff",
+            "on-tertiary": "#ffffff",
+            "secondary": "#505f76",
+            "tertiary-fixed": "#ffdbcb",
+            "on-secondary": "#ffffff",
+            "on-background": "#1a1b21",
+            "surface-container-low": "#f4f3fa",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "surface-container": "#eeedf4",
+            "primary": "#00236f",
+            "outline-variant": "#c5c5d3",
+            "outline": "#757682",
+            "on-primary": "#ffffff",
+            "on-surface": "#1a1b21",
+            "inverse-primary": "#b6c4ff",
+            "surface-variant": "#e3e1e9",
+            "tertiary": "#4b1c00",
+            "secondary-fixed": "#d3e4fe",
+            "on-secondary-fixed-variant": "#38485d",
+            "on-secondary-container": "#54647a",
+            "inverse-surface": "#2f3036",
+            "on-primary-container": "#90a8ff"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #faf8ff;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .active-link {
+      background-color: #eeedf4;
+      color: #00236f;
+      font-weight: 600;
+    }
+    .active-link span {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+  <div id="legal-sidebar"></div>
+  <main class="min-h-screen">
+    <div class="flex min-h-screen">
+      <div class="flex-1 p-8 overflow-y-auto bg-surface">
+        <div class="max-w-4xl mx-auto space-y-8">
+          <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-8 grid gap-12 grid-cols-4">
+            <div class="space-y-2">
+              <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Loại hợp đồng</label>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">description</span>
+                <p class="text-base font-semibold text-on-surface" id="legal-contract-type">--</p>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Giá</label>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary">payments</span>
+                <p class="text-base font-bold text-tertiary" id="legal-final-price">--</p>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Thời hạn</label>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary">calendar_today</span>
+                <p class="text-base font-semibold text-on-surface" id="legal-duration">--</p>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Mã hợp đồng</label>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">assignment</span>
+                <p class="text-base font-bold text-primary" id="legal-contract-code">--</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg overflow-hidden">
+            <div class="px-8 py-6 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center">
+                  <span class="material-symbols-outlined text-tertiary-container">priority_high</span>
+                </div>
+                <div>
+                  <h2 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Yêu cầu bổ sung (special_terms_requested)</h2>
+                  <p class="text-xs text-on-surface-variant/70">Cần xem xét kỹ các điều khoản tùy chỉnh từ khách hàng</p>
+                </div>
+              </div>
+              <div class="px-3 py-1 bg-tertiary-fixed rounded-full text-[10px] font-bold text-on-tertiary-fixed-variant uppercase">Cần Thẩm Định</div>
+            </div>
+            <div class="p-8">
+              <div class="relative">
+                <span class="material-symbols-outlined absolute -left-2 -top-2 text-4xl text-outline-variant/30 select-none">format_quote</span>
+                <div class="pl-8 py-2">
+                  <p class="text-lg text-on-surface font-medium leading-relaxed italic" id="legal-special-terms">--</p>
+                  <div class="mt-8 flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-xs font-bold text-secondary uppercase bg-secondary-container/30 px-3 py-1.5 rounded-lg">
+                      <span class="material-symbols-outlined text-sm">person</span>
+                      <span id="legal-assigned-sales">Người đề xuất: --</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="w-[360px] border-l border-outline-variant bg-surface-container-low flex flex-col shrink-0">
+        <div class="px-6 py-6 border-b border-outline-variant">
+          <h3 class="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">fact_check</span>
+            Xử lý hồ sơ
+          </h3>
+        </div>
+        <div class="flex-1 p-6 space-y-6 overflow-y-auto">
+          <div class="space-y-3">
+            <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest flex justify-between">
+              Ghi chú phản hồi (review_comment)
+              <span class="text-error text-[10px] lowercase italic">* bắt buộc</span>
+            </label>
+            <textarea class="w-full text-sm p-4 rounded-xl border border-outline-variant focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none h-56 bg-surface-container-lowest text-on-surface transition-all placeholder:text-outline/50 resize-none" id="legal-review-comment" placeholder="Nhập nhận xét chi tiết về các điều khoản hoặc lý do cụ thể nếu từ chối hồ sơ..."></textarea>
+          </div>
+          <div class="space-y-4 pt-2">
+            <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-center block">Cập nhật trạng thái (status)</label>
+            <div class="space-y-3">
+              <button class="w-full bg-primary hover:bg-primary-container text-white text-sm font-bold py-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group" type="button" id="legal-approve-btn">
+                <span class="material-symbols-outlined text-lg transition-transform group-hover:scale-110">check_circle</span>
+                Phê duyệt (Approved)
+              </button>
+              <div class="grid grid-cols-1 gap-3">
+                <button class="w-full border border-outline-variant text-secondary hover:bg-surface-container-high text-sm font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2" type="button" id="legal-change-btn">
+                  <span class="material-symbols-outlined text-lg">history_edu</span>
+                  Yêu cầu sửa đổi
+                </button>
+                <button class="w-full border border-error/30 text-error hover:bg-error-container hover:text-on-error-container text-sm font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2" type="button" id="legal-reject-btn">
+                  <span class="material-symbols-outlined text-lg">cancel</span>
+                  Từ chối (Rejected)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-6 bg-surface-container-highest border-t border-outline-variant">
+          <div class="flex items-start gap-2 opacity-70">
+            <span class="material-symbols-outlined text-sm mt-0.5">info</span>
+            <p class="text-[10px] leading-relaxed text-on-surface-variant font-medium">Quyết định thẩm định sẽ có hiệu lực ngay lập tức và được lưu vết vào lịch sử quy trình hợp đồng.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <script src="api.js"></script>
+  <script src="legalSidebar.js"></script>
+  <script>
+    function mapContractType(type) {
+      const normalized = String(type || '').toLowerCase();
+      if (normalized.includes('custom')) return 'Ký gửi Độc quyền';
+      if (normalized.includes('standard')) return 'Ký gửi tiêu chuẩn';
+      if (normalized.includes('consignment')) return 'Ký gửi';
+      if (normalized.includes('renewal')) return 'Gia hạn';
+      return type || 'N/A';
+    }
+
+    function formatCurrency(value) {
+      if (value === null || value === undefined || value === '') return 'N/A';
+      const normalized = String(value).replace(/,/g, '');
+      const number = Number(normalized);
+      if (!Number.isFinite(number)) return String(value);
+      return new Intl.NumberFormat('vi-VN').format(number) + ' VNĐ';
+    }
+
+    function formatDuration(value) {
+      if (!value && value !== 0) return 'N/A';
+      return `${String(value).padStart(2, '0')} tháng`;
+    }
+
+    function getContractIdFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('contractId');
+    }
+
+    async function loadLegalReviewDetail(contractId) {
+      const contractTypeEl = document.getElementById('legal-contract-type');
+      const priceEl = document.getElementById('legal-final-price');
+      const durationEl = document.getElementById('legal-duration');
+      const codeEl = document.getElementById('legal-contract-code');
+      const termsEl = document.getElementById('legal-special-terms');
+      const salesEl = document.getElementById('legal-assigned-sales');
+      const commentEl = document.getElementById('legal-review-comment');
+
+      try {
+        const data = await getLegalApprovalDetail(contractId);
+        contractTypeEl.textContent = mapContractType(data.contract_type);
+        priceEl.textContent = formatCurrency(data.final_price);
+        durationEl.textContent = formatDuration(data.contract_duration_months);
+        codeEl.textContent = data.contract_code || 'N/A';
+        termsEl.textContent = data.special_terms_requested || 'Chưa có điều khoản bổ sung.';
+
+        const assignedName = data.assigned_sales?.full_name || 'Chưa phân công';
+        salesEl.textContent = `Người đề xuất: ${assignedName}`;
+
+        if (commentEl) commentEl.value = data.review_comment || '';
+      } catch (error) {
+        console.error('Load legal review detail failed:', error);
+        termsEl.textContent = 'Không thể tải dữ liệu thẩm định.';
+      }
+    }
+
+    async function handleReviewUpdate(status) {
+      const contractId = getContractIdFromQuery();
+      const commentEl = document.getElementById('legal-review-comment');
+      const comment = commentEl ? commentEl.value.trim() : '';
+
+      if (!contractId) {
+        alert('Thiếu mã hồ sơ thẩm định.');
+        return;
+      }
+
+      try {
+        await updateLegalApproval(contractId, {
+          status,
+          review_comment: comment
+        });
+        alert('Cập nhật thẩm định thành công.');
+      } catch (error) {
+        console.error('Update legal approval failed:', error);
+        alert('Không thể cập nhật thẩm định.');
+      }
+    }
+
+    async function initLegalReviewPage() {
+      const user = await requireLogin();
+      if (!user) return;
+      if (user.role !== 'legal') {
+        window.location.href = 'home.html';
+        return;
+      }
+
+      const contractId = getContractIdFromQuery();
+      if (!contractId) {
+        alert('Thiếu mã hồ sơ thẩm định.');
+        return;
+      }
+
+      await loadLegalReviewDetail(contractId);
+
+      const approveBtn = document.getElementById('legal-approve-btn');
+      const changeBtn = document.getElementById('legal-change-btn');
+      const rejectBtn = document.getElementById('legal-reject-btn');
+
+      if (approveBtn) approveBtn.addEventListener('click', () => handleReviewUpdate('Approved'));
+      if (changeBtn) changeBtn.addEventListener('click', () => handleReviewUpdate('Changes Requested'));
+      if (rejectBtn) rejectBtn.addEventListener('click', () => handleReviewUpdate('Rejected'));
+    }
+
+    initLegalReviewPage();
+  </script>
+</body>
+</html>

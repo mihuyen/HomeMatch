@@ -207,6 +207,27 @@ async function uploadBrokerContractScan(submissionId, payload) {
         body: JSON.stringify(payload)
     });
 }
+// Legal review API helpers
+async function listLegalApprovals(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/legal/approvals${suffix}`);
+}
+
+async function getLegalApprovalDetail(submissionContractId) {
+    return apiCall(`/legal/approvals/${submissionContractId}`);
+}
+
+async function updateLegalApproval(submissionContractId, payload) {
+    return apiCall(`/legal/approvals/${submissionContractId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
 
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {

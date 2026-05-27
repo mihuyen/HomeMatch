@@ -118,9 +118,9 @@
   </style>
 </head>
 <body class="bg-background text-on-background min-h-screen">
-  <div class="min-h-screen flex flex-col" id="layout-wrapper">
+  <div class="min-h-screen" id="layout-wrapper">
     <div id="legal-sidebar"></div>
-    <main class="flex-1 min-w-0 overflow-y-auto px-lg md:px-xl py-lg">
+    <main class="flex-1 min-w-0 overflow-y-auto pr-lg md:pr-xl py-lg">
       <div class="max-w-7xl mx-auto flex flex-col min-h-full">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
           <div>
@@ -162,42 +162,18 @@
               <thead>
                 <tr class="bg-slate-50 border-b border-outline-variant text-left">
                   <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Mã hợp đồng</th>
-                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Người nộp hồ sơ</th>
+                  <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Người đề xuất</th>
                   <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Ngày nộp</th>
                   <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Loại thỏa thuận</th>
                   <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold">Trạng thái</th>
                   <th class="px-lg py-md text-label-sm text-secondary uppercase tracking-wider font-semibold text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-outline-variant">
-                <tr class="hover:bg-slate-50/50 transition-colors group">
-                  <td class="px-lg py-md"><span class="text-body-sm font-semibold text-primary">APP-2024-001</span></td>
-                  <td class="px-lg py-md">
-                    <div class="flex items-center gap-sm">
-                      <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-[12px]">NT</div>
-                      <div>
-                        <div class="text-body-sm font-medium">Nguyễn Văn Thuận</div>
-                        <div class="text-xs text-secondary">thuan.nv@email.com</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-lg py-md text-body-sm text-secondary">15/03/2024</td>
-                  <td class="px-lg py-md"><span class="px-base py-xs bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">Chuyển nhượng</span></td>
-                  <td class="px-lg py-md">
-                    <div class="flex items-center gap-xs text-amber-600">
-                      <span class="w-2 h-2 rounded-full bg-amber-600"></span>
-                      <span class="text-body-sm font-medium">Chờ thẩm định</span>
-                    </div>
-                  </td>
-                  <td class="px-lg py-md text-right">
-                    <button class="px-md py-sm bg-primary text-white rounded-lg text-label-sm font-semibold hover:bg-blue-900 transition-shadow">Thẩm định</button>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody class="divide-y divide-outline-variant" id="legal-review-list"></tbody>
             </table>
           </div>
           <div class="px-lg py-md bg-white border-t border-outline-variant flex items-center justify-between">
-            <span class="text-body-sm text-secondary">Hiển thị 1-4 trên tổng số 24 hồ sơ</span>
+            <span class="text-body-sm text-secondary" id="legal-review-total">Đang tải dữ liệu...</span>
             <div class="flex items-center gap-xs">
               <button class="p-xs rounded hover:bg-slate-100 text-secondary disabled:opacity-50" disabled>
                 <span class="material-symbols-outlined">chevron_left</span>
@@ -229,12 +205,106 @@
   <script src="api.js"></script>
   <script src="legalSidebar.js"></script>
   <script>
+    function formatCurrency(value) {
+      if (value === null || value === undefined || value === '') return 'N/A';
+      const number = Number(value);
+      if (!Number.isFinite(number)) return String(value);
+      return new Intl.NumberFormat('vi-VN').format(number) + ' VNĐ';
+    }
+
+    function formatDate(value) {
+      if (!value) return 'N/A';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleDateString('vi-VN');
+    }
+
+    function mapContractType(type) {
+      const normalized = String(type || '').toLowerCase();
+      if (normalized.includes('custom')) return 'Ký gửi Độc quyền';
+      if (normalized.includes('standard')) return 'Ký gửi tiêu chuẩn';
+      if (normalized.includes('consignment')) return 'Ký gửi';
+      if (normalized.includes('renewal')) return 'Gia hạn';
+      return type || 'N/A';
+    }
+
+    function mapStatus(status) {
+      const normalized = String(status || '').toLowerCase();
+      if (normalized.includes('approved')) return { label: 'Đã phê duyệt', color: 'text-emerald-600', dot: 'bg-emerald-600' };
+      if (normalized.includes('changes')) return { label: 'Yêu cầu sửa đổi', color: 'text-amber-600', dot: 'bg-amber-600' };
+      if (normalized.includes('rejected')) return { label: 'Từ chối', color: 'text-red-600', dot: 'bg-red-600' };
+      return { label: 'Chờ thẩm định', color: 'text-amber-600', dot: 'bg-amber-600' };
+    }
+
+    function buildRow(item) {
+      const status = mapStatus(item.legal_status);
+      const assignedName = item.assigned_sales?.full_name || 'Chưa phân công';
+      const assignedEmail = item.assigned_sales?.email || '';
+      const initials = assignedName.trim() ? assignedName.trim().split(' ').map(p => p[0]).slice(-2).join('').toUpperCase() : 'NA';
+
+      return `
+        <tr class="hover:bg-slate-50/50 transition-colors group">
+          <td class="px-lg py-md"><span class="text-body-sm font-semibold text-primary">${item.contract_code || 'N/A'}</span></td>
+          <td class="px-lg py-md">
+            <div class="flex items-center gap-sm">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-[12px]">${initials}</div>
+              <div>
+                <div class="text-body-sm font-medium">${assignedName}</div>
+                <div class="text-xs text-secondary">${assignedEmail}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-lg py-md text-body-sm text-secondary">${formatDate(item.submitted_at)}</td>
+          <td class="px-lg py-md"><span class="px-base py-xs bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">${mapContractType(item.contract_type)}</span></td>
+          <td class="px-lg py-md">
+            <div class="flex items-center gap-xs ${status.color}">
+              <span class="w-2 h-2 rounded-full ${status.dot}"></span>
+              <span class="text-body-sm font-medium">${status.label}</span>
+            </div>
+          </td>
+          <td class="px-lg py-md text-right">
+            <a href="legalReview.html?contractId=${item.submission_contract_id}" class="inline-flex px-md py-sm bg-primary text-white rounded-lg text-label-sm font-semibold hover:bg-blue-900 transition-shadow">Thẩm định</a>
+          </td>
+        </tr>`;
+    }
+
+    async function loadLegalApprovals() {
+      const tbody = document.getElementById('legal-review-list');
+      const totalEl = document.getElementById('legal-review-total');
+      tbody.innerHTML = '';
+
+      try {
+        const data = await listLegalApprovals({ limit: 50, offset: 0 });
+        if (!data.items || data.items.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td class="px-lg py-md text-body-sm text-secondary" colspan="6">Chưa có hồ sơ cần thẩm định.</td>
+            </tr>`;
+          totalEl.textContent = 'Hiển thị 0 trên tổng số 0 hồ sơ';
+          return;
+        }
+
+        tbody.innerHTML = data.items.map(buildRow).join('');
+        totalEl.textContent = `Hiển thị ${data.items.length} trên tổng số ${data.total || data.items.length} hồ sơ`;
+      } catch (error) {
+        console.error('Load legal approvals failed:', error);
+        tbody.innerHTML = `
+          <tr>
+            <td class="px-lg py-md text-body-sm text-error" colspan="6">Không thể tải dữ liệu thẩm định.</td>
+          </tr>`;
+        totalEl.textContent = 'Tải dữ liệu thất bại';
+      }
+    }
+
     async function initLegalPage() {
       const user = await requireLogin();
       if (!user) return;
       if (user.role !== 'legal') {
         window.location.href = 'home.html';
+        return;
       }
+
+      await loadLegalApprovals();
     }
 
     initLegalPage();
