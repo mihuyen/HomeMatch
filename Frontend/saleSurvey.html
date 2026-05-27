@@ -147,8 +147,8 @@
     </style>
 </head>
 <body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary">
-<div id="broker-sidebar"></div>
-<script src="brokerSidebar.js"></script>
+<div id="sale-sidebar"></div>
+<script src="saleSidebar.js"></script>
 <script src="api.js"></script>
 <!-- Main Content Area -->
 <main class="flex-1 w-full pb-24 md:pb-lg flex flex-col bg-background">
@@ -454,7 +454,7 @@
                             Ghi chú bổ sung
                         </h2>
 </div>
-<textarea name="survey_notes" class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface placeholder:text-outline transition-colors resize-y min-h-[120px]" placeholder="Nhập ưu điểm, nhược điểm, hoặc đề xuất của Broker về bất động sản này..."></textarea>
+<textarea name="survey_notes" class="modern-input w-full bg-surface border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface placeholder:text-outline transition-colors resize-y min-h-[120px]" placeholder="Nhập ưu điểm, nhược điểm, hoặc đề xuất của Sale về bất động sản này..."></textarea>
 </section>
 </form>
 </div>
@@ -481,7 +481,7 @@
 
 </body></html>
 <script>
-// Client-side handler for broker survey page
+// Client-side handler for sale survey page
 (async function(){
     await requireLogin();
 
@@ -562,7 +562,7 @@
                 surveyStatus: 'draft'
             };
             // save as draft by calling survey endpoint (surveyStatus = 'draft')
-            await submitBrokerSurvey(payload);
+            await submitSaleSurvey(payload);
             alert('Lưu tạm thành công');
         }catch(err){
             console.error(err);
@@ -585,10 +585,10 @@
                 surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
                 surveyStatus: 'đạt'
             };
-            await submitBrokerSurvey(payload);
+            await submitSaleSurvey(payload);
             alert('Gửi kết quả khảo sát thành công');
             // redirect to assignments
-            window.location.href = 'brokerAssign.html';
+            window.location.href = 'saleAssign.html';
         }catch(err){
             console.error(err);
             alert('Gửi kết quả thất bại: ' + err.message);

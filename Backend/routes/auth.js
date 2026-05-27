@@ -67,7 +67,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Mật khẩu phải có ít nhất 6 ký tự' });
         }
 
-        const validRoles = ['owner', 'tenant', 'agent', 'broker', 'legal', 'accountant', 'manager', 'it'];
+        const validRoles = ['owner', 'tenant', 'agent', 'sale', 'legal', 'accountant', 'manager', 'it'];
         if (!validRoles.includes(role)) {
             return res.status(400).json({
                 message: `Vai trò không hợp lệ. Chọn một trong: ${validRoles.join(', ')}`

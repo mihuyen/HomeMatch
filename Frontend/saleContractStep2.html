@@ -117,8 +117,8 @@
   </script>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
-  <div id="broker-sidebar"></div>
-  <script src="brokerSidebar.js"></script>
+  <div id="sale-sidebar"></div>
+  <script src="saleSidebar.js"></script>
   <script src="api.js"></script>
 
   <main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-desktop py-xl">
@@ -276,7 +276,7 @@
       }
 
       async function loadSummary() {
-        const summary = await getBrokerContractSummary(submissionId);
+        const summary = await getSaleContractSummary(submissionId);
 
         summaryContractCode.textContent = summary.contract_code || '---';
         summaryOwner.textContent = summary.owner?.full_name || '---';
@@ -343,7 +343,7 @@
               fileDataBase64: reader.result
             };
 
-            const result = await uploadBrokerContractScan(submissionId, payload);
+            const result = await uploadSaleContractScan(submissionId, payload);
             updateProgressState(true, result.contract_scan_url);
             alert(result.message || 'Tải hồ sơ hợp đồng thành công');
           } catch (error) {
@@ -385,7 +385,7 @@
           input.addEventListener('change', async () => {
             if (!input.checked) return;
             try {
-              await updateBrokerContractType(submissionId, input.value);
+              await updateSaleContractType(submissionId, input.value);
             } catch (error) {
               alert(error.message || 'Không thể cập nhật loại hợp đồng.');
             }

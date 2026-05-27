@@ -4,7 +4,7 @@ const path = require('path');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const consignmentRoutes = require('./routes/consignment');
-const brokerRoutes = require('./routes/broker');
+const saleRoutes = require('./routes/sale');
 const legalRoutes = require('./routes/legal');
 const listingRoutes = require('./routes/listing');
 const savedRoutes = require('./routes/saved');
@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/consignments', consignmentRoutes);
-app.use('/api/broker', brokerRoutes);
+app.use('/api/sale', saleRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/saved', savedRoutes);

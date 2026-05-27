@@ -242,8 +242,8 @@
     // ========================================
     if (getToken()) {
         const currentUser = getCurrentUser();
-        if (currentUser && currentUser.role === 'broker') {
-            window.location.href = 'brokerAssign.html';
+        if (currentUser && currentUser.role === 'sale') {
+            window.location.href = 'saleAssign.html';
         } else if (currentUser && currentUser.role === 'legal') {
             window.location.href = 'legalReviewList.html';
         } else {
@@ -252,8 +252,8 @@
     }
 
     function redirectAfterLogin(user) {
-        if (user && user.role === 'broker') {
-            window.location.href = 'brokerAssign.html';
+        if (user && user.role === 'sale') {
+            window.location.href = 'saleAssign.html';
             return;
         }
         if (user && user.role === 'legal') {

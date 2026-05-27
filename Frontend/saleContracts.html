@@ -131,8 +131,8 @@
 </head>
 <body class="bg-surface">
   <div class="min-h-screen flex flex-col">
-    <div id="broker-sidebar"></div>
-    <script src="brokerSidebar.js"></script>
+    <div id="sale-sidebar"></div>
+    <script src="saleSidebar.js"></script>
     <script src="api.js"></script>
 
     <main class="flex-1 p-gutter custom-scrollbar">
@@ -256,7 +256,7 @@
           direction: item.direction || '',
           propertyType: item.property_type || ''
         });
-        return `brokerContract.html?${params.toString()}`;
+        return `saleContract.html?${params.toString()}`;
       }
 
       function buildResponseUrl(item) {
@@ -270,7 +270,7 @@
           direction: item.direction || '',
           propertyType: item.property_type || ''
         });
-        return `brokerCResponse.html?${params.toString()}`;
+        return `saleCResponse.html?${params.toString()}`;
       }
 
       function renderRows(items) {
@@ -331,7 +331,7 @@
         listBody.innerHTML = '<tr><td class="p-md" colspan="5">Đang tải dữ liệu...</td></tr>';
         const params = { status: 'surveyed' };
         try {
-          const data = await listBrokerAssignments(params);
+          const data = await listSaleAssignments(params);
           renderRows(data.items || []);
         } catch (error) {
           listBody.innerHTML = `<tr><td class="p-md" colspan="5">${error.message || 'Không thể tải dữ liệu'}</td></tr>`;

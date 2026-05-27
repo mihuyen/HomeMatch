@@ -115,8 +115,8 @@
   </style>
 </head>
 <body class="text-on-surface">
-  <div id="broker-sidebar"></div>
-  <script src="brokerSidebar.js"></script>
+  <div id="sale-sidebar"></div>
+  <script src="saleSidebar.js"></script>
   <script src="api.js"></script>
 
   <main class="max-w-[1440px] mx-auto p-margin-desktop min-h-screen">
@@ -250,18 +250,12 @@
       };
     }
 
-    function buildBrokerContractUrl(params) {
-      const query = new URLSearchParams({
-        submissionId: params.submissionId || '',
-        address: params.address || '',
-        area: params.area || '',
-        bedrooms: params.bedrooms || '',
-        bathrooms: params.bathrooms || '',
-        proposedPrice: params.proposedPrice || '',
-        direction: params.direction || '',
-        propertyType: params.propertyType || ''
+    function buildSaleContractUrl(params) {
+      const query = new URLSearchParams();
+      Object.keys(params).forEach(k => {
+        if (params[k] !== undefined && params[k] !== null) query.set(k, params[k]);
       });
-      return `brokerContract.html?${query.toString()}`;
+      return `saleContract.html?${query.toString()}`;
     }
 
     async function loadResponse() {
@@ -283,7 +277,7 @@
       const submittedTerms = document.getElementById('submitted-terms');
 
       try {
-        const data = await getBrokerLegalResponse(params.submissionId);
+        const data = await getSaleLegalResponse(params.submissionId);
         const response = data.legal_response || {};
         const property = data.property || {};
 
@@ -299,7 +293,7 @@
         reviewedAt.textContent = response.reviewed_at ? `Thời gian phản hồi: ${formatDate(response.reviewed_at)}` : '';
         submittedTerms.textContent = response.special_terms_requested || 'Chưa có nội dung điều khoản.';
       } catch (error) {
-        console.error('Load broker response failed:', error);
+        console.error('Load sale response failed:', error);
         reviewComment.textContent = 'Không thể tải phản hồi từ pháp lý.';
       }
     }
@@ -315,13 +309,13 @@
 
       if (backBtn) {
         backBtn.addEventListener('click', () => {
-          window.location.href = 'brokerContracts.html';
+          window.location.href = 'saleContracts.html';
         });
       }
 
       if (resubmitBtn) {
         resubmitBtn.addEventListener('click', () => {
-          const targetUrl = buildBrokerContractUrl(params);
+          const targetUrl = buildSaleContractUrl(params);
           window.location.href = targetUrl;
         });
       }
