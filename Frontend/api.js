@@ -233,6 +233,11 @@ async function updateLegalApproval(submissionContractId, payload) {
     });
 }
 
+// Admin API helpers
+async function getAdminDashboard() {
+    return apiCall('/admin/dashboard');
+}
+
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {
     if (!getToken()) {

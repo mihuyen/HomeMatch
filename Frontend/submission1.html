@@ -255,7 +255,14 @@
 </div>
 <div class="flex flex-col gap-xs md:col-span-2">
 <label class="font-label-md text-label-md text-on-surface">Ảnh bất động sản <span class="text-error">*</span></label>
-<textarea class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors resize-none" name="imagesUploaded" placeholder="Dán URL ảnh, mỗi dòng một URL hoặc phân tách bằng dấu phẩy" rows="4" required=""></textarea>
+<div id="dropZone" class="border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer bg-surface/50 hover:bg-surface transition-all">
+    <span class="material-symbols-outlined text-[48px] text-on-surface-variant/70">cloud_upload</span>
+    <p class="font-label-md text-label-md text-on-surface font-semibold">Kéo thả ảnh vào đây hoặc click để chọn từ máy tính</p>
+    <p class="text-xs text-on-surface-variant">Chấp nhận JPG, JPEG, PNG (Tối đa 10 ảnh, dưới 5MB/ảnh)</p>
+    <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
+</div>
+<div id="previewContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 mt-4 hidden"></div>
+<textarea class="hidden" name="imagesUploaded" id="imagesUploadedHidden" required=""></textarea>
 </div>
 </div>
 </div>
@@ -317,6 +324,97 @@
     const consignmentForm = document.getElementById('consignmentForm');
     const nextStep1Button = document.getElementById('nextStep1Button');
 
+    // Drag & Drop File Upload Logic
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const imagesUploadedHidden = document.getElementById('imagesUploadedHidden');
+    
+    let uploadedImagesBase64 = []; // Stores base64 strings
+
+    // Trigger file selection on click
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop event listeners
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-primary', 'bg-surface');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary', 'bg-surface');
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        handleFiles(files);
+    });
+
+    function handleFiles(files) {
+        if (!files.length) return;
+        
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chỉ chọn tệp hình ảnh!');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`Tệp ${file.name} vượt quá dung lượng tối đa 5MB!`);
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64String = event.target.result;
+                if (!uploadedImagesBase64.includes(base64String)) {
+                    uploadedImagesBase64.push(base64String);
+                    renderPreviews();
+                    updateHiddenInput();
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function renderPreviews() {
+        if (uploadedImagesBase64.length === 0) {
+            previewContainer.innerHTML = '';
+            previewContainer.classList.add('hidden');
+            return;
+        }
+        
+        previewContainer.classList.remove('hidden');
+        previewContainer.innerHTML = uploadedImagesBase64.map((base64, index) => `
+            <div class="relative aspect-square rounded-xl border border-outline-variant overflow-hidden group shadow-sm bg-white">
+                <img src="${base64}" class="w-full h-full object-cover">
+                <button type="button" onclick="removeImage(${index})" class="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black text-white rounded-full p-1 leading-none shadow transition-all opacity-90 sm:opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    window.removeImage = function(index) {
+        uploadedImagesBase64.splice(index, 1);
+        renderPreviews();
+        updateHiddenInput();
+    };
+
+    function updateHiddenInput() {
+        imagesUploadedHidden.value = uploadedImagesBase64.join('\n');
+    }
+
     async function loadOwnerFromAuth() {
         try {
             const user = await requireLogin();
@@ -348,7 +446,7 @@
             const address = consignmentForm.querySelector('[name="address"]').value.trim();
             const proposedPrice = consignmentForm.querySelector('[name="proposedPrice"]').value.trim();
             const imagesUploaded = consignmentForm.querySelector('[name="imagesUploaded"]').value
-                .split(/\n|,/)
+                .split('\n')
                 .map(item => item.trim())
                 .filter(Boolean);
 
