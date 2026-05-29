@@ -2,6 +2,24 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { requireAuth, requireRole } = require('../middleware/auth');
+
+async function pickBrokerId() {
+    const [rows] = await db.query(
+        `SELECT u.user_id,
+                COUNT(sa.assignment_id) AS active_count
+         FROM users u
+         LEFT JOIN staff_assignments sa
+           ON sa.sale_broker_id = u.user_id
+          AND sa.status IN ('đang xử lý', 'đang chăm sóc', 'dang xu ly', 'dang cham soc')
+         WHERE u.role = 'broker'
+         GROUP BY u.user_id
+         ORDER BY active_count ASC, u.user_id ASC
+         LIMIT 1`
+    );
+
+    return rows.length ? rows[0].user_id : null;
+}
 
 // API: Lấy danh sách bất động sản đang hiển thị
 router.get('/', async (req, res) => {
@@ -60,6 +78,52 @@ router.get('/', async (req, res) => {
     } catch (err) {
         console.error('Lỗi lấy danh sách bài đăng:', err);
         res.status(500).json({ message: 'Lỗi server' });
+    }
+});
+
+// POST /api/listings/:listingId/request-view
+// Bước 8: Khách thuê gửi yêu cầu xem nhà, tạo phân công môi giới
+router.post('/:listingId/request-view', requireAuth, requireRole('tenant'), async (req, res) => {
+    try {
+        const tenantId = req.user.user_id;
+        const listingId = Number(req.params.listingId);
+        const { note } = req.body || {};
+
+        if (!Number.isInteger(listingId)) {
+            return res.status(400).json({ message: 'listingId không hợp lệ' });
+        }
+
+        const [listingRows] = await db.query(
+            'SELECT listing_id, title FROM property_listings WHERE listing_id = ? LIMIT 1',
+            [listingId]
+        );
+
+        if (listingRows.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy bài đăng' });
+        }
+
+        const brokerId = await pickBrokerId();
+        if (!brokerId) {
+            return res.status(409).json({ message: 'Hiện chưa có môi giới phù hợp để phân công' });
+        }
+
+    const listingTitle = listingRows[0].title || `Listing #${listingId}`;
+    const assignmentNote = note || `Yêu cầu xem nhà: ${listingTitle}`;
+
+        const [result] = await db.query(
+            `INSERT INTO staff_assignments (tenant_id, sale_broker_id, status, notes)
+             VALUES (?, ?, ?, ?)`,
+            [tenantId, brokerId, 'đang xử lý', assignmentNote]
+        );
+
+        res.status(201).json({
+            message: 'Đã gửi yêu cầu xem nhà và phân công môi giới',
+            assignment_id: result.insertId,
+            broker_id: brokerId
+        });
+    } catch (err) {
+        console.error('request view error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 

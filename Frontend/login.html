@@ -246,6 +246,8 @@
             window.location.href = 'saleAssign.html';
         } else if (currentUser && currentUser.role === 'legal') {
             window.location.href = 'legalReviewList.html';
+        } else if (currentUser && currentUser.role === 'broker') {
+            window.location.href = 'brokerHome.html';
         } else if (currentUser && currentUser.role === 'owner') {
             window.location.href = 'ownerSignmentTracking.html';
         } else if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager')) {
@@ -264,6 +266,8 @@
             window.location.href = 'legalReviewList.html';
             return;
         }
+        if (user && user.role === 'broker') {
+            window.location.href = 'brokerHome.html';
         if (user && user.role === 'owner') {
             window.location.href = 'ownerSignmentTracking.html';
             return;

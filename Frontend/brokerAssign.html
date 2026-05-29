@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1E293B", // Professional Navy
+                        "on-primary": "#FFFFFF",
+                        secondary: "#7C3AED", // Lavender/Purple accent
+                        "secondary-container": "#F5F3FF",
+                        "on-secondary-container": "#5B21B6",
+                        surface: "#FFFFFF",
+                        "surface-container": "#F8FAFC",
+                        outline: "#E2E8F0",
+                        "outline-variant": "#CBD5E1",
+                        error: "#DC2626",
+                        success: "#059669",
+                        warning: "#D97706"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Public Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; background-color: #F8FAFC; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.5); }
+    </style>
+<style id="custom-cursor" type="text/css">body button, body [type='button'], body input[type='reset'], body input[type='submit'], body [role="button"], ::-webkit-search-cancel-button, ::-webkit-search-decoration, ::-webkit-scrollbar-button, ::-webkit-file-upload-button, [role^=button], .cc_pointer, [type="search"]::-webkit-search-cancel-button, a, select, [type="search"]::-webkit-search-decoration, .paper-button, .ytp-progress-bar-container, input[type=submit], :link, :visited, a > *, img,  ::-webkit-scrollbar-button, .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer, ::-webkit-file-upload-button, .ytp-volume-panel, #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon, body .custom-cursor-on-hover {cursor: url("data:image/png;base64,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") 11 0, pointer !important;} html,body,body select,body .custom-cursor-default-hover {cursor: url("data:image/png;base64,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") 1 0, auto !important;}</style></head>
+<body class="text-slate-900 min-h-screen">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 flex justify-between items-center w-full px-6 md:px-12 bg-surface/95 backdrop-blur-sm border-b border-outline-variant h-16">
+<div class="flex items-center gap-8">
+<span class="font-headline text-2xl font-extrabold text-primary tracking-tight">HomeMatch</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 hover:text-primary transition-colors font-medium" href="brokerHome.html">Trang chủ</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-bold" href="brokerAssign.html">Phân công</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline">
+<img alt="Broker Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpSol8lS4ElTE88iPxtNVOw4TzEPb4jeZG0-1kb29ueFDSizyHc8hWakJkA0Sq23ncaiLqGKTj3Le-Y6nD7z2Zh4I-lY_-z3bM59ZozxJGwGfMDHBT9fbISwU0lHT1Aod5I3IoEol9ISMPi7rgPQHIgdeEXGa1X9pedupokei3UIGLIvHb8aQHGCVcu1nlXSusRpCpuQz4BO0vPC1Gmpl9roh0YPlop2t22lRFgYwlIW6o313qQPj0pTiGZVRgJ4hXHV1S9Eodhx4L">
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<!-- Header Section -->
+<div class="mb-8">
+<h1 class="text-3xl font-extrabold text-primary mb-2 tracking-tight">Danh sách Khách hàng được Phân công</h1>
+<p class="text-slate-500 text-lg">Theo dõi và quản lý việc hỗ trợ khách hàng tìm kiếm bất động sản.</p>
+</div>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-surface p-6 rounded-xl border border-outline shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 font-medium">Tổng phân công</span>
+<span class="material-symbols-outlined text-primary">assignment_ind</span>
+</div>
+<div class="text-2xl font-bold text-primary" id="totalAssignments">0</div>
+</div>
+<div class="bg-surface p-6 rounded-xl border border-outline shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-warning font-medium">Chờ xử lý</span>
+<span class="material-symbols-outlined text-warning">hourglass_empty</span>
+</div>
+<div class="text-2xl font-bold text-primary" id="pendingAssignments">0</div>
+</div>
+<div class="bg-surface p-6 rounded-xl border border-outline shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-secondary font-medium">Đang thực hiện</span>
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+</div>
+<div class="text-2xl font-bold text-primary" id="activeAssignments">0</div>
+</div>
+<div class="bg-surface p-6 rounded-xl border border-outline shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-success font-medium">Hoàn tất</span>
+<span class="material-symbols-outlined text-success">check_circle</span>
+</div>
+<div class="text-2xl font-bold text-primary" id="doneAssignments">0</div>
+</div>
+</div>
+<!-- Main Content Card -->
+<div class="bg-surface rounded-xl border border-outline shadow-sm overflow-hidden">
+<!-- Table Header / Tabs -->
+<div class="border-b border-outline px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg w-fit">
+<button class="px-4 py-1.5 rounded-md text-sm font-semibold bg-white shadow-sm text-primary">Tất cả</button>
+<button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Chờ xử lý</button>
+<button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Đang thực hiện</button>
+<button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Hoàn tất</button>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 border border-outline rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none text-sm w-full md:w-64" placeholder="Tìm kiếm khách hàng..." type="text" id="assignmentSearch">
+</div>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 border-b border-outline text-slate-500 font-semibold text-xs uppercase tracking-wider">
+<th class="px-6 py-4">Mã YÊU CẦU</th>
+<th class="px-6 py-4">Khách hàng</th>
+<th class="px-6 py-4">Bất động sản quan tâm</th>
+<th class="px-6 py-4">Ngày phân công</th>
+<th class="px-6 py-4">Ghi chú</th>
+<th class="px-6 py-4">Trạng thái</th>
+<th class="px-6 py-4 text-right">Thao tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline" id="assignmentTable">
+<tr>
+<td class="px-6 py-4 text-slate-500" colspan="7">Đang tải dữ liệu...</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="border-t border-outline px-6 py-4 flex items-center justify-between bg-slate-50">
+<p class="text-sm text-slate-500">
+                    Hiển thị <span class="font-bold text-primary">1</span> đến <span class="font-bold text-primary">4</span> trên <span class="font-bold text-primary">18</span> phân công
+                </p>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline rounded-lg bg-white text-slate-400 hover:bg-slate-100 transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 bg-primary text-white font-bold rounded-lg shadow-sm">1</button>
+<button class="w-10 h-10 border border-outline bg-white text-slate-600 font-medium rounded-lg hover:bg-slate-100 transition-colors">2</button>
+<button class="p-2 border border-outline rounded-lg bg-white text-slate-600 hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+ </main>
+
+<script src="api.js"></script>
+<script>
+        const tableBody = document.getElementById('assignmentTable');
+        const searchInput = document.getElementById('assignmentSearch');
+        const totalAssignments = document.getElementById('totalAssignments');
+        const pendingAssignments = document.getElementById('pendingAssignments');
+        const activeAssignments = document.getElementById('activeAssignments');
+        const doneAssignments = document.getElementById('doneAssignments');
+
+        const statusMap = {
+            pending: ['đang xử lý', 'cho xu ly', 'cho xu ly', 'pending'],
+            active: ['đang chăm sóc', 'đang thực hiện', 'dang cham soc', 'dang thuc hien', 'active'],
+            done: ['hoàn tất', 'hoàn thành', 'done', 'completed']
+        };
+
+        const tabs = document.querySelectorAll('.bg-slate-100 button');
+        let currentFilter = 'all';
+        let allItems = [];
+
+        function formatDate(value) {
+            if (!value) return '-';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        function normalizeStatus(status) {
+            return String(status || '').toLowerCase().trim();
+        }
+
+        function badgeForStatus(status) {
+            const normalized = normalizeStatus(status);
+            if (statusMap.done.some(val => normalized.includes(val))) {
+                return { label: 'Hoàn tất', cls: 'bg-emerald-100 text-emerald-700' };
+            }
+            if (statusMap.active.some(val => normalized.includes(val))) {
+                return { label: 'Đang thực hiện', cls: 'bg-blue-100 text-blue-700' };
+            }
+            return { label: 'Chờ xử lý', cls: 'bg-amber-100 text-amber-700' };
+        }
+
+        function buildAvatar(name) {
+            const initials = String(name || '')
+                .split(' ')
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0]?.toUpperCase())
+                .join('');
+            return initials || 'KH';
+        }
+
+        function renderTable(items) {
+            if (!items.length) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 text-slate-500" colspan="7">Chưa có phân công phù hợp.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = items.map(item => {
+                const badge = badgeForStatus(item.status);
+                const tenantName = item.tenant_name || `Khách hàng #${item.tenant_id}`;
+                const assignmentCode = `ASN-${String(item.assignment_id).padStart(6, '0')}`;
+                const detailLink = `brokerAssignDetail.html?assignmentId=${item.assignment_id}`;
+                const appointmentLink = `brokerAppointmentDetail.html?assignmentId=${item.assignment_id}`;
+                const interest = item.notes || 'Đang cập nhật';
+
+                return `
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-primary">${assignmentCode}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-xs text-indigo-700">${buildAvatar(tenantName)}</div>
+                                <span class="font-medium">${tenantName}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-secondary font-medium">${interest}</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500">${formatDate(item.assigned_at)}</td>
+                        <td class="px-6 py-4 text-slate-500 text-sm max-w-[150px] truncate">${interest}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badge.cls}">
+                                ${badge.label}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <a class="px-3 py-1.5 border border-outline text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all" href="${detailLink}">Chi tiết</a>
+                                <a class="px-3 py-1.5 bg-secondary text-white text-xs font-bold rounded-lg hover:bg-on-secondary-container transition-all" href="${appointmentLink}">Tạo lịch hẹn</a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function applyFilters() {
+            const keyword = (searchInput.value || '').toLowerCase().trim();
+            const filtered = allItems.filter(item => {
+                const status = normalizeStatus(item.status);
+                const matchesStatus = currentFilter === 'all'
+                    || (currentFilter === 'pending' && statusMap.pending.some(val => status.includes(val)))
+                    || (currentFilter === 'active' && statusMap.active.some(val => status.includes(val)))
+                    || (currentFilter === 'done' && statusMap.done.some(val => status.includes(val)));
+                const matchesSearch = !keyword
+                    || String(item.tenant_name || '').toLowerCase().includes(keyword)
+                    || String(item.notes || '').toLowerCase().includes(keyword)
+                    || String(item.assignment_id || '').includes(keyword);
+                return matchesStatus && matchesSearch;
+            });
+
+            renderTable(filtered);
+        }
+
+        function updateStats(items) {
+            totalAssignments.textContent = items.length;
+            pendingAssignments.textContent = items.filter(item => statusMap.pending.some(val => normalizeStatus(item.status).includes(val))).length;
+            activeAssignments.textContent = items.filter(item => statusMap.active.some(val => normalizeStatus(item.status).includes(val))).length;
+            doneAssignments.textContent = items.filter(item => statusMap.done.some(val => normalizeStatus(item.status).includes(val))).length;
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('bg-white', 'shadow-sm', 'font-semibold', 'text-primary');
+                    t.classList.add('text-slate-600', 'font-medium');
+                });
+                tab.classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-primary');
+                tab.classList.remove('text-slate-600', 'font-medium');
+
+                const label = tab.textContent.trim().toLowerCase();
+                if (label.includes('chờ')) currentFilter = 'pending';
+                else if (label.includes('đang')) currentFilter = 'active';
+                else if (label.includes('hoàn')) currentFilter = 'done';
+                else currentFilter = 'all';
+
+                applyFilters();
+            });
+        });
+
+        searchInput.addEventListener('input', applyFilters);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await requireLogin();
+            if (!user) return;
+
+            try {
+                const data = await listBrokerAssignments();
+                allItems = data.items || [];
+                updateStats(allItems);
+                applyFilters();
+            } catch (err) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 text-error" colspan="7">${err.message || 'Không tải được dữ liệu.'}</td>
+                    </tr>
+                `;
+            }
+        });
+    </script>
+
+
+</body></html>

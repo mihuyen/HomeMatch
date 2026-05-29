@@ -1,5 +1,5 @@
 // File chứa các hàm gọi API
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://localhost:5050/api';
 
 // Lưu token vào localStorage
 function saveAuth(token, user) {
@@ -225,6 +225,44 @@ async function updateSaleDepositTransaction(submissionId, payload) {
 async function getSaleLegalResponse(submissionId) {
     return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }
+
+// Broker API helpers
+async function listBrokerAssignments() {
+    return apiCall('/broker/assignments');
+}
+
+async function getBrokerAssignmentDetail(assignmentId) {
+    return apiCall(`/broker/assignments/${assignmentId}`);
+}
+
+async function listBrokerAppointments() {
+    return apiCall('/broker/appointments');
+}
+
+async function createBrokerAppointment(payload) {
+    return apiCall('/appointments/viewings', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function createBrokerContract(payload) {
+    return apiCall('/broker/contracts', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function getBrokerAppointmentsForAssignment(assignmentId) {
+    return apiCall(`/broker/assignments/${assignmentId}/appointments`);
+}
+
+async function getBrokerDashboardStats() {
+    return apiCall('/broker/dashboard-stats');
+}
+
+
+
 // Legal review API helpers
 async function listLegalApprovals(params = {}) {
     const query = new URLSearchParams();
