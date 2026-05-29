@@ -663,6 +663,67 @@ router.post('/contracts/:submissionId/scan', requireAuth, requireRole('sale', 'a
     }
 });
 
+// PATCH /api/sale/contracts/:submissionId/deposit
+// Xac nhan thanh toan coc va cap nhat giao dich
+router.patch('/contracts/:submissionId/deposit', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
+    try {
+        const saleId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+        const { status, paymentMethod } = req.body;
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId khong hop le' });
+        }
+
+        const contract = await getLatestSubmissionContract(submissionId, saleId);
+        if (!contract) {
+            return res.status(404).json({ message: 'Khong tim thay hop dong cho ho so nay' });
+        }
+
+        const [rows] = await db.query(
+            `SELECT transaction_id
+             FROM deposit_transactions
+             WHERE submission_contract_id = ?
+             ORDER BY transaction_id DESC
+             LIMIT 1`,
+            [contract.submission_contract_id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Khong tim thay giao dich coc' });
+        }
+
+        const transactionId = rows[0].transaction_id;
+        const nextStatus = status ? String(status).trim() : 'Completed';
+        const nextPaymentMethod = paymentMethod ? String(paymentMethod).trim() : 'Chuyen khoan / VietQR';
+        const shouldStamp = ['completed', 'verified'].includes(nextStatus.toLowerCase());
+
+        await db.query(
+            `UPDATE deposit_transactions
+             SET status = ?,
+                 payment_method = ?,
+                 verified_at = CASE WHEN ? THEN NOW() ELSE verified_at END
+             WHERE transaction_id = ?`,
+            [nextStatus, nextPaymentMethod, shouldStamp, transactionId]
+        );
+
+        const [updatedRows] = await db.query(
+            `SELECT transaction_id, status, payment_method, verified_at
+             FROM deposit_transactions
+             WHERE transaction_id = ?`,
+            [transactionId]
+        );
+
+        res.json({
+            message: 'Da cap nhat giao dich coc',
+            transaction: updatedRows[0] || null
+        });
+    } catch (err) {
+        console.error('sale update deposit error:', err);
+        res.status(500).json({ message: 'Loi server: ' + err.message });
+    }
+});
+
 // POST /api/sale/appointments
 // Tạo lịch khảo sát cho 1 hồ sơ đã được phân công
 router.post('/appointments', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {

@@ -374,7 +374,11 @@
 
       if (submitBtn) {
         submitBtn.addEventListener('click', () => {
-          alert('Hồ sơ đang được xử lý chuyển sang bước thanh toán.');
+          if (submissionId) {
+            window.location.href = `depositTransaction.html?submissionId=${encodeURIComponent(submissionId)}`;
+          } else {
+            window.location.href = 'depositTransaction.html';
+          }
         });
       }
 
