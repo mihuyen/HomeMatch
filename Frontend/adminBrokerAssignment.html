@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>HomeMatch - Quản lý Phân công Môi giới</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#e3e1e9",
+                        "surface": "#faf8ff",
+                        "outline-variant": "#c5c5d3",
+                        "surface-dim": "#dad9e1",
+                        "surface-container": "#eeedf4",
+                        "surface-bright": "#faf8ff",
+                        "surface-tint": "#4059aa",
+                        "on-secondary-container": "#54647a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757682",
+                        "on-surface": "#1a1b21",
+                        "on-primary-container": "#90a8ff",
+                        "on-primary-fixed-variant": "#264191",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3036",
+                        "primary-container": "#1e3a8a",
+                        "primary": "#00236f",
+                        "on-surface-variant": "#444651",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f1f0f7",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container-highest": "#e3e1e9",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-background": "#1a1b21",
+                        "background": "#faf8ff",
+                        "on-primary-fixed": "#00164e",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "surface-container-high": "#e9e7ef",
+                        "surface-container-low": "#f4f3fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#1a1b21",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f6f8fc;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 35, 111, 0.05);
+        }
+
+        .btn-hover-effect {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-hover-effect:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 35, 111, 0.15);
+        }
+
+        .modal-active {
+            transition: opacity 0.3s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+    <!-- Admin Header/Sidebar -->
+    <div id="admin-sidebar"></div>
+    <script src="adminSidebar.js"></script>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-8 flex flex-col min-w-0">
+
+        <!-- Page Title & Counter Section -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-black text-primary mb-2 tracking-tight">Quản lý Phân công Môi giới</h1>
+                <div class="flex items-center gap-2 text-sm text-secondary font-medium">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse inline-block"></span>
+                    <span>Hiện có <strong id="pending-count" class="text-red-600 font-bold">0</strong> yêu cầu hệ thống đã phân công</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar Card -->
+        <div
+            class="bg-white border border-slate-100 rounded-2xl p-5 custom-shadow mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div class="grid grid-cols-1 gap-4 flex-1">
+                <!-- Status Filter -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-extrabold text-secondary uppercase tracking-widest">Trạng
+                        thái</label>
+                    <select id="filter-status"
+                        class="w-full rounded-xl border-slate-200 text-sm font-medium text-on-surface focus:border-primary focus:ring-primary py-2.5 px-3">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending">Hệ thống đã phân công</option>
+                        <option value="reassigned">Đã phân công lại</option>
+                        <option value="completed">Đã hoàn thành</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Clear Filter Link -->
+            <button id="btn-clear-filters"
+                class="self-end lg:self-center font-semibold text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1.5 py-2 px-4 hover:bg-slate-50 rounded-xl">
+                <span class="material-symbols-outlined text-lg">filter_alt_off</span>
+                Xóa bộ lọc
+            </button>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="bg-white border border-slate-100 rounded-2xl custom-shadow overflow-hidden flex flex-col">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[950px] border-collapse">
+                    <thead>
+                        <tr class="bg-[#f8fafc]/80 border-b border-slate-100">
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[120px]">Mã
+                                phân công</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider">Khách hàng
+                            </th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[140px]">Ngày
+                                phân công</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[200px]">Hệ
+                                thống gợi ý</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[180px]">Môi
+                                giới hiện tại</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[180px]">
+                                Trạng thái</th>
+                            <th
+                                class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider text-center w-[160px]">
+                                Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignments-tbody" class="divide-y divide-slate-50">
+                        <!-- Dynamic rows will be rendered here -->
+                        <tr>
+                            <td colspan="7" class="p-10 text-center text-secondary font-medium">
+                                <span class="animate-spin inline-block mr-2 text-primary">⏳</span> Đang đồng bộ hóa dữ
+                                liệu từ hệ thống...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Pagination Footer -->
+            <div
+                class="p-5 border-t border-slate-100 bg-[#f8fafc]/50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <span id="pagination-summary" class="text-xs text-secondary font-medium">
+                    Hiển thị 0-0 trên 0 yêu cầu
+                </span>
+
+                <div id="pagination-buttons" class="flex items-center gap-1.5">
+                    <!-- Page control buttons will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Beautiful Reassign Modal Popup -->
+    <div id="reassign-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Modal Background Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" aria-hidden="true"
+                onclick="closeReassignModal()"></div>
+
+            <!-- Trick the browser into centering the modal contents -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Content Card -->
+            <div
+                class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-slate-100">
+                <div class="p-6">
+                    <!-- Modal Header -->
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-primary" id="modal-title">Thay đổi Phân công Môi giới</h3>
+                            <p class="text-xs text-secondary mt-1">Chọn môi giới thay thế để hỗ trợ khách thuê này</p>
+                        </div>
+                        <button onclick="closeReassignModal()"
+                            class="w-8 h-8 rounded-full hover:bg-slate-100 transition-colors flex items-center justify-center text-secondary hover:text-on-surface">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                    </div>
+
+                    <!-- Assignment Detail Summary -->
+                    <div class="bg-[#f8fafc] border border-slate-100 rounded-2xl p-4 mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="modal-req-code"
+                                class="text-xs font-extrabold text-primary bg-primary/10 py-1 px-2.5 rounded-lg">#ASN-000000</span>
+                            <span id="modal-req-status"
+                                class="text-[10px] font-extrabold tracking-wider uppercase bg-[#dbe1ff] text-[#00144b] py-1 px-2.5 rounded-lg">Đang
+                                xử lý</span>
+                        </div>
+                        <h4 id="modal-req-title" class="font-bold text-on-surface text-sm">Đang tải tên...</h4>
+                        <p id="modal-req-address" class="text-xs text-secondary mt-1">Đang tải nhu cầu...</p>
+                    </div>
+
+                    <!-- System Suggestion Highlight -->
+                    <div id="system-suggestion-box"
+                        class="bg-green-50 border border-green-200/50 rounded-2xl p-4 mb-6 flex items-start gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 shrink-0">
+                            <span class="material-symbols-outlined text-[18px]">recommend</span>
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-[10px] font-extrabold text-green-700 uppercase tracking-widest">Hệ thống
+                                đề xuất</span>
+                            <h5 id="suggested-broker-name" class="font-bold text-green-800 text-sm mt-0.5">Môi giới viên
+                                gợi ý</h5>
+                            <p class="text-xs text-green-700/80 mt-0.5">Lý do: Hiện tại đang phụ trách ít phân công
+                                khách hàng nhất hệ thống.</p>
+                            <button id="btn-apply-suggestion"
+                                class="mt-2.5 text-xs font-bold text-green-800 hover:text-green-950 underline transition-colors">
+                                Áp dụng gợi ý ngay
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Staff Options List Container -->
+                    <h5 class="text-xs font-extrabold text-secondary uppercase tracking-widest mb-3">Chọn môi giới phụ
+                        trách</h5>
+                    <div id="staff-list" class="max-h-[220px] overflow-y-auto space-y-2.5 pr-1">
+                        <!-- Dynamic list of brokers -->
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-6 bg-[#f8fafc] border-t border-slate-100 flex justify-end gap-3">
+                    <button onclick="closeReassignModal()"
+                        class="px-5 py-2.5 text-sm font-semibold text-secondary hover:text-primary transition-colors hover:bg-slate-100 rounded-xl">
+                        Hủy bỏ
+                    </button>
+                    <button id="btn-confirm-reassign"
+                        class="px-6 py-2.5 text-sm font-bold text-white bg-primary hover:bg-[#001c57] transition-colors rounded-xl shadow-md flex items-center gap-1.5">
+                        Xác nhận phân công
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let currentUser = null;
+        let assignments = [];
+        let totalCount = 0;
+        let pendingCount = 0;
+        let limit = 10;
+        let offset = 0;
+        let selectedAssignment = null;
+        let suggestedBroker = null;
+
+        // Verify and Protect Page
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                currentUser = await requireLogin();
+                if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'manager') {
+                    alert('Bạn không có quyền truy cập vào trang quản trị.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Initialize events
+                document.getElementById('filter-status').addEventListener('change', () => { offset = 0; loadAssignmentsData(); });
+                document.getElementById('btn-clear-filters').addEventListener('click', clearFilters);
+                document.getElementById('btn-confirm-reassign').addEventListener('click', performReassignment);
+                document.getElementById('btn-apply-suggestion').addEventListener('click', applySystemSuggestion);
+
+                // Explicitly set dropdown to pending to prevent browser caching input value
+                document.getElementById('filter-status').value = 'pending';
+
+                // Initial Load
+                loadAssignmentsData();
+            } catch (err) {
+                console.error('requireLogin failed:', err);
+            }
+        });
+
+        // Fetch & Render list data
+        async function loadAssignmentsData() {
+            const status = document.getElementById('filter-status').value;
+
+            const tbody = document.getElementById('assignments-tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="p-10 text-center text-secondary font-medium">
+                        <span class="animate-spin inline-block mr-2 text-primary">⏳</span> Đang đồng bộ hóa dữ liệu từ hệ thống...
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const response = await getAdminBrokerAssignments({
+                    status,
+                    limit,
+                    offset
+                });
+
+                assignments = response.items || [];
+                totalCount = response.total || 0;
+                pendingCount = response.totalPending || 0;
+                suggestedBroker = response.suggestedBroker || null;
+
+                // Update counter
+                document.getElementById('pending-count').textContent = pendingCount;
+
+                // Populate suggestion in modal
+                if (suggestedBroker) {
+                    document.getElementById('suggested-broker-name').textContent = suggestedBroker.full_name;
+                    document.getElementById('system-suggestion-box').style.display = 'flex';
+                } else {
+                    document.getElementById('system-suggestion-box').style.display = 'none';
+                }
+
+                // Render Table
+                tbody.innerHTML = '';
+                if (assignments.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="p-10 text-center text-secondary font-medium">
+                                📂 Không tìm thấy phân công nào khớp với bộ lọc.
+                            </td>
+                        </tr>
+                    `;
+                    updatePagination();
+                    return;
+                }
+
+                assignments.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50/50 transition-colors font-medium text-slate-700';
+
+                    const dateStr = row.assigned_at ? new Date(row.assigned_at).toLocaleDateString('vi-VN') : '-';
+                    const suggestedName = suggestedBroker ? suggestedBroker.full_name : 'Hệ thống đang tính toán...';
+
+                    const displayStatus = row.assignment_status || 'HỆ THỐNG ĐÃ PHÂN CÔNG';
+                    let badgeClass = 'bg-blue-50 text-blue-700 border border-blue-200/50';
+
+                    if (displayStatus === 'ĐÃ HOÀN THÀNH') {
+                        badgeClass = 'bg-green-50 text-green-700 border border-green-200/50';
+                    } else if (displayStatus === 'ĐÃ PHÂN CÔNG LẠI') {
+                        badgeClass = 'bg-amber-50 text-amber-700 border border-amber-200/50';
+                    }
+
+                    tr.innerHTML = `
+                        <td class="p-5 font-bold text-primary font-mono text-sm">${row.request_code}</td>
+                        <td class="p-5">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-800 text-sm">${row.tenant_name}</span>
+                                <span class="text-xs text-secondary mt-0.5">${row.notes || 'Không có ghi chú'}</span>
+                            </div>
+                        </td>
+                        <td class="p-5 text-sm text-secondary font-semibold">${dateStr}</td>
+                        <td class="p-5 text-sm">
+                            <div class="flex items-center gap-2 font-semibold text-emerald-700">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shrink-0"></span>
+                                <span>${suggestedName}</span>
+                            </div>
+                        </td>
+                        <td class="p-5">
+                            <div class="flex items-center gap-2 font-semibold text-slate-800">
+                                <span class="material-symbols-outlined text-[18px] text-slate-400">person</span>
+                                <span>${row.broker_name || 'Chưa phân công'}</span>
+                            </div>
+                        </td>
+                        <td class="p-5">
+                            <span class="inline-flex items-center px-3 py-1 text-[11px] font-extrabold tracking-wide uppercase rounded-full ${badgeClass}">
+                                ${displayStatus}
+                            </span>
+                        </td>
+                        <td class="p-5 text-center">
+                            ${displayStatus === 'ĐÃ HOÀN THÀNH' ? `
+                                <span class="inline-flex items-center gap-1.5 text-emerald-700 font-bold text-xs bg-emerald-50 border border-emerald-100/50 rounded-xl px-3.5 py-2">
+                                    <span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+                                    Đã hoàn thành
+                                </span>
+                            ` : `
+                                <button onclick="openReassignModal(${row.assignment_id})" class="inline-flex items-center justify-center font-bold text-xs bg-slate-50 text-primary border border-slate-200 rounded-xl px-4 py-2 hover:bg-primary hover:text-white transition-all shadow-sm">
+                                    Sửa phân công
+                                </button>
+                            `}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                updatePagination();
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-10 text-center text-red-600 font-medium">
+                            ⚠️ Có lỗi xảy ra trong quá trình đồng bộ dữ liệu: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Pagination Handler
+        function updatePagination() {
+            const summary = document.getElementById('pagination-summary');
+            const buttonsContainer = document.getElementById('pagination-buttons');
+
+            const currentStart = totalCount > 0 ? offset + 1 : 0;
+            const currentEnd = Math.min(offset + limit, totalCount);
+
+            summary.textContent = `Hiển thị ${currentStart}-${currentEnd} trên ${totalCount} yêu cầu`;
+
+            buttonsContainer.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors';
+            prevBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_left</span>';
+            prevBtn.disabled = offset === 0;
+            prevBtn.addEventListener('click', () => {
+                offset = Math.max(0, offset - limit);
+                loadAssignmentsData();
+            });
+            buttonsContainer.appendChild(prevBtn);
+
+            // Page numbers
+            const totalPages = Math.ceil(totalCount / limit);
+            const currentPage = Math.floor(offset / limit) + 1;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                const isCurrent = i === currentPage;
+                btn.className = `w-9 h-9 rounded-xl font-bold text-xs flex items-center justify-center border transition-all ${isCurrent ? 'bg-primary border-primary text-white shadow-sm' : 'border-slate-200 text-secondary hover:bg-slate-50'}`;
+                btn.textContent = i;
+                btn.addEventListener('click', () => {
+                    offset = (i - 1) * limit;
+                    loadAssignmentsData();
+                });
+                buttonsContainer.appendChild(btn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors';
+            nextBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_right</span>';
+            nextBtn.disabled = offset + limit >= totalCount;
+            nextBtn.addEventListener('click', () => {
+                offset = offset + limit;
+                loadAssignmentsData();
+            });
+            buttonsContainer.appendChild(nextBtn);
+        }
+
+        // Clear filter utility
+        function clearFilters() {
+            document.getElementById('filter-status').value = 'pending';
+            offset = 0;
+            loadAssignmentsData();
+        }
+
+        // Open Modal reassignment popup
+        async function openReassignModal(assignmentId) {
+            selectedAssignment = assignments.find(a => a.assignment_id === assignmentId);
+            if (!selectedAssignment) return;
+
+            document.getElementById('modal-req-code').textContent = selectedAssignment.request_code;
+            document.getElementById('modal-req-title').textContent = selectedAssignment.tenant_name;
+            document.getElementById('modal-req-address').textContent = selectedAssignment.notes || 'Yêu cầu xem nhà';
+
+            const displayStatus = selectedAssignment.assignment_status || 'HỆ THỐNG ĐÃ PHÂN CÔNG';
+            const reqStatusEl = document.getElementById('modal-req-status');
+            reqStatusEl.textContent = displayStatus;
+            if (displayStatus === 'ĐÃ HOÀN THÀNH') {
+                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-[#dcfce7] text-[#14532d] py-1 px-2.5 rounded-lg';
+            } else if (displayStatus === 'ĐÃ PHÂN CÔNG LẠI') {
+                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-amber-100 text-amber-800 py-1 px-2.5 rounded-lg';
+            } else {
+                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-[#dbe1ff] text-[#00144b] py-1 px-2.5 rounded-lg';
+            }
+
+            chosenBrokerId = selectedAssignment.sale_broker_id;
+
+            // Load brokers options
+            const staffListContainer = document.getElementById('staff-list');
+            staffListContainer.innerHTML = '<p class="text-xs text-secondary py-3 text-center">⏳ Đang tải danh sách môi giới...</p>';
+
+            try {
+                const brokersResponse = await getAdminBrokers();
+                const brokers = brokersResponse.brokers || [];
+
+                if (brokers.length === 0) {
+                    staffListContainer.innerHTML = '<p class="text-xs text-secondary py-3 text-center">📂 Không tìm thấy môi giới nào trong hệ thống.</p>';
+                    return;
+                }
+
+                renderStaffList(brokers);
+            } catch (err) {
+                console.error(err);
+                staffListContainer.innerHTML = `<p class="text-xs text-red-600 py-3 text-center">⚠️ Không tải được danh sách: ${err.message}</p>`;
+            }
+
+            // Show Modal
+            document.getElementById('reassign-modal').classList.remove('hidden');
+        }
+
+        // Render staff options inside modal list
+        function renderStaffList(brokers) {
+            const staffListContainer = document.getElementById('staff-list');
+            staffListContainer.innerHTML = '';
+            
+            brokers.forEach(b => {
+                const activeAssignedCount = b.active_count;
+                const isSuggested = suggestedBroker && suggestedBroker.user_id === b.user_id;
+                
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `flex items-center justify-between p-3.5 border rounded-2xl hover:border-primary cursor-pointer transition-all ${isSuggested ? 'bg-emerald-50/30 border-emerald-200' : 'border-slate-100'}`;
+                
+                // On click select radio
+                rowDiv.addEventListener('click', () => {
+                    document.getElementById(`radio-broker-${b.user_id}`).checked = true;
+                });
+
+                rowDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="reassign-broker-option" id="radio-broker-${b.user_id}" value="${b.user_id}" ${selectedAssignment.sale_broker_id === b.user_id ? 'checked' : ''} class="w-4.5 h-4.5 text-primary border-slate-300 focus:ring-primary">
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-sm">${b.full_name}</span>
+                                ${isSuggested ? '<span class="text-[9px] font-extrabold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-md uppercase tracking-wider">Đề xuất</span>' : ''}
+                            </div>
+                            <span class="text-xs text-secondary mt-0.5">${b.email || ''} - ${b.phone || 'Chưa cập nhật SĐT'}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end shrink-0">
+                        <span class="text-xs font-extrabold text-slate-700 bg-slate-100 py-1 px-2.5 rounded-lg">
+                            Đang phụ trách: ${activeAssignedCount} phân công
+                        </span>
+                        <div class="w-20 bg-slate-100 rounded-full h-1 mt-1.5 overflow-hidden">
+                            <div class="bg-primary h-full" style="width: ${Math.min(activeAssignedCount * 5, 100)}%"></div>
+                        </div>
+                    </div>
+                `;
+                staffListContainer.appendChild(rowDiv);
+            });
+        }
+
+        // Apply automatic system recommendation
+        function applySystemSuggestion() {
+            if (suggestedBroker) {
+                const radio = document.getElementById(`radio-broker-${suggestedBroker.user_id}`);
+                if (radio) {
+                    radio.checked = true;
+                }
+            }
+        }
+
+        // Close reassignment modal
+        function closeReassignModal() {
+            document.getElementById('reassign-modal').classList.add('hidden');
+            selectedAssignment = null;
+        }
+
+        // Execute reassignment update to server
+        async function performReassignment() {
+            if (!selectedAssignment) return;
+            
+            const selectedRadio = document.querySelector('input[name="reassign-broker-option"]:checked');
+            if (!selectedRadio) {
+                alert('Vui lòng chọn một môi giới để phân công.');
+                return;
+            }
+
+            const chosenBrokerId = Number(selectedRadio.value);
+            const btn = document.getElementById('btn-confirm-reassign');
+            btn.disabled = true;
+            btn.textContent = 'Đang lưu...';
+
+            try {
+                await assignAdminBroker(selectedAssignment.assignment_id, chosenBrokerId);
+                closeReassignModal();
+                loadAssignmentsData();
+            } catch (err) {
+                console.error(err);
+                alert('Phân công thất bại: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Xác nhận phân công';
+            }
+        }
+    </script>
+</body>
+
+</html>

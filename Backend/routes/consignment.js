@@ -407,6 +407,7 @@ async function getOwnerTrackingDetail(ownerId, submissionId) {
             note: `Hồ sơ #${toRequestCode(base.submission_id)}`
         },
         ...appointmentRows.map(ap => ({
+            id: ap.appointment_id,
             type: 'appointment',
             title: `Lịch ${ap.appointment_type || 'hẹn'}`,
             status: ap.status,

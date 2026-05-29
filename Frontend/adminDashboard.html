@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>HomeMatch - Báo cáo Thống kê Quản trị</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for interactive premium animations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#e3e1e9",
+                        "surface": "#faf8ff",
+                        "outline-variant": "#c5c5d3",
+                        "surface-dim": "#dad9e1",
+                        "surface-container": "#eeedf4",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "surface-bright": "#faf8ff",
+                        "surface-tint": "#4059aa",
+                        "on-secondary-container": "#54647a",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcb",
+                        "outline": "#757682",
+                        "tertiary-container": "#6e2c00",
+                        "inverse-primary": "#b6c4ff",
+                        "primary-container": "#1e3a8a",
+                        "primary": "#00236f",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00164e",
+                        "inverse-surface": "#2f3036",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-surface": "#1a1b21",
+                        "secondary-fixed": "#d3e4fe",
+                        "background": "#faf8ff",
+                        "on-surface-variant": "#444651",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dce1ff",
+                        "secondary": "#505f76",
+                        "tertiary": "#4b1c00",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f4f3fa",
+                        "on-tertiary-container": "#f39461",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e3e1e9",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-container": "#90a8ff",
+                        "on-background": "#1a1b21",
+                        "on-primary-fixed-variant": "#264191",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-container-high": "#e9e7ef",
+                        "inverse-on-surface": "#f1f0f7",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "secondary-container": "#d0e1fb",
+                        "error": "#ba1a1a"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        gutter: "24px",
+                        xl: "32px",
+                        marginMobile: "16px",
+                        sm: "8px",
+                        md: "16px",
+                        base: "8px",
+                        marginDesktop: "32px",
+                        lg: "24px",
+                        xs: "4px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-xl": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "headline-xl-mobile": ["28px", { lineHeight: "34px", fontWeight: "700" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "headline-xl": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfbfe;
+        }
+        .metric-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -8px rgba(0, 35, 111, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+    <!-- Admin Sidebar Header -->
+    <div id="admin-sidebar"></div>
+    <script src="adminSidebar.js"></script>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
+        <!-- Overview Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Card 1: Tổng doanh thu -->
+            <div class="metric-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-2">Tổng Doanh Thu</p>
+                        <h2 id="metric-revenue" class="text-[28px] font-black text-primary leading-none">2.450.000.000 đ</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-[22px]">payments</span>
+                    </div>
+                </div>
+                <div id="sub-revenue-container" class="mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600">
+                    <span id="sub-revenue-icon" class="material-symbols-outlined text-[16px]">trending_up</span>
+                    <span id="sub-revenue-text">+12.5% so với tháng trước</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Người dùng mới -->
+            <div class="metric-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-2">Người Dùng Mới</p>
+                        <h2 id="metric-users" class="text-[28px] font-black text-on-surface leading-none">1,284</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-[#e8f0fe] flex items-center justify-center text-blue-700">
+                        <span class="material-symbols-outlined text-[22px]">group_add</span>
+                    </div>
+                </div>
+                <div id="sub-users-container" class="mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary">
+                    <span id="sub-users-icon" class="material-symbols-outlined text-[16px] text-green-600">trending_up</span>
+                    <span id="sub-users-text">+8% chủ nhà &amp; khách thuê</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Tỷ lệ ký kết -->
+            <div class="metric-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-2">Tỷ Lệ Ký Kết</p>
+                        <h2 id="metric-rate" class="text-[28px] font-black text-on-surface leading-none">68.2%</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-[#fef3c7] flex items-center justify-center text-[#92400e]">
+                        <span class="material-symbols-outlined text-[22px]">gavel</span>
+                    </div>
+                </div>
+                <div id="sub-rate-container" class="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#78350f]">
+                    <span id="sub-rate-dot" class="w-2 h-2 rounded-full bg-[#f59e0b] inline-block"></span>
+                    <span id="sub-rate-text">Ổn định</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Ký gửi hoạt động -->
+            <div class="metric-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-2">Ký Gửi Hoạt Động</p>
+                        <h2 id="metric-active" class="text-[28px] font-black text-on-surface leading-none">452</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-[#fce8e6] flex items-center justify-center text-error">
+                        <span class="material-symbols-outlined text-[22px]">real_estate_agent</span>
+                    </div>
+                </div>
+                <div id="sub-active-container" class="mt-4 flex items-center gap-1.5 text-xs font-bold text-error">
+                    <span id="sub-active-icon" class="material-symbols-outlined text-[16px]">trending_down</span>
+                    <span id="sub-active-text">-2.4% cần đẩy mạnh</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Middle Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Left Chart: Doanh thu hoa hồng -->
+            <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="font-headline-md text-on-surface">Thống kê doanh thu</h3>
+                        <p class="text-sm text-on-surface-variant">Doanh thu hoa hồng theo thời gian</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-surface-container px-3 py-1.5 rounded-lg text-xs font-semibold text-secondary">Tháng này</span>
+                        <button class="w-8 h-8 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors flex items-center justify-center text-secondary">
+                            <span class="material-symbols-outlined text-[18px]">download</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Canvas for Chart.js -->
+                <div class="flex-1 min-h-[300px] relative">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Chart: Tiến độ xử lý ký gửi -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="font-headline-md text-on-surface">Tiến độ xử lý ký gửi</h3>
+                    </div>
+                    <button class="w-8 h-8 rounded-full hover:bg-surface-container-low transition-colors flex items-center justify-center text-secondary">
+                        <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                </div>
+                <div class="flex flex-col items-center justify-center flex-1">
+                    <div class="w-48 h-48 relative mb-6">
+                        <canvas id="progressChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span id="progress-total" class="text-[28px] font-black text-primary leading-none">452</span>
+                            <span class="text-xs text-secondary mt-1">Tổng ký gửi</span>
+                        </div>
+                    </div>
+                    <div class="w-full space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                <span class="text-on-surface font-medium">Chờ khảo sát</span>
+                            </div>
+                            <span id="lbl-pending-survey" class="font-bold text-secondary">84</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span>
+                                <span class="text-on-surface font-medium">Đã khảo sát</span>
+                            </div>
+                            <span id="lbl-surveyed" class="font-bold text-secondary">112</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-600"></span>
+                                <span class="text-on-surface font-medium">Đã ký hợp đồng</span>
+                            </div>
+                            <span id="lbl-contracted" class="font-bold text-secondary">156</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></span>
+                                <span class="text-on-surface font-medium">Đang niêm yết</span>
+                            </div>
+                            <span id="lbl-listed" class="font-bold text-secondary">68</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+                                <span class="text-on-surface font-medium">Đã hủy/Hết hạn</span>
+                            </div>
+                            <span id="lbl-cancelled" class="font-bold text-secondary">32</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Broker Performance Table -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm mb-8 flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="font-headline-md text-on-surface">Báo cáo hiệu suất môi giới</h3>
+                    <p class="text-sm text-on-surface-variant">Theo dõi hoạt động và tỷ lệ chốt đơn của đội ngũ</p>
+                </div>
+                <a href="#" class="text-sm font-bold text-primary hover:underline flex items-center gap-1">
+                    Xem tất cả
+                    <span class="material-symbols-outlined text-[16px] mt-0.5">chevron_right</span>
+                </a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[800px] border-collapse">
+                    <thead>
+                        <tr class="bg-surface border-b border-outline-variant">
+                            <th class="p-4 font-label-md text-label-md text-secondary font-semibold">Môi giới</th>
+                            <th class="p-4 font-label-md text-label-md text-secondary font-semibold">Yêu cầu phân bổ</th>
+                            <th class="p-4 font-label-md text-label-md text-secondary font-semibold">Lịch khảo sát</th>
+                            <th class="p-4 font-label-md text-label-md text-secondary font-semibold">Hợp đồng thành công</th>
+                            <th class="p-4 font-label-md text-label-md text-secondary font-semibold">Hiệu suất</th>
+                        </tr>
+                    </thead>
+                    <tbody id="brokers-tbody" class="divide-y divide-outline-variant">
+                        <!-- Dynamic rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- User Growth Section -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="font-headline-md text-on-surface">Tăng trưởng người dùng</h3>
+                    <p class="text-sm text-on-surface-variant">Số lượng chủ nhà và khách thuê đăng ký mới</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-semibold">
+                    <div class="flex items-center gap-1.5 text-primary">
+                        <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+                        <span>Chủ nhà</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[#b6c4ff]">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#b6c4ff] inline-block"></span>
+                        <span>Khách thuê</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Canvas for Chart.js -->
+            <div class="h-[250px] relative">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script src="api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            let user;
+            try {
+                user = await requireLogin();
+                if (user && user.role !== 'admin' && user.role !== 'manager') {
+                    alert('Bạn không có quyền truy cập vào trang quản trị.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+            } catch (e) {
+                console.error(e);
+                return;
+            }
+
+            function formatCurrency(val) {
+                return new Intl.NumberFormat('vi-VN').format(val) + ' đ';
+            }
+
+            try {
+                // Fetch dynamic metrics from backend API
+                const data = await getAdminDashboard();
+                const metrics = data.metrics || {};
+                const progress = data.progress || {};
+                const brokers = data.brokers || [];
+                const revenueTrend = data.revenueTrend || [];
+                const userGrowth = data.userGrowth || [];
+
+                // Bind Summary Cards
+                document.getElementById('metric-revenue').textContent = formatCurrency(metrics.totalRevenue);
+                document.getElementById('metric-users').textContent = new Intl.NumberFormat('vi-VN').format(metrics.newUsers);
+                document.getElementById('metric-rate').textContent = metrics.signingRate + '%';
+                document.getElementById('metric-active').textContent = metrics.activeSubmissions;
+
+                // Bind dynamic subtexts
+                const subRevText = document.getElementById('sub-revenue-text');
+                const subRevIcon = document.getElementById('sub-revenue-icon');
+                const subRevContainer = document.getElementById('sub-revenue-container');
+                subRevText.textContent = metrics.revenueSubtext;
+                if (metrics.revenueSubtext === 'Chưa phát sinh doanh thu') {
+                    subRevContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                    subRevIcon.textContent = 'info';
+                    subRevIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
+                } else {
+                    subRevContainer.className = metrics.revenueTrendUp 
+                        ? 'mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600' 
+                        : 'mt-4 flex items-center gap-1.5 text-xs font-bold text-error';
+                    subRevIcon.textContent = metrics.revenueTrendUp ? 'trending_up' : 'trending_down';
+                    subRevIcon.className = 'material-symbols-outlined text-[16px]';
+                }
+
+                const subUsersText = document.getElementById('sub-users-text');
+                const subUsersIcon = document.getElementById('sub-users-icon');
+                const subUsersContainer = document.getElementById('sub-users-container');
+                subUsersText.textContent = metrics.usersSubtext;
+                if (metrics.usersSubtext.includes('Không có') || metrics.usersSubtext.includes('Tổng cộng')) {
+                    subUsersContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                    subUsersIcon.textContent = 'info';
+                    subUsersIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
+                } else {
+                    subUsersContainer.className = metrics.usersTrendUp 
+                        ? 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-green-600' 
+                        : 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-error';
+                    subUsersIcon.textContent = metrics.usersTrendUp ? 'trending_up' : 'trending_down';
+                    subUsersIcon.className = 'material-symbols-outlined text-[16px]';
+                }
+
+                const subRateText = document.getElementById('sub-rate-text');
+                const subRateDot = document.getElementById('sub-rate-dot');
+                const subRateContainer = document.getElementById('sub-rate-container');
+                subRateText.textContent = metrics.rateSubtext;
+                if (metrics.signingRate === 0) {
+                    subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                    subRateDot.className = 'w-2 h-2 rounded-full bg-secondary inline-block';
+                } else if (metrics.signingRate > 80) {
+                    subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-green-600';
+                    subRateDot.className = 'w-2 h-2 rounded-full bg-green-600 inline-block';
+                } else {
+                    subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#78350f]';
+                    subRateDot.className = 'w-2 h-2 rounded-full bg-[#f59e0b] inline-block';
+                }
+
+                const subActiveText = document.getElementById('sub-active-text');
+                const subActiveIcon = document.getElementById('sub-active-icon');
+                const subActiveContainer = document.getElementById('sub-active-container');
+                subActiveText.textContent = metrics.subsSubtext;
+                if (metrics.subsSubtext.includes('Chưa có') || metrics.subsSubtext.includes('Tổng cộng')) {
+                    subActiveContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                    subActiveIcon.textContent = 'info';
+                    subActiveIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
+                } else {
+                    subActiveContainer.className = metrics.subsTrendUp 
+                        ? 'mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600' 
+                        : 'mt-4 flex items-center gap-1.5 text-xs font-bold text-error';
+                    subActiveIcon.textContent = metrics.subsTrendUp ? 'trending_up' : 'trending_down';
+                    subActiveIcon.className = 'material-symbols-outlined text-[16px]';
+                }
+
+                // Bind Progress Labels
+                const totalProgress = progress.pendingSurvey + progress.surveyed + progress.contracted + progress.listed + progress.cancelled;
+                document.getElementById('progress-total').textContent = totalProgress;
+                document.getElementById('lbl-pending-survey').textContent = progress.pendingSurvey;
+                document.getElementById('lbl-surveyed').textContent = progress.surveyed;
+                document.getElementById('lbl-contracted').textContent = progress.contracted;
+                document.getElementById('lbl-listed').textContent = progress.listed;
+                document.getElementById('lbl-cancelled').textContent = progress.cancelled;
+
+                // Render Progress Doughnut Chart
+                const progressCtx = document.getElementById('progressChart').getContext('2d');
+                new Chart(progressCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Chờ khảo sát', 'Đã khảo sát', 'Đã ký hợp đồng', 'Đang niêm yết', 'Đã hủy/Hết hạn'],
+                        datasets: [{
+                            data: [progress.pendingSurvey, progress.surveyed, progress.contracted, progress.listed, progress.cancelled],
+                            backgroundColor: ['#2563eb', '#f59e0b', '#16a34a', '#4f46e5', '#ba1a1a'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        cutout: '75%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: true }
+                        }
+                    }
+                });
+
+                // Render Revenue Trend Line Chart
+                const revCtx = document.getElementById('revenueChart').getContext('2d');
+                new Chart(revCtx, {
+                    type: 'line',
+                    data: {
+                        labels: revenueTrend.map(t => t.month),
+                        datasets: [{
+                            label: 'Doanh thu hoa hồng',
+                            data: revenueTrend.map(t => t.amount),
+                            borderColor: '#00236f',
+                            backgroundColor: 'rgba(0, 35, 111, 0.04)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#00236f'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                grid: { drawBorder: false },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value >= 1000000000 
+                                            ? (value / 1000000000).toFixed(1) + 'B đ' 
+                                            : (value / 1000000).toFixed(0) + 'M đ';
+                                    }
+                                }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                // Bind Broker Performance Table
+                const tbody = document.getElementById('brokers-tbody');
+                tbody.innerHTML = '';
+                
+                // standard avatar fallbacks matching dynamic profiles
+                const avatars = [
+                    'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=120',
+                    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120',
+                    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=120'
+                ];
+
+                brokers.forEach((b, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-surface-container-low transition-colors';
+                    const avatarUrl = avatars[idx % avatars.length];
+                    const initials = b.name ? b.name.split(' ').pop().substring(0, 2).toUpperCase() : 'BR';
+                    const closingColor = b.closingRate >= 80 ? 'bg-green-600' : (b.closingRate >= 60 ? 'bg-[#00236f]' : 'bg-error');
+
+                    tr.innerHTML = `
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-primary-container/10 flex items-center justify-center shrink-0">
+                                <img src="${avatarUrl}" class="w-full h-full object-cover" onerror="this.outerHTML='<span class=\'font-bold text-xs\'>${initials}</span>'">
+                            </div>
+                            <div>
+                                <p class="font-bold text-on-surface text-sm">${b.name}</p>
+                                <p class="text-xs text-secondary">${b.role}</p>
+                            </div>
+                        </td>
+                        <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.assigned}</td>
+                        <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.appointments}</td>
+                        <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.contracts}</td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-3 min-w-[150px]">
+                                <div class="flex-1 bg-surface-container rounded-full h-2 overflow-hidden">
+                                    <div class="${closingColor} h-full" style="width: ${b.closingRate}%"></div>
+                                </div>
+                                <span class="font-bold text-xs text-secondary shrink-0">${b.closingRate}% Tỷ lệ chốt</span>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Render User Growth Line Chart
+                const growthCtx = document.getElementById('growthChart').getContext('2d');
+                new Chart(growthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: userGrowth.map(g => g.week),
+                        datasets: [
+                            {
+                                label: 'Chủ nhà',
+                                data: userGrowth.map(g => g.owners),
+                                borderColor: '#00236f',
+                                borderDash: [5, 5],
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3
+                            },
+                            {
+                                label: 'Khách thuê',
+                                data: userGrowth.map(g => g.tenants),
+                                borderColor: '#b6c4ff',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { grid: { drawBorder: false } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Tải dữ liệu báo cáo thất bại:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // File chứa các hàm gọi API
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://localhost:5050/api';
 
 // Lưu token vào localStorage
 function saveAuth(token, user) {
@@ -40,8 +40,23 @@ async function apiCall(endpoint, options = {}) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(API_BASE + endpoint, config);
-    const data = await res.json();
+    // Cache-busting for GET requests
+    let url = API_BASE + endpoint;
+    const method = (options.method || 'GET').toUpperCase();
+    if (method === 'GET') {
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}_t=${Date.now()}`;
+    }
+
+    const res = await fetch(url, config);
+    const contentType = res.headers.get('content-type');
+    let data;
+    if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+    } else {
+        const text = await res.text();
+        throw new Error(`Lỗi từ máy chủ (${res.status}): ${text.substring(0, 100)}...`);
+    }
 
     if (!res.ok) {
         throw new Error(data.message || 'Lỗi không xác định');
@@ -218,24 +233,6 @@ async function updateSaleDepositTransaction(submissionId, payload) {
 async function getSaleLegalResponse(submissionId) {
     return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }
-async function createExtension(submissionId, payload) {
-    return apiCall(`/consignments/${submissionId}/extend`, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-    });
-}
-
-async function getExtensionDetail(extensionId) {
-    return apiCall(`/sale/extensions/${extensionId}`);
-}
-
-async function completeExtensionContract(submissionId, extensionId, payload) {
-    return apiCall(`/sale/contracts/${submissionId}/extend/${extensionId}/complete`, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-    });
-}
-
 // Legal review API helpers
 async function listLegalApprovals(params = {}) {
     const query = new URLSearchParams();
@@ -254,18 +251,6 @@ async function getLegalApprovalDetail(submissionContractId) {
 async function updateLegalApproval(submissionContractId, payload) {
     return apiCall(`/legal/approvals/${submissionContractId}`, {
         method: 'PATCH',
-        body: JSON.stringify(payload)
-    });
-}
-
-// Accountant API helpers
-async function getExpiredContractsNeedingRefund() {
-    return apiCall('/accountant/contracts/expired');
-}
-
-async function processDepositReturn(payload) {
-    return apiCall('/accountant/returns', {
-        method: 'POST',
         body: JSON.stringify(payload)
     });
 }

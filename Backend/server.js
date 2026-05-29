@@ -10,14 +10,19 @@ const saleRoutes = require('./routes/sale');
 const legalRoutes = require('./routes/legal');
 const listingRoutes = require('./routes/listing');
 const savedRoutes = require('./routes/saved');
-const accountantRoutes = require('./routes/accountant');
 
 const app = express();
-const PORT = 5000;
+const PORT = 5050;
 
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '15mb' }));
+
+// Cache control to prevent browser/proxy caching of API responses
+app.use('/api', (req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
 
 // Phục vụ frontend tĩnh từ thư mục ../frontend
 app.use(express.static(path.join(__dirname, '..', 'Frontend')));
@@ -34,7 +39,6 @@ app.use('/api/sale', saleRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/saved', savedRoutes);
-app.use('/api/accountant', accountantRoutes);
 
 // Test endpoints
 app.get('/api/health', async (req, res) => {
