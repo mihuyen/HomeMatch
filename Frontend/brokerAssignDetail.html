@@ -1,263 +1,333 @@
-<!DOCTYPE html><html class="light" lang="vi"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>EstateSync Pro - Chi tiết phân công</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: "#00236f",
-              "on-primary": "#ffffff",
-              "primary-container": "#dbe1ff",
-              "on-primary-container": "#00144b",
-              secondary: "#585e71",
-              "on-secondary": "#ffffff",
-              "secondary-container": "#dce2f9",
-              "on-secondary-container": "#151b2c",
-              surface: "#fbf8fd",
-              "on-surface": "#1b1b1f",
-              "surface-variant": "#e2e2ec",
-              "on-surface-variant": "#45464f",
-              outline: "#767680",
-              "outline-variant": "#c6c6d0",
-              error: "#ba1a1a",
-              "surface-container-low": "#f4f3f9",
-              "surface-container-high": "#ebe9ef",
-              "inverse-surface": "#303034",
-              "inverse-primary": "#b4c5ff"
-            },
-            borderRadius: {
-              "DEFAULT": "0.25rem",
-              "lg": "0.5rem",
-              "xl": "0.75rem",
-              "full": "9999px"
-            },
-            fontFamily: {
-              headline: ["Public Sans", "sans-serif"],
-              display: ["Public Sans", "sans-serif"],
-              body: ["Public Sans", "sans-serif"],
-              label: ["Public Sans", "sans-serif"]
-            }
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>HomeMatch - Chi tiết phân công</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#00236f",
+            "on-primary": "#ffffff",
+            "primary-container": "#dbe1ff",
+            "on-primary-container": "#00144b",
+            secondary: "#585e71",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#dce2f9",
+            "on-secondary-container": "#151b2c",
+            surface: "#fbf8fd",
+            "on-surface": "#1b1b1f",
+            "surface-variant": "#e2e2ec",
+            "on-surface-variant": "#45464f",
+            outline: "#767680",
+            "outline-variant": "#c6c6d0",
+            error: "#ba1a1a",
+            "surface-container-low": "#f4f3f9",
+            "surface-container-high": "#ebe9ef",
+            "inverse-surface": "#303034",
+            "inverse-primary": "#b4c5ff"
           },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            headline: ["Public Sans", "sans-serif"],
+            display: ["Public Sans", "sans-serif"],
+            body: ["Public Sans", "sans-serif"],
+            label: ["Public Sans", "sans-serif"]
+          }
         },
-      }
-    </script>
-<style>
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      }
-      .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-      }
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #c6c6d0;
-        border-radius: 10px;
-      }
-    </style>
-<style id="custom-cursor" type="text/css">body button, body [type='button'], body input[type='reset'], body input[type='submit'], body [role="button"], ::-webkit-search-cancel-button, ::-webkit-search-decoration, ::-webkit-scrollbar-button, ::-webkit-file-upload-button, [role^=button], .cc_pointer, [type="search"]::-webkit-search-cancel-button, a, select, [type="search"]::-webkit-search-decoration, .paper-button, .ytp-progress-bar-container, input[type=submit], :link, :visited, a > *, img,  ::-webkit-scrollbar-button, .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer, ::-webkit-file-upload-button, .ytp-volume-panel, #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon, body .custom-cursor-on-hover {cursor: url("data:image/png;base64,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") 11 0, pointer !important;} html,body,body select,body .custom-cursor-default-hover {cursor: url("data:image/png;base64,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") 1 0, auto !important;}</style></head>
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #c6c6d0;
+      border-radius: 10px;
+    }
+  </style>
+  <style id="custom-cursor" type="text/css">
+    body button,
+    body [type='button'],
+    body input[type='reset'],
+    body input[type='submit'],
+    body [role="button"],
+    ::-webkit-search-cancel-button,
+    ::-webkit-search-decoration,
+    ::-webkit-scrollbar-button,
+    ::-webkit-file-upload-button,
+    [role^=button],
+    .cc_pointer,
+    [type="search"]::-webkit-search-cancel-button,
+    a,
+    select,
+    [type="search"]::-webkit-search-decoration,
+    .paper-button,
+    .ytp-progress-bar-container,
+    input[type=submit],
+    :link,
+    :visited,
+    a>*,
+    img,
+    ::-webkit-scrollbar-button,
+    .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer,
+    ::-webkit-file-upload-button,
+    .ytp-volume-panel,
+    #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon,
+    body .custom-cursor-on-hover {
+      cursor: url("data:image/png;base64,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") 11 0, pointer !important;
+    }
+
+    html,
+    body,
+    body select,
+    body .custom-cursor-default-hover {
+      cursor: url("data:image/png;base64,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") 1 0, auto !important;
+    }
+  </style>
+</head>
+
 <body class="bg-surface text-on-surface font-body min-h-screen">
-<!-- TopNavBar -->
-<nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]"><div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto"><div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3" onclick="window.location.href='home.html'"><span class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span><span class="">HomeMatch</span></div><div class="hidden md:flex gap-10 h-full items-center"><a class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="home.html">Trang chủ</a><a class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="saleAssign.html">Phân công</a></div><div class="flex items-center gap-6"><button class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95" onclick="localStorage.removeItem('token'); window.location.href='login.html';">Đăng xuất</button><button class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all"><img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0rZ_SzxMGwBC_GiTpZdcco5CS9iuQESKbeUTuiHhiMJxNRt340TnfBU0Dr6m1FzTFprD7k7MIigXvXWoK0ZdmHuW7XZKerj5crP-BBX7jFxXbDDDgP5DUbZhjqsjK_F8i3XISMc78pPBaBgNEb4CyxyXyriNbW28w7TMhtkyZUT--mAWXXtr1Jcf-yr2KNDIrZ64p97pN0hp8iC70V6mLO94Pp9nMmB0Z5ntxOv7q2CUD8OZKRGdIhst2NlijOVNDCx3dsZMUg02C"></button></div></div></nav>
-<main class="max-w-7xl mx-auto px-6 py-8 mt-0">
-<!-- Header & Breadcrumbs Section -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-<div>
-<nav class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
-<a class="hover:text-primary transition-colors" href="#">Trang chủ&nbsp;</a>
-<span class="material-symbols-outlined text-xs">chevron_right</span>
-<a class="hover:text-primary transition-colors" href="#">Phân công</a>
-<span class="material-symbols-outlined text-xs">chevron_right</span>
-<span class="text-primary font-semibold">Chi tiết</span>
-</nav>
-<h1 class="text-3xl font-headline font-extrabold text-on-primary-container tracking-tight">Chi tiết Phân công</h1>
-</div>
-<div class="flex items-center gap-3">
-    <button id="btnCreateContract" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-emerald-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">handshake</span>
-        Chốt giao dịch
-    </button>
-    <button id="btnCreateAppointment" class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">calendar_add_on</span>
+  <!-- TopNavBar -->
+  <nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
+    <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
+      <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3"
+        onclick="window.location.href='brokerHome.html'"><span
+          class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span><span
+          class="">HomeMatch</span></div>
+      <div class="hidden md:flex gap-10 h-full items-center"><a
+          class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
+          href="brokerHome.html">Trang chủ</a><a
+          class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
+          href="brokerAssign.html">Phân công</a></div>
+      <div class="flex items-center gap-6"><button
+          class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95"
+          onclick="localStorage.removeItem('token'); window.location.href='login.html';">Đăng xuất</button><button
+          class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all"><img
+            alt="User profile avatar" class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0rZ_SzxMGwBC_GiTpZdcco5CS9iuQESKbeUTuiHhiMJxNRt340TnfBU0Dr6m1FzTFprD7k7MIigXvXWoK0ZdmHuW7XZKerj5crP-BBX7jFxXbDDDgP5DUbZhjqsjK_F8i3XISMc78pPBaBgNEb4CyxyXyriNbW28w7TMhtkyZUT--mAWXXtr1Jcf-yr2KNDIrZ64p97pN0hp8iC70V6mLO94Pp9nMmB0Z5ntxOv7q2CUD8OZKRGdIhst2NlijOVNDCx3dsZMUg02C"></button>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-7xl mx-auto px-6 py-8 mt-0">
+    <!-- Header & Breadcrumbs Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div>
+        <nav class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
+          <a class="hover:text-primary transition-colors" href="#">Trang chủ&nbsp;</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <a class="hover:text-primary transition-colors" href="#">Phân công</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="text-primary font-semibold">Chi tiết</span>
+        </nav>
+        <h1 class="text-3xl font-headline font-extrabold text-on-primary-container tracking-tight">Chi tiết Phân công
+        </h1>
+      </div>
+      <button
+        class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+        <span class="material-symbols-outlined"
+          style="font-variation-settings: &quot;FILL&quot; 1;">calendar_add_on</span>
         Tạo lịch hẹn
-    </button>
-</div>
-</div>
-<!-- Main Content Grid -->
-<div class="grid grid-cols-1 gap-8">
-<!-- Left Column: Assignment & Customer Info -->
-<div class="space-y-8">
-<!-- Assignment Info Card -->
-<div class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-<div class="flex items-center gap-4">
-<div class="bg-primary-container p-3 rounded-2xl">
-<span class="material-symbols-outlined text-primary text-3xl">assignment_ind</span>
-</div>
-<div>
-<h2 id="assignCode" class="text-xl font-bold text-on-surface">Mã phân công: Đang tải...</h2>
-<p id="assignDate" class="text-on-surface-variant">Ngày phân công: Đang tải...</p>
-</div>
-</div>
-<span id="assignStatus" class="px-4 py-1.5 rounded-full text-sm font-bold border border-primary/20">Đang tải...</span>
-</div>
-<div class="bg-surface-container-low p-5 rounded-2xl">
-<h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Ghi chú phân công</h3>
-<p id="assignNotes" class="text-on-surface leading-relaxed italic">Đang tải...</p>
-</div>
-</div>
-<!-- Customer Profile Card -->
-<div class="bg-white rounded-3xl overflow-hidden border border-outline-variant shadow-sm">
-<div class="h-24 bg-gradient-to-r from-primary to-blue-900"></div>
-<div class="px-8 pb-8 -mt-12">
-<div class="flex flex-col md:flex-row items-end gap-6 mb-8">
-<img alt="Customer Avatar" class="w-32 h-32 rounded-3xl border-4 border-white shadow-xl object-cover bg-surface" data-alt="A portrait of a middle-aged Vietnamese businessman looking approachable and professional, wearing a white oxford shirt. The style is clean and well-lit with a soft-focus urban balcony background in the late afternoon. High-end lifestyle photography aesthetic with natural skin tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9rrV3EwolpmIA43JNIEQppjtChXpf2xfK0LFVyB7zDzAmBa3NegNiy_wuj2JVcw-UqWmnGrW_YVFQ3kM-Vo-5os0LvMWehMvHuhhEYd7oWWgBF-Wmk1uJJS4r11V6GuBit2-yMc5nGxjonMDNtfQnEhT3b8_22-Rn5Qd4HsT0vA6gZMxVv1_Zwrip8xYiRh890_TnJU0LHXrYgocKImdHaGIMl-4837q_YorQA-8aeyzJ35r3TvhTlIw86xVRtLcmIOfnNi2V6UGp">
-<div class="flex-1 pb-2">
-<h2 id="tenantName" class="text-2xl font-extrabold text-on-surface">Đang tải...</h2>
-<p class="text-primary font-semibold">Khách hàng VIP • Hạng Platinum</p>
-</div>
-<div class="flex gap-2 pb-2">
-<button class="p-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined">call</span>
-</button>
-<button class="p-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined">mail</span>
-</button>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-<div class="space-y-4">
-<div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30">
-<span class="material-symbols-outlined text-secondary">phone_iphone</span>
-<div>
-<p class="text-xs text-on-surface-variant font-bold uppercase">Điện thoại</p>
-<p id="tenantPhone" class="text-on-surface font-medium">Đang tải...</p>
-</div>
-</div>
-<div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30">
-<span class="material-symbols-outlined text-secondary">alternate_email</span>
-<div>
-<p class="text-xs text-on-surface-variant font-bold uppercase">Email</p>
-<p id="tenantEmail" class="text-on-surface font-medium">Đang tải...</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Interested Property Section -->
-<div class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm overflow-hidden group">
-<h3 class="text-xl font-bold text-on-surface mb-6">Bất động sản quan tâm</h3>
-<div class="flex flex-col md:flex-row gap-6">
-<div class="w-full md:w-64 h-44 rounded-2xl overflow-hidden relative">
-<img alt="Property Thumbnail" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A luxurious penthouse living room with double-height floor-to-ceiling windows overlooking a modern city skyline at sunset. The interior is decorated with high-end designer furniture in shades of beige and gold. The lighting is warm and golden, creating an atmosphere of extreme luxury and exclusivity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmgQ_8OiCTdGMBPWla-DKhAyargdNdTSP0g3ZqJTYtO9v7kbgbuiywYSkWXiSZanqvD89sd-35OxT1a2TP4aZ0cIKGi8hZWVxpoSSntpdpS48QnG534XLFkKW61QmEqrAWtdLf-ulmPpvyVNQc_OYHdQcj94Xak5ySm2h4A9aaxeJlB4m2EhX4oh9C-S8LdWLuPp1b1523UnuQ1ZS1Lkn16i5npRZ25x-C9Q_LXTJFvCBH14Pldfpqq_Up4xTm5rXQyB2EuAhaZ8U7">
-<div class="absolute top-3 left-3 bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 rounded">HOT DEAL</div>
-</div>
-<div class="flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-start">
-<h4 class="text-xl font-bold text-primary mb-1">Penthouse Vinhomes Central Park</h4>
-<p class="text-2xl font-extrabold text-on-surface tracking-tighter">45.5 Tỷ</p>
-</div>
-<div class="flex items-center gap-1 text-on-surface-variant mb-4">
-<span class="material-symbols-outlined text-sm">location_on</span>
-<span class="text-sm">Bình Thạnh, TP. Hồ Chí Minh</span>
-</div>
-<div class="grid grid-cols-3 gap-4 border-t border-outline-variant pt-4">
-<div class="text-center">
-<p class="text-[10px] font-bold text-on-surface-variant uppercase">Diện tích</p>
-<p class="font-bold">320 m²</p>
-</div>
-<div class="text-center border-x border-outline-variant">
-<p class="text-[10px] font-bold text-on-surface-variant uppercase">Phòng ngủ</p>
-<p class="font-bold">4</p>
-</div>
-<div class="text-center">
-<p class="text-[10px] font-bold text-on-surface-variant uppercase">Tầng</p>
-<p class="font-bold">81</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Column: Interaction Timeline -->
-</div>
-</main>
-<script src="api.js"></script>
-<script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const user = await requireLogin();
-            if (!user) return;
-            
-            const params = new URLSearchParams(window.location.search);
-            const assignmentId = params.get('assignmentId');
-            
-            if (assignmentId) {
-                try {
-                    const data = await getBrokerAssignmentDetail(assignmentId);
-                    
-                    document.getElementById('assignCode').innerText = 'Mã phân công: ASN-' + String(data.assignment_id).padStart(6, '0');
-                    
-                    const assignedDate = new Date(data.assigned_at);
-                    document.getElementById('assignDate').innerText = 'Ngày phân công: ' + (isNaN(assignedDate.getTime()) ? '-' : assignedDate.toLocaleDateString('vi-VN'));
-                    
-                    let badgeClass = 'bg-amber-100 text-amber-700';
-                    let badgeText = 'Chờ xử lý';
-                    const status = String(data.status).toLowerCase();
-                    if (status.includes('đang') || status.includes('active')) {
-                        badgeClass = 'bg-blue-100 text-blue-700';
-                        badgeText = 'Đang thực hiện';
-                    } else if (status.includes('hoàn') || status.includes('done')) {
-                        badgeClass = 'bg-emerald-100 text-emerald-700';
-                        badgeText = 'Hoàn tất';
-                    }
-                    
-                    const statusBadge = document.getElementById('assignStatus');
-                    statusBadge.className = `px-4 py-1.5 rounded-full text-sm font-bold border border-primary/20 ${badgeClass}`;
-                    statusBadge.innerText = badgeText;
-                    
-                    document.getElementById('assignNotes').innerText = data.notes || 'Không có ghi chú';
-                    
-                    document.getElementById('tenantName').innerText = data.tenant_name || 'Khách hàng #' + data.tenant_id;
-                    document.getElementById('tenantPhone').innerText = data.tenant_phone || 'Chưa cập nhật';
-                    document.getElementById('tenantEmail').innerText = data.tenant_email || 'Chưa cập nhật';
-                    
-                    const btnAppointment = document.getElementById('btnCreateAppointment');
-                    if (btnAppointment) {
-                        btnAppointment.onclick = () => {
-                            window.location.href = `brokerAppointmentDetail.html?assignmentId=${assignmentId}`;
-                        };
-                    }
-                    
-                    const btnContract = document.getElementById('btnCreateContract');
-                    if (btnContract) {
-                        btnContract.onclick = () => {
-                            window.location.href = `brokerContract.html?assignmentId=${assignmentId}`;
-                        };
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert('Không tải được thông tin phân công');
-                }
-            }
-        });
-    </script>
+      </button>
+    </div>
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 gap-8">
+      <!-- Left Column: Assignment & Customer Info -->
+      <div class="space-y-8">
+        <!-- Assignment Info Card -->
+        <div class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+            <div class="flex items-center gap-4">
+              <div class="bg-primary-container p-3 rounded-2xl">
+                <span class="material-symbols-outlined text-primary text-3xl">assignment_ind</span>
+              </div>
+              <div>
+                <h2 id="assignCode" class="text-xl font-bold text-on-surface">Mã phân công: Đang tải...</h2>
+                <p id="assignDate" class="text-on-surface-variant">Ngày phân công: Đang tải...</p>
+              </div>
+            </div>
+            <span id="assignStatus" class="px-4 py-1.5 rounded-full text-sm font-bold border border-primary/20">Đang
+              tải...</span>
+          </div>
+          <div class="bg-surface-container-low p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Ghi chú phân công</h3>
+            <p id="assignNotes" class="text-on-surface leading-relaxed italic">Đang tải...</p>
+          </div>
+        </div>
+        <!-- Customer Profile Card -->
+        <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant shadow-sm">
+          <div class="h-24 bg-gradient-to-r from-primary to-blue-900"></div>
+          <div class="px-8 pb-8 -mt-12">
+            <div class="flex flex-col md:flex-row items-end gap-6 mb-8">
+              <img alt="Customer Avatar"
+                class="w-32 h-32 rounded-3xl border-4 border-white shadow-xl object-cover bg-surface"
+                data-alt="A portrait of a middle-aged Vietnamese businessman looking approachable and professional, wearing a white oxford shirt. The style is clean and well-lit with a soft-focus urban balcony background in the late afternoon. High-end lifestyle photography aesthetic with natural skin tones."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9rrV3EwolpmIA43JNIEQppjtChXpf2xfK0LFVyB7zDzAmBa3NegNiy_wuj2JVcw-UqWmnGrW_YVFQ3kM-Vo-5os0LvMWehMvHuhhEYd7oWWgBF-Wmk1uJJS4r11V6GuBit2-yMc5nGxjonMDNtfQnEhT3b8_22-Rn5Qd4HsT0vA6gZMxVv1_Zwrip8xYiRh890_TnJU0LHXrYgocKImdHaGIMl-4837q_YorQA-8aeyzJ35r3TvhTlIw86xVRtLcmIOfnNi2V6UGp">
+              <div class="flex gap-2 pb-2">
+                <button
+                  class="p-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                  <span class="material-symbols-outlined">call</span>
+                </button>
+                <button
+                  class="p-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                  <span class="material-symbols-outlined">mail</span>
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="space-y-4">
+                <div
+                  class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30">
+                  <span class="material-symbols-outlined text-secondary">phone_iphone</span>
+                  <div>
+                    <p class="text-xs text-on-surface-variant font-bold uppercase">Điện thoại</p>
+                    <p id="tenantPhone" class="text-on-surface font-medium">Đang tải...</p>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30">
+                  <span class="material-symbols-outlined text-secondary">alternate_email</span>
+                  <div>
+                    <p class="text-xs text-on-surface-variant font-bold uppercase">Email</p>
+                    <p id="tenantEmail" class="text-on-surface font-medium">Đang tải...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Interested Property Section -->
+        <div class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm overflow-hidden group">
+          <h3 class="text-xl font-bold text-on-surface mb-6">Bất động sản quan tâm</h3>
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-64 h-44 rounded-2xl overflow-hidden relative">
+              <img alt="Property Thumbnail"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                data-alt="A luxurious penthouse living room with double-height floor-to-ceiling windows overlooking a modern city skyline at sunset. The interior is decorated with high-end designer furniture in shades of beige and gold. The lighting is warm and golden, creating an atmosphere of extreme luxury and exclusivity."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmgQ_8OiCTdGMBPWla-DKhAyargdNdTSP0g3ZqJTYtO9v7kbgbuiywYSkWXiSZanqvD89sd-35OxT1a2TP4aZ0cIKGi8hZWVxpoSSntpdpS48QnG534XLFkKW61QmEqrAWtdLf-ulmPpvyVNQc_OYHdQcj94Xak5ySm2h4A9aaxeJlB4m2EhX4oh9C-S8LdWLuPp1b1523UnuQ1ZS1Lkn16i5npRZ25x-C9Q_LXTJFvCBH14Pldfpqq_Up4xTm5rXQyB2EuAhaZ8U7">
+              <div class="absolute top-3 left-3 bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 rounded">
+                HOT DEAL</div>
+            </div>
+            <div class="flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h4 class="text-xl font-bold text-primary mb-1">Penthouse Vinhomes Central Park</h4>
+                  <p class="text-2xl font-extrabold text-on-surface tracking-tighter">45.5 Tỷ</p>
+                </div>
+                <div class="flex items-center gap-1 text-on-surface-variant mb-4">
+                  <span class="material-symbols-outlined text-sm">location_on</span>
+                  <span class="text-sm">Bình Thạnh, TP. Hồ Chí Minh</span>
+                </div>
+                <div class="grid grid-cols-3 gap-4 border-t border-outline-variant pt-4">
+                  <div class="text-center">
+                    <p class="text-[10px] font-bold text-on-surface-variant uppercase">Diện tích</p>
+                    <p class="font-bold">320 m²</p>
+                  </div>
+                  <div class="text-center border-x border-outline-variant">
+                    <p class="text-[10px] font-bold text-on-surface-variant uppercase">Phòng ngủ</p>
+                    <p class="font-bold">4</p>
+                  </div>
+                  <div class="text-center">
+                    <p class="text-[10px] font-bold text-on-surface-variant uppercase">Tầng</p>
+                    <p class="font-bold">81</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Right Column: Interaction Timeline -->
+    </div>
+  </main>
+  <script src="api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await requireLogin();
+      if (!user) return;
+
+      const params = new URLSearchParams(window.location.search);
+      const assignmentId = params.get('assignmentId');
+
+      if (assignmentId) {
+        try {
+          const data = await getBrokerAssignmentDetail(assignmentId);
+
+          document.getElementById('assignCode').innerText = 'Mã phân công: ASN-' + String(data.assignment_id).padStart(6, '0');
+
+          const assignedDate = new Date(data.assigned_at);
+          document.getElementById('assignDate').innerText = 'Ngày phân công: ' + (isNaN(assignedDate.getTime()) ? '-' : assignedDate.toLocaleDateString('vi-VN'));
+
+          let badgeClass = 'bg-amber-100 text-amber-700';
+          let badgeText = 'Chờ xử lý';
+          const status = String(data.status).toLowerCase();
+          if (status.includes('đang') || status.includes('active')) {
+            badgeClass = 'bg-blue-100 text-blue-700';
+            badgeText = 'Đang thực hiện';
+          } else if (status.includes('hoàn') || status.includes('done')) {
+            badgeClass = 'bg-emerald-100 text-emerald-700';
+            badgeText = 'Hoàn tất';
+          }
+
+          const statusBadge = document.getElementById('assignStatus');
+          statusBadge.className = `px-4 py-1.5 rounded-full text-sm font-bold border border-primary/20 ${badgeClass}`;
+          statusBadge.innerText = badgeText;
+
+          document.getElementById('assignNotes').innerText = data.notes || 'Không có ghi chú';
+
+          document.getElementById('tenantName').innerText = data.tenant_name || 'Khách hàng #' + data.tenant_id;
+          document.getElementById('tenantPhone').innerText = data.tenant_phone || 'Chưa cập nhật';
+          document.getElementById('tenantEmail').innerText = data.tenant_email || 'Chưa cập nhật';
+
+          const btnAppointment = document.querySelector('button.flex.items-center.gap-2.bg-primary');
+          if (btnAppointment) {
+            btnAppointment.onclick = () => {
+              window.location.href = `brokerAppointmentDetail.html?assignmentId=${assignmentId}`;
+            };
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Không tải được thông tin phân công');
+        }
+      }
+    });
+  </script>
 
 
 
-</body></html>
+</body>
+
+</html>
