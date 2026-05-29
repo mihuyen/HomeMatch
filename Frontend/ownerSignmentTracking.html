@@ -666,6 +666,53 @@
                                 </div>
                         `).join('')}</div>`;
 
+                const contracts = Array.isArray(detail.submission_contracts) ? detail.submission_contracts : [];
+                const activeContract = contracts.find(c => c && c.status === 'active') || null;
+
+                let contractInfoHtml = '';
+                let daysRemaining = 999;
+                if (activeContract) {
+                  const signedDate = new Date(activeContract.signed_at);
+                  const expiredDate = new Date(activeContract.signed_at);
+                  expiredDate.setMonth(expiredDate.getMonth() + activeContract.contract_duration_months);
+                  daysRemaining = Math.ceil((expiredDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                  
+                  let extendButtonHtml = '';
+                  if (detail.has_pending_extension) {
+                    extendButtonHtml = `
+                      <button id="extendContractBtn" disabled class="w-full md:w-auto px-4 py-2.5 bg-surface-container-high text-on-surface-variant/70 text-xs font-bold rounded-lg border border-outline-variant/60 cursor-not-allowed opacity-80 flex items-center justify-center gap-1 shadow-none">
+                        <span class="material-symbols-outlined text-[16px] text-on-surface-variant/50">schedule</span>
+                        Đang chờ duyệt gia hạn
+                      </button>
+                    `;
+                  } else {
+                    extendButtonHtml = `
+                      <button id="extendContractBtn" class="w-full md:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">sync_alt</span>
+                        Yêu cầu Gia hạn (${daysRemaining > 0 ? `Còn ${daysRemaining} ngày` : 'Đã hết hạn'})
+                      </button>
+                    `;
+                  }
+
+                  contractInfoHtml = `
+                    <div class="border border-outline-variant bg-surface p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-md mb-4 shadow-sm">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-sm">
+                          <span class="material-symbols-outlined text-primary text-[20px]">assignment</span>
+                          <span class="font-bold text-on-surface text-sm">Hợp đồng: ${escapeHtml(activeContract.contract_code)}</span>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Đang hoạt động</span>
+                        </div>
+                        <p class="text-xs text-on-surface-variant">
+                          Thời hạn: <strong>${activeContract.contract_duration_months} tháng</strong> | 
+                          Ngày ký: <strong>${new Date(activeContract.signed_at).toLocaleDateString('vi-VN')}</strong> | 
+                          Hết hạn: <strong class="${daysRemaining <= 20 ? 'text-error font-extrabold' : 'text-primary'}">${expiredDate.toLocaleDateString('vi-VN')} (${daysRemaining > 0 ? `Còn ${daysRemaining} ngày` : 'Đã hết hạn'})</strong>
+                        </p>
+                      </div>
+                      ${extendButtonHtml}
+                    </div>
+                  `;
+                }
+
                 trackingDetailPane.innerHTML = `
                         <div class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
                                 <div>
@@ -679,6 +726,7 @@
                                 </div>
                         </div>
                         <div class="flex-1 overflow-y-auto p-md space-y-6">
+                                ${contractInfoHtml}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
                                         <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
                                                 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
@@ -729,6 +777,34 @@
                                         await loadDetail(s.submission_id);
                                 } catch (error) {
                                         alert(error.message);
+                                }
+                        });
+                }
+
+                const extendContractBtn = document.getElementById('extendContractBtn');
+                if (extendContractBtn) {
+                        extendContractBtn.addEventListener('click', async () => {
+                                const monthsStr = prompt("Nhập số tháng muốn gia hạn hợp đồng (ví dụ: 6, 12, 24):", "12");
+                                if (monthsStr === null) return;
+                                const months = parseInt(monthsStr, 10);
+                                if (isNaN(months) || months <= 0) {
+                                        alert("Số tháng gia hạn không hợp lệ!");
+                                        return;
+                                }
+
+                                const notes = prompt("Nhập ghi chú yêu cầu gia hạn (không bắt buộc):", "Chủ sở hữu yêu cầu gia hạn hợp đồng thêm " + months + " tháng.");
+                                if (notes === null) return;
+
+                                try {
+                                        extendContractBtn.disabled = true;
+                                        extendContractBtn.textContent = "Đang gửi...";
+                                        const res = await createExtension(s.submission_id, { extensionMonths: months, notes: notes });
+                                        alert(res.message || "Đã gửi yêu cầu gia hạn thành công!");
+                                        await loadTrackingList();
+                                } catch (error) {
+                                        alert(error.message || "Gửi yêu cầu gia hạn thất bại.");
+                                } finally {
+                                        extendContractBtn.disabled = false;
                                 }
                         });
                 }

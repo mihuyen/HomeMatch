@@ -3,20 +3,30 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Chi tiết Hợp đồng Ký gửi - EstateSync Pro</title>
+  <title>Chi tiết Hợp đồng Ký gửi - HomeMatch</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <style>
+    body { font-family: 'Inter', sans-serif; }
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .icon-filled {
+      font-variation-settings: 'FILL' 1;
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid #e2e8f0;
     }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
   </style>
   <script id="tailwind-config">
     tailwind.config = {
@@ -24,19 +34,19 @@
       theme: {
         extend: {
           "colors": {
-            "primary": "#00236f",
+            "primary": "#1E3A8A",
             "primary-container": "#1e3a8a",
-            "surface": "#faf8ff",
-            "on-surface": "#1a1b21",
-            "on-surface-variant": "#444651",
-            "outline-variant": "#c5c5d3",
-            "background": "#faf8ff"
+            "surface": "#ffffff",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#475569",
+            "outline-variant": "#e2e8f0",
+            "background": "#f8fafc"
           },
           "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
+            "DEFAULT": "12px",
+            "lg": "16px",
+            "xl": "24px",
+            "full": "9999px"
           },
           "spacing": {
             "margin-desktop": "32px",
@@ -50,220 +60,292 @@
     }
   </script>
 </head>
-<body class="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen flex flex-col antialiased">
+<body class="bg-background text-on-surface overflow-x-hidden min-h-screen flex flex-col antialiased">
+  <!-- Shared Sidebar Container -->
   <div id="sale-sidebar"></div>
   <script src="saleSidebar.js"></script>
   <script src="api.js"></script>
 
-  <main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-desktop py-xl min-w-0">
-    <div class="mb-xl flex flex-col md:flex-row md:items-center justify-between gap-md">
-      <div>
-        <div class="flex items-center gap-sm mb-xs">
-          <button class="p-2 border border-outline-variant hover:bg-white rounded-lg transition-all inline-flex items-center justify-center text-on-surface-variant" onclick="window.history.back()">
-            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
-          </button>
-          <span class="text-sm font-semibold uppercase tracking-wider text-primary">EstateSync Pro</span>
+  <!-- Main Viewport -->
+  <main class="flex-1 w-full max-w-[1240px] mx-auto px-6 md:px-10 py-10 min-w-0">
+    
+    <!-- Top Nav Header -->
+    <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="flex items-start gap-4">
+        <!-- Back Button with dynamic hover scale -->
+        <button class="p-3 bg-white border border-outline-variant hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all shadow-sm flex items-center justify-center text-on-surface-variant active:scale-95 group" onclick="window.history.back()" title="Quay lại">
+          <span class="material-symbols-outlined text-[22px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+        </button>
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 bg-blue-50 text-primary border border-blue-100 rounded-full text-[11px] font-bold uppercase tracking-wider">Hồ sơ nghiệp vụ</span>
+            <span class="text-xs text-slate-400 font-semibold">•</span>
+            <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">HomeMatch Premium</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-black tracking-tight text-on-surface">
+            Chi tiết Hợp đồng Ký gửi: <span class="text-primary font-extrabold" id="title-contract-code">---</span>
+          </h1>
         </div>
-        <h1 class="font-headline-xl text-headline-xl text-on-surface flex items-center gap-xs flex-wrap">
-          Chi tiết Hợp đồng Ký gửi: <span class="text-primary font-extrabold" id="title-contract-code">---</span>
-        </h1>
       </div>
-      <div class="flex items-center gap-sm">
-        <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm gap-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          Đã hoàn thành
+      
+      <!-- Verification Badge -->
+      <div class="flex items-center">
+        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+          <span>Đã hoàn thành pháp lý</span>
         </span>
       </div>
     </div>
 
-    <div class="grid grid-cols-12 gap-gutter">
-      <!-- Cột trái (Thông tin hợp đồng & thanh toán) -->
-      <div class="col-span-12 lg:col-span-8 space-y-xl">
+    <!-- Details Grid -->
+    <div class="grid grid-cols-12 gap-6">
+      
+      <!-- Left Column (Contract Detail & Payment Verification) -->
+      <div class="col-span-12 lg:col-span-8 space-y-6">
         
-        <!-- CARD 1: THÔNG TIN HỢP ĐỒNG -->
-        <div class="glass-card p-xl rounded-2xl shadow-sm bg-white/95 relative overflow-hidden">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-primary/5 rounded-full"></div>
-          <div class="flex items-center gap-md border-b border-outline-variant pb-md mb-md">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-              <span class="material-symbols-outlined text-[24px]">description</span>
+        <!-- CARD 1: THÔNG TIN PHÁP LÝ & ĐIỀU KHOẢN -->
+        <div class="glass-card p-6 md:p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden bg-white">
+          <div class="absolute -right-10 -top-10 w-28 h-28 bg-primary/5 rounded-full blur-xl"></div>
+          
+          <div class="flex items-center gap-4 border-b border-outline-variant pb-5 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <span class="material-symbols-outlined text-[26px] icon-filled">description</span>
             </div>
             <div>
-              <h2 class="font-headline-md text-headline-md text-on-surface">Thông tin pháp lý & Hợp đồng</h2>
-              <p class="text-xs text-on-surface-variant">Chi tiết các điều khoản và hiệu lực hợp đồng ký gửi</p>
+              <h2 class="text-lg font-extrabold text-on-surface">Thông tin pháp lý & Hợp đồng</h2>
+              <p class="text-xs text-on-surface-variant font-medium mt-0.5">Chi tiết thời hạn hiệu lực và tài liệu đính kèm chính thức</p>
             </div>
           </div>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-            <div class="space-y-sm">
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Mã hợp đồng</span>
-                <span class="font-bold text-primary" id="contract-code">---</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Mã hợp đồng</span>
+                <span class="font-bold text-primary text-[15px]" id="contract-code">---</span>
               </div>
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Loại hợp đồng</span>
-                <span class="font-semibold text-on-surface" id="contract-type">---</span>
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Loại hợp đồng</span>
+                <span class="font-bold text-on-surface text-[14px]" id="contract-type">---</span>
               </div>
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Thời hạn ký gửi</span>
-                <span class="font-semibold text-on-surface" id="contract-duration">---</span>
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Thời hạn ký gửi</span>
+                <span class="font-bold text-on-surface text-[14px]" id="contract-duration">---</span>
               </div>
             </div>
-            <div class="space-y-sm">
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Ngày ký kết</span>
-                <span class="font-semibold text-on-surface" id="contract-signed-at">---</span>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Ngày ký kết</span>
+                <span class="font-bold text-on-surface text-[14px]" id="contract-signed-at">---</span>
               </div>
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Trạng thái hợp đồng</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800" id="contract-status">Đang hoạt động</span>
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Trạng thái hợp đồng</span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800" id="contract-status">Đang hoạt động</span>
               </div>
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">File Scan đính kèm</span>
-                <a class="text-xs font-bold text-primary hover:underline flex items-center gap-0.5" id="contract-scan-link" target="_blank">
-                  <span class="material-symbols-outlined text-[16px]">visibility</span> Xem File
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">File scan hợp đồng</span>
+                <a class="text-xs font-black text-primary hover:text-blue-900 hover:underline flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 transition-colors" id="contract-scan-link" target="_blank">
+                  <span class="material-symbols-outlined text-[16px]">visibility</span>
+                  <span>Xem File Scan</span>
                 </a>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- CARD 2: CHI TIẾT THANH TOÁN & ĐỐI SOÁT -->
-        <div class="glass-card p-xl rounded-2xl shadow-sm bg-white/95 relative overflow-hidden">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-emerald-500/5 rounded-full"></div>
-          <div class="flex items-center gap-md border-b border-outline-variant pb-md mb-md">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-              <span class="material-symbols-outlined text-[24px]">payments</span>
+        <!-- CARD 2: CHI TIẾT THANH TOÁN ĐẶT CỌC -->
+        <div class="glass-card p-6 md:p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden bg-white">
+          <div class="absolute -right-10 -top-10 w-28 h-28 bg-emerald-500/5 rounded-full blur-xl"></div>
+          
+          <div class="flex items-center gap-4 border-b border-outline-variant pb-5 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <span class="material-symbols-outlined text-[26px] icon-filled">payments</span>
             </div>
             <div>
-              <h2 class="font-headline-md text-headline-md text-on-surface">Thông tin Đối soát tiền đảm bảo</h2>
-              <p class="text-xs text-on-surface-variant">Giao dịch đặt cọc được đối soát real-time qua SePay Webhook</p>
+              <h2 class="text-lg font-extrabold text-on-surface">Thông tin Đối soát tiền đảm bảo</h2>
+              <p class="text-xs text-on-surface-variant font-medium mt-0.5">Xác minh giao dịch đặt cọc real-time thông qua cổng thanh toán SePay</p>
             </div>
           </div>
 
-          <div class="p-lg bg-emerald-500/5 border border-emerald-200/60 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
+          <!-- Emerald Glowing Amount Card -->
+          <div class="p-6 bg-gradient-to-r from-emerald-50 to-emerald-100/50 border border-emerald-200/80 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
             <div class="space-y-1">
-              <span class="text-xs font-semibold text-emerald-800 uppercase tracking-wide">Số tiền đặt cọc</span>
-              <p class="text-3xl font-black text-emerald-600" id="deposit-amount">10.000 VND</p>
+              <span class="text-xs font-bold text-emerald-800 uppercase tracking-widest block">Số tiền đặt cọc nhận được</span>
+              <p class="text-3xl font-black text-emerald-700 flex items-baseline gap-1" id="deposit-amount">10.000 VNĐ</p>
             </div>
-            <div class="flex flex-col gap-1 items-start md:items-end">
-              <span class="text-xs text-emerald-800 uppercase tracking-wide font-semibold">Trạng thái đối soát</span>
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white gap-0.5">
-                <span class="material-symbols-outlined text-[14px]">verified</span> Đối soát thành công
+            <div class="flex flex-col gap-1.5 items-start md:items-end">
+              <span class="text-xs text-emerald-800 uppercase tracking-widest font-bold block">Trạng thái giao dịch</span>
+              <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black bg-emerald-600 text-white gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-[15px] icon-filled">verified</span> 
+                <span>Đối soát thành công</span>
               </span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-            <div class="space-y-sm">
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Mã giao dịch đối soát</span>
-                <div class="flex items-center gap-sm">
-                  <span class="font-mono font-bold text-on-surface" id="deposit-code">---</span>
-                  <button class="p-1 hover:bg-surface-container-high rounded text-primary transition-all inline-flex items-center justify-center" onclick="copyTransactionCode()" title="Copy mã giao dịch">
-                    <span class="material-symbols-outlined text-[16px]">content_copy</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Mã giao dịch đối soát</span>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-on-surface bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200" id="deposit-code">---</span>
+                  <!-- Upgraded copy button with dynamic copy animation -->
+                  <button id="copy-btn" class="p-1.5 hover:bg-slate-100 text-primary border border-outline-variant hover:border-slate-300 rounded transition-all inline-flex items-center justify-center active:scale-90" onclick="copyTransactionCode()" title="Copy mã giao dịch">
+                    <span class="material-symbols-outlined text-[16px]" id="copy-icon">content_copy</span>
                   </button>
                 </div>
               </div>
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Phương thức thanh toán</span>
-                <span class="font-semibold text-on-surface" id="deposit-method">---</span>
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Phương thức thanh toán</span>
+                <span class="font-bold text-on-surface text-[14px]" id="deposit-method">---</span>
               </div>
             </div>
-            <div class="space-y-sm">
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Thời gian xác thực</span>
-                <span class="font-semibold text-on-surface" id="deposit-verified-at">---</span>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Thời gian xác thực</span>
+                <span class="font-bold text-on-surface text-[14px]" id="deposit-verified-at">---</span>
               </div>
-              <div class="flex justify-between items-center py-xs border-b border-outline-variant/40">
-                <span class="text-body-sm text-on-surface-variant">Ngân hàng thụ hưởng</span>
-                <span class="font-semibold text-on-surface">BIDV (96247VUONGTHUYLINH)</span>
+              <div class="flex justify-between items-center py-2 border-b border-outline-variant/40">
+                <span class="text-[14px] text-on-surface-variant font-medium">Ngân hàng thụ hưởng</span>
+                <span class="font-bold text-slate-800 text-[13px] flex items-center gap-1">
+                  <span class="w-2.5 h-2.5 bg-blue-600 rounded-full inline-block"></span>
+                  <span>BIDV (96247VUONGTHUYLINH)</span>
+                </span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Cột phải (Chủ sở hữu & Bất động sản) -->
-      <div class="col-span-12 lg:col-span-4 space-y-xl">
+      <!-- Right Column (Owner Profile & Property Details) -->
+      <div class="col-span-12 lg:col-span-4 space-y-6">
         
-        <!-- CARD 3: THÔNG TIN CHỦ SỞ HỮU -->
-        <div class="glass-card p-lg rounded-2xl shadow-sm bg-white/95 relative overflow-hidden">
-          <div class="flex items-center gap-sm border-b border-outline-variant pb-sm mb-md">
-            <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+        <!-- CARD 3: CHỦ SỞ HỮU -->
+        <div class="glass-card p-6 rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow relative overflow-hidden">
+          <div class="flex items-center gap-2 border-b border-outline-variant pb-4 mb-4">
+            <span class="material-symbols-outlined text-primary text-[20px] icon-filled">account_circle</span>
             <h3 class="font-bold text-on-surface">Thông tin Chủ sở hữu</h3>
           </div>
-          <div class="space-y-md">
-            <div>
-              <p class="text-xs text-on-surface-variant">Họ và tên chủ nhà</p>
-              <p class="font-bold text-on-surface" id="owner-name">---</p>
+          <div class="space-y-4 text-[14px]">
+            <div class="bg-slate-50 p-3 rounded-lg border border-outline-variant/60">
+              <p class="text-xs text-on-surface-variant font-medium">Họ và tên chủ nhà</p>
+              <p class="font-extrabold text-primary text-[15px] mt-0.5" id="owner-name">---</p>
             </div>
-            <div>
-              <p class="text-xs text-on-surface-variant">Số điện thoại</p>
-              <p class="font-semibold text-on-surface" id="owner-phone">---</p>
-            </div>
-            <div>
-              <p class="text-xs text-on-surface-variant">Địa chỉ Email</p>
-              <p class="font-semibold text-on-surface" id="owner-email">---</p>
-            </div>
-            <div>
-              <p class="text-xs text-on-surface-variant">Số CMND / CCCD</p>
-              <p class="font-mono font-semibold text-on-surface" id="owner-idcard">---</p>
+            <div class="grid grid-cols-1 gap-3 px-1">
+              <div>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">phone_iphone</span> Số điện thoại
+                </span>
+                <p class="font-bold text-on-surface" id="owner-phone">---</p>
+              </div>
+              <div>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">mail</span> Địa chỉ Email
+                </span>
+                <p class="font-bold text-on-surface break-all" id="owner-email">---</p>
+              </div>
+              <div>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">fingerprint</span> CCCD / Số định danh
+                </span>
+                <p class="font-mono font-bold text-slate-800 bg-slate-100/50 px-2 py-0.5 rounded border border-slate-200/50 inline-block" id="owner-idcard">---</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- CARD 4: THÔNG TIN BẤT ĐỘNG SẢN -->
-        <div class="glass-card p-lg rounded-2xl shadow-sm bg-white/95 relative overflow-hidden">
-          <div class="flex items-center gap-sm border-b border-outline-variant pb-sm mb-md">
-            <span class="material-symbols-outlined text-primary text-[20px]">home</span>
+        <!-- CARD 4: THÔNG TIN CHI TIẾT BẤT ĐỘNG SẢN -->
+        <div class="glass-card p-6 rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow relative overflow-hidden">
+          <div class="flex items-center gap-2 border-b border-outline-variant pb-4 mb-4">
+            <span class="material-symbols-outlined text-primary text-[20px] icon-filled">home</span>
             <h3 class="font-bold text-on-surface">Bất động sản ký gửi</h3>
           </div>
-          <div class="space-y-md">
+          <div class="space-y-4 text-[14px]">
             <div>
-              <p class="text-xs text-on-surface-variant">Loại tài sản</p>
-              <p class="font-bold text-on-surface" id="prop-type">---</p>
+              <p class="text-xs text-on-surface-variant font-medium">Loại bất động sản</p>
+              <p class="font-extrabold text-on-surface mt-0.5" id="prop-type">---</p>
             </div>
-            <div class="grid grid-cols-2 gap-sm">
+            
+            <div class="grid grid-cols-2 gap-3 bg-slate-50/50 p-3 rounded-lg border border-slate-100">
               <div>
-                <p class="text-xs text-on-surface-variant">Diện tích</p>
-                <p class="font-semibold text-on-surface" id="prop-area">---</p>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">space_dashboard</span>Diện tích
+                </span>
+                <p class="font-extrabold text-slate-800" id="prop-area">---</p>
               </div>
               <div>
-                <p class="text-xs text-on-surface-variant">Hướng nhà</p>
-                <p class="font-semibold text-on-surface" id="prop-direction">---</p>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-sm">
-              <div>
-                <p class="text-xs text-on-surface-variant">Phòng ngủ</p>
-                <p class="font-semibold text-on-surface" id="prop-bedrooms">---</p>
-              </div>
-              <div>
-                <p class="text-xs text-on-surface-variant">Phòng tắm</p>
-                <p class="font-semibold text-on-surface" id="prop-bathrooms">---</p>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">explore</span>Hướng nhà
+                </span>
+                <p class="font-extrabold text-slate-800" id="prop-direction">---</p>
               </div>
             </div>
+            
+            <div class="grid grid-cols-2 gap-3 bg-slate-50/50 p-3 rounded-lg border border-slate-100">
+              <div>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">bed</span>Phòng ngủ
+                </span>
+                <p class="font-extrabold text-slate-800" id="prop-bedrooms">---</p>
+              </div>
+              <div>
+                <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                  <span class="material-symbols-outlined text-[14px]">bathtub</span>Phòng tắm
+                </span>
+                <p class="font-extrabold text-slate-800" id="prop-bathrooms">---</p>
+              </div>
+            </div>
+            
             <div>
-              <p class="text-xs text-on-surface-variant">Địa chỉ chi tiết</p>
-              <p class="text-sm font-semibold text-on-surface" id="prop-address">---</p>
+              <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1 mb-0.5">
+                <span class="material-symbols-outlined text-[14px]">location_on</span>Địa chỉ chi tiết
+              </span>
+              <p class="text-sm font-semibold text-slate-800 leading-relaxed" id="prop-address">---</p>
             </div>
-            <div class="pt-sm border-t border-outline-variant/60">
-              <p class="text-xs text-on-surface-variant">Giá đề xuất</p>
-              <p class="font-black text-primary text-lg" id="prop-price">---</p>
+            
+            <div class="pt-4 border-t border-outline-variant/60">
+              <span class="text-xs text-on-surface-variant font-medium">Mức giá chủ nhà đề xuất</span>
+              <p class="font-black text-primary text-xl mt-0.5 tracking-tight" id="prop-price">---</p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <footer class="mt-xl py-lg text-center text-outline font-body-sm border-t border-outline-variant">
-      © 2023 EstateSync Pro - Hệ thống quản lý bất động sản tích hợp.
+    <!-- TOAST NOTIFICATION CONTAINER (FOR PREMIUM NOTIFICATIONS) -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3"></div>
+
+    <!-- Elegant Footer -->
+    <footer class="mt-12 py-6 text-center text-slate-400 font-medium text-xs border-t border-outline-variant/60">
+      © 2026 HomeMatch - Hệ thống Quản lý Ký gửi và Giao dịch Bất động sản Premium.
     </footer>
   </main>
 
   <script>
+    // Premium Toast Helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+      const icon = type === 'success' ? 'check_circle' : 'error';
+      
+      toast.className = `flex items-center gap-3 text-white px-5 py-3 rounded-lg shadow-xl ${bgColor} transition-all duration-300 translate-x-12 opacity-0 font-medium text-[13px]`;
+      toast.innerHTML = `
+        <span class="material-symbols-outlined icon-filled text-[18px]">${icon}</span>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-x-12', 'opacity-0');
+      }, 50);
+      
+      setTimeout(() => {
+        toast.classList.add('translate-x-12', 'opacity-0');
+        setTimeout(() => { toast.remove(); }, 300);
+      }, 3000);
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const submissionId = urlParams.get('submissionId');
@@ -273,22 +355,31 @@
       }
 
       if (!submissionId) {
-        alert('Thiếu submissionId để tải chi tiết hợp đồng.');
-        window.history.back();
+        showToast('Thiếu mã yêu cầu (submissionId) để tải chi tiết hợp đồng.', 'error');
+        setTimeout(() => { window.history.back(); }, 2000);
         return;
       }
 
       const formatVnd = (value) => {
         const parsed = Number(value);
         if (!Number.isFinite(parsed)) return '---';
-        return `${parsed.toLocaleString('vi-VN')} VND`;
+        return `${parsed.toLocaleString('vi-VN')} VNĐ`;
       };
 
       const formatDate = (value) => {
         if (!value) return '---';
         const d = new Date(value);
         if (Number.isNaN(d.getTime())) return '---';
-        return d.toLocaleString('vi-VN');
+        return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      };
+
+      const mapPropertyType = (type) => {
+        const normalized = String(type || '').toLowerCase();
+        if (normalized === 'apartment') return 'Căn hộ';
+        if (normalized === 'house') return 'Nhà riêng';
+        if (normalized === 'villa') return 'Biệt thự';
+        if (normalized === 'ground') return 'Đất nền';
+        return type || '---';
       };
 
       try {
@@ -304,10 +395,10 @@
           document.getElementById('contract-code').textContent = activeContract.contract_code || '---';
           
           let typeLabel = activeContract.contract_type || '---';
-          if (activeContract.contract_type === 'consignment') typeLabel = 'Hợp đồng ký gửi';
-          if (activeContract.contract_type === 'renewal') typeLabel = 'Hợp đồng gia hạn';
-          if (activeContract.contract_type === 'standard') typeLabel = 'Hợp đồng mẫu (Standard)';
-          if (activeContract.contract_type === 'custom') typeLabel = 'Hợp đồng điều khoản riêng (Custom)';
+          if (activeContract.contract_type === 'consignment') typeLabel = 'Hợp đồng ký gửi gốc';
+          if (activeContract.contract_type === 'renewal') typeLabel = 'Phụ lục gia hạn';
+          if (activeContract.contract_type === 'standard') typeLabel = 'Hợp đồng tiêu chuẩn (Standard)';
+          if (activeContract.contract_type === 'custom') typeLabel = 'Thỏa thuận riêng biệt (Custom)';
           document.getElementById('contract-type').textContent = typeLabel;
 
           document.getElementById('contract-duration').textContent = activeContract.contract_duration_months ? `${activeContract.contract_duration_months} tháng` : '---';
@@ -322,11 +413,11 @@
           const scanLink = document.getElementById('contract-scan-link');
           if (activeContract.signed_scan_url) {
             scanLink.href = activeContract.signed_scan_url;
-            scanLink.className = 'text-xs font-bold text-primary hover:underline flex items-center gap-0.5';
+            scanLink.className = 'text-xs font-bold text-primary hover:text-blue-800 hover:underline flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 transition-all';
           } else {
             scanLink.removeAttribute('href');
-            scanLink.textContent = 'Chưa tải lên file scan';
-            scanLink.className = 'text-xs text-on-surface-variant cursor-not-allowed';
+            scanLink.textContent = 'Chưa nộp tệp Scan';
+            scanLink.className = 'text-xs text-slate-400 font-bold bg-slate-100 border border-slate-200 px-3 py-1 rounded-full cursor-not-allowed';
           }
         }
 
@@ -351,7 +442,7 @@
 
         // 4. Tải thông tin bất động sản
         if (data.submission) {
-          document.getElementById('prop-type').textContent = data.submission.property_type || '---';
+          document.getElementById('prop-type').textContent = mapPropertyType(data.submission.property_type);
           document.getElementById('prop-area').textContent = data.submission.area ? `${data.submission.area} m²` : '---';
           document.getElementById('prop-direction').textContent = data.submission.direction || '---';
           document.getElementById('prop-bedrooms').textContent = data.submission.num_bedrooms ? `${data.submission.num_bedrooms} phòng` : '0 phòng';
@@ -361,18 +452,34 @@
         }
 
       } catch (error) {
-        alert(error.message || 'Không thể tải chi tiết hợp đồng.');
-        window.history.back();
+        showToast(error.message || 'Không thể tải chi tiết hợp đồng.', 'error');
+        setTimeout(() => { window.history.back(); }, 2000);
       }
     });
 
     function copyTransactionCode() {
       const codeText = document.getElementById('deposit-code').textContent;
       if (codeText && codeText !== '---') {
+        const copyIcon = document.getElementById('copy-icon');
+        const copyBtn = document.getElementById('copy-btn');
+        
         navigator.clipboard.writeText(codeText).then(() => {
-          alert('Đã copy mã giao dịch đối soát thành công!');
+          // Toast Notification instead of raw alert!
+          showToast('Sao chép mã đối soát thành công!');
+          
+          // Animate icon transition to check mark!
+          copyIcon.textContent = 'check';
+          copyIcon.classList.add('text-emerald-600', 'font-black');
+          copyBtn.classList.add('border-emerald-300', 'bg-emerald-50');
+          
+          setTimeout(() => {
+            copyIcon.textContent = 'content_copy';
+            copyIcon.classList.remove('text-emerald-600', 'font-black');
+            copyBtn.classList.remove('border-emerald-300', 'bg-emerald-50');
+          }, 1500);
         }).catch(err => {
           console.error('Không thể copy:', err);
+          showToast('Không thể tự động copy mã, xin vui lòng bôi đen mã để copy.', 'error');
         });
       }
     }

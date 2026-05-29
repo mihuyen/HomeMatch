@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>HomeMatch - Kế toán: Hoàn trả tiền đặt cọc</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f4f3fa",
+            "primary-fixed-dim": "#b6c4ff",
+            "on-primary-fixed": "#00164e",
+            "on-error-container": "#93000a",
+            "secondary-fixed-dim": "#b7c8e1",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#6e2c00",
+            "on-primary-fixed-variant": "#264191",
+            "error-container": "#ffdad6",
+            "on-surface-variant": "#444651",
+            "on-secondary-fixed": "#0b1c30",
+            "on-error": "#ffffff",
+            "surface-container": "#eeedf4",
+            "background": "#f8fafc",
+            "surface": "#ffffff",
+            "secondary-fixed": "#d3e4fe",
+            "secondary": "#505f76",
+            "tertiary": "#4b1c00",
+            "on-background": "#0f172a",
+            "surface-variant": "#e3e1e9",
+            "primary-container": "#1e3a8a",
+            "outline": "#94a3b8",
+            "surface-dim": "#f1f5f9",
+            "on-secondary-container": "#54647a",
+            "inverse-surface": "#1e293b",
+            "error": "#ba1a1a",
+            "surface-tint": "#4059aa",
+            "tertiary-fixed-dim": "#ffb691",
+            "on-tertiary-container": "#f39461",
+            "surface-bright": "#ffffff",
+            "surface-container-high": "#e2e8f0",
+            "surface-container-highest": "#cbd5e1",
+            "on-tertiary-fixed-variant": "#773205",
+            "on-tertiary-fixed": "#341100",
+            "inverse-on-surface": "#f8fafc",
+            "tertiary-fixed": "#ffdbcb",
+            "on-primary": "#ffffff",
+            "secondary-container": "#d3e4fe",
+            "inverse-primary": "#b6c4ff",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#dce1ff",
+            "on-secondary-fixed-variant": "#38485d",
+            "on-primary-container": "#90a8ff",
+            "on-surface": "#1a1b21",
+            "primary": "#1E3A8A",
+            "outline-variant": "#e2e8f0"
+          },
+          "borderRadius": {
+            "DEFAULT": "12px",
+            "lg": "16px",
+            "xl": "24px",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "sans": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .icon-filled {
+      font-variation-settings: 'FILL' 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    
+    /* Subtle pulsing effect for alarm */
+    @keyframes alarm-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+    .alarm-glow {
+      animation: alarm-pulse 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+  <div class="min-h-screen flex flex-col" id="layout-wrapper">
+    <!-- Accountant Topbar Navigation Container -->
+    <div id="accountant-sidebar"></div>
+    
+    <main class="flex-1 min-w-0 overflow-y-auto px-6 md:px-12 py-8 max-w-[1440px] w-full mx-auto">
+      <div class="flex flex-col min-h-full">
+        
+        <!-- Welcome Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 class="text-[28px] font-extrabold tracking-tight text-on-background flex items-center gap-2">
+              <span>Xin chào, </span>
+              <span id="accountant-name" class="text-primary">Kế toán</span> 👋
+            </h1>
+            <p class="text-secondary text-[15px] mt-1">Hệ thống xử lý hoàn trả tiền cọc cho các hợp đồng ký gửi đã hết hạn.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-4 py-2 bg-slate-100 border border-outline-variant text-[14px] font-semibold text-secondary rounded-full flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>Hệ thống trực tuyến</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 3 Stats Cards Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <!-- Stats Card 1: Tổng yêu cầu -->
+          <div class="bg-white p-6 rounded-lg border border-outline-variant shadow-sm hover:shadow-md transition-all group flex items-start justify-between">
+            <div class="space-y-2">
+              <span class="text-secondary text-[14px] font-medium tracking-wide">Yêu cầu cần xử lý</span>
+              <h2 id="stat-total-requests" class="text-[32px] font-black text-on-background">0</h2>
+              <span class="text-xs text-secondary bg-slate-100 px-2 py-0.5 rounded font-medium">Hợp đồng đã hết hạn</span>
+            </div>
+            <div class="p-3 bg-blue-50 text-primary rounded-lg group-hover:bg-primary group-hover:text-white transition-all duration-300">
+              <span class="material-symbols-outlined text-[28px] icon-filled">currency_exchange</span>
+            </div>
+          </div>
+
+          <!-- Stats Card 2: Sắp hết hạn (Đỏ cảnh báo nổi bật) -->
+          <div class="bg-red-50/50 p-6 rounded-lg border-2 border-red-200 shadow-sm hover:shadow-md transition-all group flex items-start justify-between alarm-glow">
+            <div class="space-y-2">
+              <span class="text-red-700 text-[14px] font-semibold tracking-wide flex items-center gap-1">
+                <span class="material-symbols-outlined text-[18px] text-red-600 animate-bounce">warning</span>
+                Sắp hết hạn (≤20 ngày)
+              </span>
+              <h2 id="stat-upcoming-expiring" class="text-[32px] font-black text-red-700">0</h2>
+              <span class="text-xs text-red-700 bg-red-100 px-2 py-0.5 rounded font-bold">Cần đặc biệt lưu ý</span>
+            </div>
+            <div class="p-3 bg-red-100 text-red-700 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+              <span class="material-symbols-outlined text-[28px] icon-filled">notifications_active</span>
+            </div>
+          </div>
+
+          <!-- Stats Card 3: Tỷ lệ hoàn cọc đã xử lý -->
+          <div class="bg-white p-6 rounded-lg border border-outline-variant shadow-sm hover:shadow-md transition-all group flex items-start justify-between">
+            <div class="space-y-2 w-full pr-4">
+              <span class="text-secondary text-[14px] font-medium tracking-wide">Tỷ lệ đã hoàn thành</span>
+              <div class="flex items-baseline gap-2">
+                <h2 id="stat-process-rate" class="text-[32px] font-black text-on-background">0%</h2>
+                <span id="stat-process-fraction" class="text-[13px] text-secondary font-medium">(0/0)</span>
+              </div>
+              <!-- Progress Bar -->
+              <div class="w-full bg-slate-100 rounded-full h-2 mt-2">
+                <div id="stat-progress-bar" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+              <span class="material-symbols-outlined text-[28px] icon-filled">check_circle</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Section -->
+        <div class="bg-white p-5 rounded-lg border border-outline-variant shadow-sm mb-6">
+          <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+              <input id="search-input" class="w-full pl-11 pr-4 py-2.5 border border-outline-variant rounded-lg text-body-sm focus:ring-primary focus:border-primary placeholder-slate-400" placeholder="Tìm kiếm theo mã hợp đồng, tên hoặc email chủ nhà..." type="text">
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <select id="filter-property-type" class="border border-outline-variant rounded-lg text-[14px] py-2.5 px-4 focus:ring-primary focus:border-primary bg-white text-secondary font-medium">
+                <option value="">Tất cả loại tài sản</option>
+                <option value="apartment">Căn hộ</option>
+                <option value="house">Nhà nguyên căn</option>
+                <option value="villa">Biệt thự</option>
+                <option value="ground">Đất nền</option>
+              </select>
+              <button id="reset-filters-btn" class="flex items-center gap-2 px-4 py-2.5 border border-outline-variant rounded-lg text-secondary hover:bg-slate-50 font-semibold text-[14px] transition-colors">
+                <span class="material-symbols-outlined text-[20px]">filter_alt_off</span>
+                <span>Đặt lại</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Datatable -->
+        <div class="bg-white rounded-lg border border-outline-variant shadow-sm overflow-hidden flex-1 mb-8">
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-outline-variant text-left">
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px]">Mã hợp đồng</th>
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px]">Chủ sở hữu (Chủ nhà)</th>
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px]">Tài sản & Địa chỉ</th>
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px]">Tiền cọc gốc</th>
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px]">Ngày hết hạn</th>
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px]">Trạng thái</th>
+                  <th class="px-6 py-4 text-label-sm text-secondary uppercase tracking-wider font-bold text-[12px] text-right">Hành động</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant" id="contracts-table-body">
+                <tr>
+                  <td class="px-6 py-8 text-center text-secondary" colspan="7">
+                    <div class="flex flex-col items-center gap-2 justify-center">
+                      <span class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                      <span class="text-[14px]">Đang tải danh sách hợp đồng hết hạn...</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="px-6 py-4 bg-white border-t border-outline-variant flex items-center justify-between">
+            <span class="text-[14px] text-secondary font-medium" id="table-total-count">Hiển thị 0 trên tổng số 0 hợp đồng</span>
+            <div class="flex items-center gap-2">
+              <!-- Simple paging placeholder as visual polish -->
+              <button class="p-1 rounded hover:bg-slate-100 text-secondary disabled:opacity-40" disabled>
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button class="w-8 h-8 rounded bg-primary text-white text-[13px] font-bold">1</button>
+              <button class="p-1 rounded hover:bg-slate-100 text-secondary disabled:opacity-40" disabled>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-auto py-6 border-t border-outline-variant">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-[14px] text-secondary">© 2026 HomeMatch. Tất cả các quyền được bảo hộ.</div>
+            <div class="flex items-center gap-6">
+              <a class="text-[13px] text-secondary hover:text-primary transition-colors font-medium" href="#">Điều khoản dịch vụ</a>
+              <a class="text-[13px] text-secondary hover:text-primary transition-colors font-medium" href="#">Chính sách bảo mật</a>
+              <a class="text-[13px] text-secondary hover:text-primary transition-colors font-medium" href="#">Hỗ trợ kỹ thuật</a>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: Xử lý hoàn tiền cọc -->
+  <div id="refund-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <!-- Backdrop with blur -->
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeRefundModal()"></div>
+    
+    <!-- Modal Content Box -->
+    <div class="relative bg-white rounded-lg shadow-2xl max-w-lg w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col border border-slate-200" id="refund-modal-box">
+      <!-- Modal Header -->
+      <div class="bg-primary px-6 py-4 text-white flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined icon-filled">payments</span>
+          <h3 class="text-[18px] font-bold">Xử lý hoàn trả tiền đặt cọc</h3>
+        </div>
+        <button onclick="closeRefundModal()" class="text-white/80 hover:text-white transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="refund-form" class="p-6 space-y-4 flex-1">
+        <input type="hidden" id="modal-transaction-id">
+        
+        <!-- Contract info cards -->
+        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-lg border border-outline-variant text-[13px]">
+          <div>
+            <span class="text-secondary block font-medium">Mã hợp đồng</span>
+            <span id="modal-contract-code" class="font-bold text-primary text-[14px]">HD-00000-0000</span>
+          </div>
+          <div>
+            <span class="text-secondary block font-medium font-medium">Số tiền cọc gốc</span>
+            <span id="modal-deposit-amount" class="font-bold text-on-background text-[14px]">0 VNĐ</span>
+          </div>
+          <div class="col-span-2 pt-2 border-t border-slate-200 mt-1">
+            <span class="text-secondary block font-medium">Chủ sở hữu</span>
+            <span id="modal-owner-name" class="font-semibold text-slate-800">Nguyễn Văn A</span>
+            <span id="modal-owner-contact" class="text-xs text-secondary block">email@gmail.com | 0123456789</span>
+          </div>
+        </div>
+
+        <!-- Inputs -->
+        <div class="space-y-3">
+          <!-- Return Amount -->
+          <div>
+            <label for="modal-return-amount" class="block text-[14px] font-semibold text-slate-700 mb-1">Số tiền hoàn trả (VNĐ) <span class="text-red-500">*</span></label>
+            <div class="relative rounded-lg shadow-sm">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <span class="text-slate-500 text-[14px]">₫</span>
+              </div>
+              <input type="number" name="return_amount" id="modal-return-amount" class="block w-full rounded-lg border-outline-variant pl-8 pr-12 py-2 focus:border-primary focus:ring-primary text-[15px] font-bold text-slate-800" placeholder="0.00" required>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span class="text-slate-400 text-xs font-semibold">VNĐ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Refund Date -->
+          <div>
+            <label for="modal-return-date" class="block text-[14px] font-semibold text-slate-700 mb-1">Ngày hoàn trả thực tế <span class="text-red-500">*</span></label>
+            <input type="date" name="returned_at" id="modal-return-date" class="block w-full rounded-lg border-outline-variant py-2 focus:border-primary focus:ring-primary text-[14px]" required>
+          </div>
+
+          <!-- Reason -->
+          <div>
+            <label for="modal-reason" class="block text-[14px] font-semibold text-slate-700 mb-1">Lý do hoàn cọc <span class="text-red-500">*</span></label>
+            <textarea name="reason" id="modal-reason" rows="3" class="block w-full rounded-lg border-outline-variant py-2 focus:border-primary focus:ring-primary text-[14px]" placeholder="Nhập lý do hoàn trả tiền đặt cọc..." required></textarea>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 mt-6">
+          <button type="button" onclick="closeRefundModal()" class="px-5 py-2.5 border border-outline-variant text-secondary rounded-lg font-semibold hover:bg-slate-50 active:scale-95 transition-all text-[14px]">
+            Hủy bỏ
+          </button>
+          <button type="submit" id="submit-refund-btn" class="px-6 py-2.5 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 active:scale-95 transition-all flex items-center gap-2 text-[14px]">
+            <span class="material-symbols-outlined text-[20px]">check</span>
+            <span>Xác nhận & Hoàn tiền</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3"></div>
+
+  <!-- Scripts -->
+  <script src="api.js"></script>
+  <script src="accountantSidebar.js"></script>
+  <script>
+    let expiredContractsData = [];
+    let currentAccountantUser = null;
+
+    // Toast Notification helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+      const icon = type === 'success' ? 'check_circle' : 'error';
+      
+      toast.className = `flex items-center gap-3 text-white px-5 py-3.5 rounded-lg shadow-xl ${bgColor} transition-all duration-300 translate-x-12 opacity-0 font-medium text-[14px]`;
+      toast.innerHTML = `
+        <span class="material-symbols-outlined icon-filled">${icon}</span>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Animate in
+      setTimeout(() => {
+        toast.classList.remove('translate-x-12', 'opacity-0');
+      }, 50);
+      
+      // Auto dismiss after 3.5s
+      setTimeout(() => {
+        toast.classList.add('translate-x-12', 'opacity-0');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3500);
+    }
+
+    // Format helpers
+    function formatCurrency(value) {
+      if (value === null || value === undefined || value === '') return 'N/A';
+      const number = Number(value);
+      if (!Number.isFinite(number)) return String(value);
+      return new Intl.NumberFormat('vi-VN').format(number) + ' VNĐ';
+    }
+
+    function formatDate(value) {
+      if (!value) return 'N/A';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleDateString('vi-VN');
+    }
+
+    function mapPropertyType(type) {
+      const normalized = String(type || '').toLowerCase();
+      if (normalized === 'apartment') return 'Căn hộ';
+      if (normalized === 'house') return 'Nhà riêng';
+      if (normalized === 'villa') return 'Biệt thự';
+      if (normalized === 'ground') return 'Đất nền';
+      return type || 'N/A';
+    }
+
+    // Modal Control
+    function openRefundModal(transactionId, contractCode, depositAmount, ownerName, ownerEmail, ownerPhone) {
+      document.getElementById('modal-transaction-id').value = transactionId;
+      document.getElementById('modal-contract-code').textContent = contractCode;
+      document.getElementById('modal-deposit-amount').textContent = formatCurrency(depositAmount);
+      document.getElementById('modal-owner-name').textContent = ownerName;
+      document.getElementById('modal-owner-contact').textContent = `${ownerEmail} | ${ownerPhone || 'Không có sđt'}`;
+      
+      // Pre-fill inputs
+      document.getElementById('modal-return-amount').value = Number(depositAmount);
+      document.getElementById('modal-reason').value = `Hoàn trả lại khoản tiền đặt cọc 10.000đ khi kết thúc/hết hạn hợp đồng ký gửi mã ${contractCode}.`;
+      
+      // Today date in YYYY-MM-DD
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('modal-return-date').value = today;
+
+      const modal = document.getElementById('refund-modal');
+      const box = document.getElementById('refund-modal-box');
+      
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        box.classList.remove('scale-95', 'opacity-0');
+      }, 50);
+    }
+
+    function closeRefundModal() {
+      const modal = document.getElementById('refund-modal');
+      const box = document.getElementById('refund-modal-box');
+      
+      box.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    // Render stats
+    function renderStats(stats) {
+      document.getElementById('stat-total-requests').textContent = stats.totalRequests;
+      document.getElementById('stat-upcoming-expiring').textContent = stats.upcomingExpiring;
+      document.getElementById('stat-process-rate').textContent = `${stats.processRate}%`;
+      
+      document.getElementById('stat-process-fraction').textContent = `(${stats.refundedCount}/${stats.expiredTotal})`;
+      document.getElementById('stat-progress-bar').style.width = `${stats.processRate}%`;
+    }
+
+    // Render table rows
+    function buildContractRow(item) {
+      const owner = item.owner || {};
+      const tx = item.deposit_transaction || {};
+      const ret = item.deposit_return || null;
+      
+      const statusBadge = ret 
+        ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            Đã hoàn cọc
+           </span>`
+        : `<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+            Chờ xử lý
+           </span>`;
+
+      const actionButton = ret
+        ? `<button disabled 
+                  class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 text-slate-400 border border-slate-200 rounded-lg text-[13px] font-bold cursor-not-allowed">
+              <span class="material-symbols-outlined text-[16px]">task_alt</span>
+              <span>Đã hoàn tiền</span>
+            </button>`
+        : `<button onclick="openRefundModal(${tx.transaction_id}, '${item.contract_code}', ${tx.amount}, '${owner.full_name}', '${owner.email}', '${owner.phone}')" 
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[13px] font-bold transition-all hover:shadow-md active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">payment</span>
+              <span>Xử lý hoàn tiền</span>
+            </button>`;
+      
+      return `
+        <tr class="hover:bg-slate-50/50 transition-colors group">
+          <td class="px-6 py-4">
+            <span class="text-[14px] font-bold text-primary block">${item.contract_code || 'N/A'}</span>
+            <span class="text-xs text-secondary">Mã HS: KG-${String(item.submission_id).padStart(5, '0')}</span>
+          </td>
+          <td class="px-6 py-4">
+            <div>
+              <div class="text-[14px] font-semibold text-slate-800">${owner.full_name || 'Không rõ'}</div>
+              <div class="text-xs text-secondary flex items-center gap-1 mt-0.5">
+                <span class="material-symbols-outlined text-[14px]">mail</span>
+                <span>${owner.email || 'N/A'}</span>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="max-w-xs truncate">
+              <span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[11px] font-bold uppercase tracking-wider mb-1 inline-block">${mapPropertyType(item.property_type)}</span>
+              <div class="text-xs text-secondary truncate" title="${item.address || 'N/A'}">${item.address || 'N/A'}</div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-[14px] font-bold text-slate-800 block">${formatCurrency(tx.amount)}</span>
+            <span class="text-[10px] text-slate-500 font-medium font-mono">${tx.transaction_code || ''}</span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-[14px] font-semibold text-red-600 block">${formatDate(item.expired_at)}</span>
+            <span class="text-xs text-secondary">Ký ngày: ${formatDate(item.signed_at)}</span>
+          </td>
+          <td class="px-6 py-4">
+            ${statusBadge}
+          </td>
+          <td class="px-6 py-4 text-right">
+            ${actionButton}
+          </td>
+        </tr>
+      `;
+    }
+
+    // Load expired contracts data
+    async function loadExpiredContracts() {
+      const tbody = document.getElementById('contracts-table-body');
+      const totalCountEl = document.getElementById('table-total-count');
+      
+      try {
+        const response = await getExpiredContractsNeedingRefund();
+        expiredContractsData = response.items || [];
+        
+        // Render statistics
+        renderStats(response.stats || { totalRequests: 0, upcomingExpiring: 0, processRate: 100, totalRefundedAmount: 0, expiredTotal: 0, refundedCount: 0 });
+        
+        filterAndRenderTable();
+      } catch (error) {
+        console.error('Failed to load expired contracts:', error);
+        tbody.innerHTML = `
+          <tr>
+            <td class="px-6 py-8 text-center text-error" colspan="7">
+              <div class="flex flex-col items-center gap-1 justify-center font-semibold">
+                <span class="material-symbols-outlined text-[36px]">error</span>
+                <span>Không thể tải danh sách hợp đồng hết hạn. Vui lòng thử lại!</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        totalCountEl.textContent = 'Lỗi tải dữ liệu';
+      }
+    }
+
+    // Filtering and Search
+    function filterAndRenderTable() {
+      const tbody = document.getElementById('contracts-table-body');
+      const totalCountEl = document.getElementById('table-total-count');
+      
+      const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+      const propertyType = document.getElementById('filter-property-type').value;
+      
+      const filtered = expiredContractsData.filter(item => {
+        const owner = item.owner || {};
+        
+        // Search matches
+        const matchesSearch = !searchTerm || 
+          (item.contract_code && item.contract_code.toLowerCase().includes(searchTerm)) ||
+          (owner.full_name && owner.full_name.toLowerCase().includes(searchTerm)) ||
+          (owner.email && owner.email.toLowerCase().includes(searchTerm));
+          
+        // Property Type matches
+        const matchesType = !propertyType || (item.property_type === propertyType);
+        
+        return matchesSearch && matchesType;
+      });
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td class="px-6 py-12 text-center text-secondary" colspan="7">
+              <div class="flex flex-col items-center gap-2 justify-center">
+                <span class="material-symbols-outlined text-[40px] text-slate-300">hourglass_empty</span>
+                <span class="text-[14px] font-medium">Không tìm thấy yêu cầu hoàn cọc nào phù hợp.</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        totalCountEl.textContent = 'Hiển thị 0 trên tổng số 0 hợp đồng';
+        return;
+      }
+      
+      tbody.innerHTML = filtered.map(buildContractRow).join('');
+      totalCountEl.textContent = `Hiển thị ${filtered.length} trên tổng số ${expiredContractsData.length} hợp đồng`;
+    }
+
+    // Listeners for filters
+    document.getElementById('search-input').addEventListener('input', filterAndRenderTable);
+    document.getElementById('filter-property-type').addEventListener('change', filterAndRenderTable);
+    
+    document.getElementById('reset-filters-btn').addEventListener('click', () => {
+      document.getElementById('search-input').value = '';
+      document.getElementById('filter-property-type').value = '';
+      filterAndRenderTable();
+    });
+
+    // Form Submit handler
+    document.getElementById('refund-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const transactionId = Number(document.getElementById('modal-transaction-id').value);
+      const returnAmount = Number(document.getElementById('modal-return-amount').value);
+      const reason = document.getElementById('modal-reason').value.trim();
+      const returnedAt = document.getElementById('modal-return-date').value;
+      
+      const submitBtn = document.getElementById('submit-refund-btn');
+      const originalBtnText = submitBtn.innerHTML;
+      
+      // Disable & Loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>Đang xử lý...</span>
+      `;
+      
+      try {
+        await processDepositReturn({
+          transaction_id: transactionId,
+          return_amount: returnAmount,
+          reason: reason,
+          returned_at: returnedAt
+        });
+        
+        showToast('Đã xử lý hoàn trả tiền đặt cọc thành công!');
+        closeRefundModal();
+        
+        // Reload expired contracts
+        await loadExpiredContracts();
+      } catch (error) {
+        console.error('Failed to submit refund:', error);
+        showToast(error.message || 'Có lỗi xảy ra khi hoàn cọc.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+    });
+
+    // Page Init
+    async function initAccountantPage() {
+      currentAccountantUser = await requireLogin();
+      if (!currentAccountantUser) return;
+      
+      // Ensure the role is accountant or manager
+      if (currentAccountantUser.role !== 'accountant' && currentAccountantUser.role !== 'manager') {
+        window.location.href = 'home.html';
+        return;
+      }
+      
+      // Set name
+      document.getElementById('accountant-name').textContent = currentAccountantUser.full_name;
+      
+      await loadExpiredContracts();
+    }
+
+    initAccountantPage();
+  </script>
+</body>
+</html>

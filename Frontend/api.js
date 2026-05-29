@@ -218,6 +218,24 @@ async function updateSaleDepositTransaction(submissionId, payload) {
 async function getSaleLegalResponse(submissionId) {
     return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }
+async function createExtension(submissionId, payload) {
+    return apiCall(`/consignments/${submissionId}/extend`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function getExtensionDetail(extensionId) {
+    return apiCall(`/sale/extensions/${extensionId}`);
+}
+
+async function completeExtensionContract(submissionId, extensionId, payload) {
+    return apiCall(`/sale/contracts/${submissionId}/extend/${extensionId}/complete`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
 // Legal review API helpers
 async function listLegalApprovals(params = {}) {
     const query = new URLSearchParams();
@@ -236,6 +254,18 @@ async function getLegalApprovalDetail(submissionContractId) {
 async function updateLegalApproval(submissionContractId, payload) {
     return apiCall(`/legal/approvals/${submissionContractId}`, {
         method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
+
+// Accountant API helpers
+async function getExpiredContractsNeedingRefund() {
+    return apiCall('/accountant/contracts/expired');
+}
+
+async function processDepositReturn(payload) {
+    return apiCall('/accountant/returns', {
+        method: 'POST',
         body: JSON.stringify(payload)
     });
 }
