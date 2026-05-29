@@ -10,9 +10,12 @@ const saleRoutes = require('./routes/sale');
 const legalRoutes = require('./routes/legal');
 const listingRoutes = require('./routes/listing');
 const savedRoutes = require('./routes/saved');
+const appointmentRoutes = require('./routes/appointments');
+const brokerRoutes = require('./routes/broker');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
-const PORT = 5000;
+const PORT = 5050;
 
 // Middleware
 app.use(cors());
@@ -33,6 +36,9 @@ app.use('/api/sale', saleRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/saved', savedRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/broker', brokerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Test endpoints
 app.get('/api/health', async (req, res) => {

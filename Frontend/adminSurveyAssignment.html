@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>HomeMatch - Quản lý Phân công Khảo sát</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#e3e1e9",
+                        "surface": "#faf8ff",
+                        "outline-variant": "#c5c5d3",
+                        "surface-dim": "#dad9e1",
+                        "surface-container": "#eeedf4",
+                        "surface-bright": "#faf8ff",
+                        "surface-tint": "#4059aa",
+                        "on-secondary-container": "#54647a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757682",
+                        "primary-container": "#1e3a8a",
+                        "primary": "#00236f",
+                        "on-surface": "#1a1b21",
+                        "background": "#faf8ff",
+                        "on-surface-variant": "#444651",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f4f3fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#1a1b21",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f6f8fc;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 35, 111, 0.05);
+        }
+        .btn-hover-effect {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-hover-effect:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 35, 111, 0.15);
+        }
+        .modal-active {
+            transition: opacity 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+    <!-- Admin Header/Sidebar -->
+    <div id="admin-sidebar"></div>
+    <script src="adminSidebar.js"></script>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-8 flex flex-col min-w-0">
+        
+        <!-- Page Title & Counter Section -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-black text-primary mb-2 tracking-tight">Quản lý Phân công Khảo sát</h1>
+                <div class="flex items-center gap-2 text-sm text-secondary font-medium">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse inline-block"></span>
+                    <span>Hiện có <strong id="pending-count" class="text-red-600 font-bold">0</strong> yêu cầu hệ thống đã phân công</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar Card -->
+        <div class="bg-white border border-slate-100 rounded-2xl p-5 custom-shadow mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                <!-- Status Filter -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-extrabold text-secondary uppercase tracking-widest">Trạng thái</label>
+                    <select id="filter-status" class="w-full rounded-xl border-slate-200 text-sm font-medium text-on-surface focus:border-primary focus:ring-primary py-2.5 px-3">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending">Hệ thống đã phân công</option>
+                        <option value="assigned">Đã phân công lại</option>
+                        <option value="surveyed">Đã khảo sát đạt</option>
+                    </select>
+                </div>
+
+                <!-- Property Type Filter -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-extrabold text-secondary uppercase tracking-widest">Loại BĐS</label>
+                    <select id="filter-property-type" class="w-full rounded-xl border-slate-200 text-sm font-medium text-on-surface focus:border-primary focus:ring-primary py-2.5 px-3">
+                        <option value="">Tất cả loại BĐS</option>
+                        <option value="Căn hộ">Căn hộ chung cư</option>
+                        <option value="Nhà riêng">Nhà riêng</option>
+                        <option value="Nhà phố">Nhà phố thương mại</option>
+                        <option value="Biệt thự">Biệt thự vườn</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Clear Filter Link -->
+            <button id="btn-clear-filters" class="self-end lg:self-center font-semibold text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1.5 py-2 px-4 hover:bg-slate-50 rounded-xl">
+                <span class="material-symbols-outlined text-lg">filter_alt_off</span>
+                Xóa bộ lọc
+            </button>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="bg-white border border-slate-100 rounded-2xl custom-shadow overflow-hidden flex flex-col">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[950px] border-collapse">
+                    <thead>
+                        <tr class="bg-[#f8fafc]/80 border-b border-slate-100">
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[120px]">Mã yêu cầu</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider">Bất động sản</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[140px]">Ngày gửi</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[200px]">Hệ thống gợi ý</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[180px]">Phân công hiện tại</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider w-[180px]">Trạng thái</th>
+                            <th class="p-5 font-semibold text-xs text-secondary uppercase tracking-wider text-center w-[160px]">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignments-tbody" class="divide-y divide-slate-50">
+                        <!-- Dynamic rows will be rendered here -->
+                        <tr>
+                            <td colspan="7" class="p-10 text-center text-secondary font-medium">
+                                <span class="animate-spin inline-block mr-2 text-primary">⏳</span> Đang tải danh sách phân công khảo sát...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Pagination Footer -->
+            <div class="p-5 border-t border-slate-100 bg-[#f8fafc]/50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <span id="pagination-summary" class="text-xs text-secondary font-medium">
+                    Hiển thị 0-0 trên 0 yêu cầu
+                </span>
+                
+                <div id="pagination-buttons" class="flex items-center gap-1.5">
+                    <!-- Page control buttons will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Beautiful Reassign Modal Popup -->
+    <div id="reassign-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Modal Background Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeReassignModal()"></div>
+
+            <!-- Trick the browser into centering the modal contents -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Content Card -->
+            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-slate-100">
+                <div class="p-6">
+                    <!-- Modal Header -->
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-primary" id="modal-title">Thay đổi Phân công Khảo sát</h3>
+                            <p class="text-xs text-secondary mt-1">Chọn nhân viên thay thế để thực địa tài sản này</p>
+                        </div>
+                        <button onclick="closeReassignModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 transition-colors flex items-center justify-center text-secondary hover:text-on-surface">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                    </div>
+
+                    <!-- Property Detail Summary -->
+                    <div class="bg-[#f8fafc] border border-slate-100 rounded-2xl p-4 mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="modal-req-code" class="text-xs font-extrabold text-primary bg-primary/10 py-1 px-2.5 rounded-lg">#RQ-0000</span>
+                            <span id="modal-req-status" class="text-[10px] font-extrabold tracking-wider uppercase bg-[#ffdad6] text-[#ba1a1a] py-1 px-2.5 rounded-lg">Chờ xử lý</span>
+                        </div>
+                        <h4 id="modal-req-title" class="font-bold text-on-surface text-sm">Căn hộ Vinhome Grand Park</h4>
+                        <p id="modal-req-address" class="text-xs text-secondary mt-1">P. Long Thạnh Mỹ, Thủ Đức</p>
+                    </div>
+
+                    <!-- System Suggestion Highlight -->
+                    <div id="system-suggestion-box" class="bg-green-50 border border-green-200/50 rounded-2xl p-4 mb-6 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 shrink-0">
+                            <span class="material-symbols-outlined text-[18px]">recommend</span>
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-[10px] font-extrabold text-green-700 uppercase tracking-widest">Hệ thống đề xuất</span>
+                            <h5 id="suggested-agent-name" class="font-bold text-green-800 text-sm mt-0.5">Trần Anh Tuấn</h5>
+                            <p class="text-xs text-green-700/80 mt-0.5">Lý do: Hiện tại đang phụ trách ít hồ sơ khảo sát nhất hệ thống.</p>
+                            <button id="btn-apply-suggestion" class="mt-2.5 text-xs font-bold text-green-800 hover:text-green-950 underline transition-colors">
+                                Áp dụng gợi ý ngay
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Staff Options List Container -->
+                    <h5 class="text-xs font-extrabold text-secondary uppercase tracking-widest mb-3">Chọn nhân viên khảo sát</h5>
+                    <div id="staff-list" class="max-h-[220px] overflow-y-auto space-y-2.5 pr-1">
+                        <!-- Dynamic list of brokers -->
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-6 bg-[#f8fafc] border-t border-slate-100 flex justify-end gap-3">
+                    <button onclick="closeReassignModal()" class="px-5 py-2.5 text-sm font-semibold text-secondary hover:text-primary transition-colors hover:bg-slate-100 rounded-xl">
+                        Hủy bỏ
+                    </button>
+                    <button id="btn-confirm-reassign" class="px-6 py-2.5 text-sm font-bold text-white bg-primary hover:bg-[#001c57] transition-colors rounded-xl shadow-md flex items-center gap-1.5">
+                        Xác nhận phân công
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let currentUser = null;
+        let assignments = [];
+        let totalCount = 0;
+        let pendingCount = 0;
+        let limit = 10;
+        let offset = 0;
+        let selectedSubmission = null;
+        let suggestedAgent = null;
+
+        // Verify and Protect Page
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                currentUser = await requireLogin();
+                if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'manager') {
+                    alert('Bạn không có quyền truy cập vào trang quản trị.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Initialize events
+                document.getElementById('filter-status').addEventListener('change', () => { offset = 0; loadAssignmentsData(); });
+                document.getElementById('filter-property-type').addEventListener('change', () => { offset = 0; loadAssignmentsData(); });
+                document.getElementById('btn-clear-filters').addEventListener('click', clearFilters);
+                document.getElementById('btn-confirm-reassign').addEventListener('click', performReassignment);
+                document.getElementById('btn-apply-suggestion').addEventListener('click', applySystemSuggestion);
+
+                // Initial Load
+                loadAssignmentsData();
+            } catch (err) {
+                console.error('requireLogin failed:', err);
+            }
+        });
+
+        // Fetch & Render list data
+        async function loadAssignmentsData() {
+            const status = document.getElementById('filter-status').value;
+            const propertyType = document.getElementById('filter-property-type').value;
+
+            const tbody = document.getElementById('assignments-tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="p-10 text-center text-secondary font-medium">
+                        <span class="animate-spin inline-block mr-2 text-primary">⏳</span> Đang đồng bộ hóa dữ liệu từ hệ thống...
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const response = await getAdminAssignments({
+                    status,
+                    property_type: propertyType,
+                    limit,
+                    offset
+                });
+
+                assignments = response.items || [];
+                totalCount = response.total || 0;
+                pendingCount = response.totalPending || 0;
+                suggestedAgent = response.suggestedAgent || null;
+
+                // Update counter
+                document.getElementById('pending-count').textContent = pendingCount;
+
+                // Populate suggestion in modal
+                if (suggestedAgent) {
+                    document.getElementById('suggested-agent-name').textContent = suggestedAgent.full_name;
+                    document.getElementById('system-suggestion-box').style.display = 'flex';
+                } else {
+                    document.getElementById('system-suggestion-box').style.display = 'none';
+                }
+
+                // Render Table
+                tbody.innerHTML = '';
+                if (assignments.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="p-10 text-center text-secondary font-medium">
+                                📂 Không tìm thấy hồ sơ nào khớp với bộ lọc.
+                            </td>
+                        </tr>
+                    `;
+                    updatePagination();
+                    return;
+                }
+
+                assignments.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50/50 transition-colors font-medium text-slate-700';
+
+                    const dateStr = row.submitted_at ? new Date(row.submitted_at).toLocaleDateString('vi-VN') : '-';
+                    const suggestedName = suggestedAgent ? suggestedAgent.full_name : 'Hệ thống đang tính toán...';
+
+                    // Normalise status labels directly using raw row.status
+                    const STATUS_LABELS = {
+                        draft: 'BẢN NHÁP',
+                        pending: 'HỆ THỐNG ĐÃ PHÂN CÔNG',
+                        submitted: 'HỆ THỐNG ĐÃ PHÂN CÔNG',
+                        assigned: 'ĐÃ PHÂN CÔNG LẠI',
+                        surveyed: 'ĐÃ KHẢO SÁT',
+                        approved: 'ĐÃ PHÊ DUYỆT',
+                        active: 'ĐANG HOẠT ĐỘNG',
+                        cancelled: 'ĐÃ HỦY',
+                        rejected: 'ĐÃ TỪ CHỐI',
+                        listed: 'ĐÃ LÊN TIN',
+                        rented: 'ĐÃ CHO THUÊ',
+                        expired: 'HẾT HẠN'
+                    };
+                    let displayStatus = STATUS_LABELS[row.status] || (row.status || '').toUpperCase();
+
+                    // Badges coloring based on mapped status labels
+                    let badgeClass = 'bg-slate-50 text-slate-600 border border-slate-150';
+                    if (displayStatus === 'HỆ THỐNG ĐÃ PHÂN CÔNG') {
+                        badgeClass = 'bg-blue-50 text-blue-700 border border-blue-200/50';
+                    } else if (displayStatus === 'ĐÃ PHÂN CÔNG LẠI') {
+                        badgeClass = 'bg-amber-50 text-amber-700 border border-amber-200/50';
+                    } else if (displayStatus === 'ĐÃ KHẢO SÁT' || displayStatus === 'ĐÃ PHÊ DUYỆT' || displayStatus === 'ĐANG HOẠT ĐỘNG' || displayStatus === 'ĐÃ CHO THUÊ') {
+                        badgeClass = 'bg-green-50 text-green-700 border border-green-200/50';
+                    } else if (displayStatus === 'ĐÃ HỦY' || displayStatus === 'ĐÃ TỪ CHỐI' || displayStatus === 'HẾT HẠN') {
+                        badgeClass = 'bg-red-50 text-red-700 border border-red-200/50';
+                    }
+
+                    // Extract nice area name for display
+                    let addressParts = (row.address || '').split(',');
+                    let district = addressParts[addressParts.length - 2]?.trim() || '';
+                    let street = addressParts[addressParts.length - 3]?.trim() || '';
+                    if (!district) {
+                        district = row.address;
+                        street = '';
+                    } else {
+                        district = district + ', ' + addressParts[addressParts.length - 1]?.trim();
+                    }
+
+                    tr.innerHTML = `
+                        <td class="p-5 font-bold text-primary font-mono text-sm">#${row.request_code}</td>
+                        <td class="p-5">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-800 text-sm">${row.property_type} ${street ? '- ' + street : ''}</span>
+                                <span class="text-xs text-secondary mt-0.5">${row.address}</span>
+                            </div>
+                        </td>
+                        <td class="p-5 text-sm text-secondary font-semibold">${dateStr}</td>
+                        <td class="p-5 text-sm">
+                            <div class="flex items-center gap-2 font-semibold text-emerald-700">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0"></span>
+                                <span>${suggestedName}</span>
+                            </div>
+                        </td>
+                        <td class="p-5">
+                            <div class="flex items-center gap-2 font-semibold text-slate-800">
+                                <span class="material-symbols-outlined text-[18px] text-slate-400">person</span>
+                                <span>${row.assigned_sales_name || 'Chưa phân công'}</span>
+                            </div>
+                        </td>
+                        <td class="p-5">
+                            <span class="inline-flex items-center px-3 py-1 text-[11px] font-extrabold tracking-wide uppercase rounded-full ${badgeClass}">
+                                ${displayStatus}
+                            </span>
+                        </td>
+                        <td class="p-5 text-center">
+                            ${displayStatus === 'ĐÃ KHẢO SÁT' ? `
+                                <span class="inline-flex items-center gap-1.5 text-emerald-700 font-bold text-xs bg-emerald-50 border border-emerald-100/50 rounded-xl px-3.5 py-2">
+                                    <span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+                                    Đã hoàn tất
+                                </span>
+                            ` : `
+                                <button onclick="openReassignModal(${row.submission_id})" class="inline-flex items-center justify-center font-bold text-xs bg-slate-50 text-primary border border-slate-200 rounded-xl px-4 py-2 hover:bg-primary hover:text-white transition-all shadow-sm">
+                                    Sửa phân công
+                                </button>
+                            `}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                updatePagination();
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-10 text-center text-red-600 font-medium">
+                            ⚠️ Có lỗi xảy ra trong quá trình đồng bộ dữ liệu: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Pagination Handler
+        function updatePagination() {
+            const summary = document.getElementById('pagination-summary');
+            const buttonsContainer = document.getElementById('pagination-buttons');
+
+            const currentStart = totalCount > 0 ? offset + 1 : 0;
+            const currentEnd = Math.min(offset + limit, totalCount);
+
+            summary.textContent = `Hiển thị ${currentStart}-${currentEnd} trên ${totalCount} yêu cầu`;
+
+            buttonsContainer.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors';
+            prevBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_left</span>';
+            prevBtn.disabled = offset === 0;
+            prevBtn.addEventListener('click', () => {
+                offset = Math.max(0, offset - limit);
+                loadAssignmentsData();
+            });
+            buttonsContainer.appendChild(prevBtn);
+
+            // Page numbers
+            const totalPages = Math.ceil(totalCount / limit);
+            const currentPage = Math.floor(offset / limit) + 1;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                const isCurrent = i === currentPage;
+                btn.className = `w-9 h-9 rounded-xl font-bold text-xs flex items-center justify-center border transition-all ${isCurrent ? 'bg-primary border-primary text-white shadow-sm' : 'border-slate-200 text-secondary hover:bg-slate-50'}`;
+                btn.textContent = i;
+                btn.addEventListener('click', () => {
+                    offset = (i - 1) * limit;
+                    loadAssignmentsData();
+                });
+                buttonsContainer.appendChild(btn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors';
+            nextBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_right</span>';
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            nextBtn.addEventListener('click', () => {
+                offset = offset + limit;
+                loadAssignmentsData();
+            });
+            buttonsContainer.appendChild(nextBtn);
+        }
+
+        // Clear filter bar inputs
+        function clearFilters() {
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-property-type').value = '';
+            offset = 0;
+            loadAssignmentsData();
+        }
+
+        // Open assignment edit popup
+        async function openReassignModal(submissionId) {
+            selectedSubmission = assignments.find(it => it.submission_id === submissionId);
+            if (!selectedSubmission) return;
+
+            document.getElementById('modal-req-code').textContent = `#${selectedSubmission.request_code}`;
+            document.getElementById('modal-req-status').textContent = selectedSubmission.assignment_status;
+            document.getElementById('modal-req-title').textContent = selectedSubmission.property_type;
+            document.getElementById('modal-req-address').textContent = selectedSubmission.address;
+
+            // Bind current status badge color
+            const badge = document.getElementById('modal-req-status');
+            if (selectedSubmission.assignment_status === 'HỆ THỐNG ĐÃ PHÂN CÔNG') {
+                badge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-blue-50 text-blue-800 py-1 px-2.5 rounded-lg';
+            } else if (selectedSubmission.assignment_status === 'ĐÃ PHÂN CÔNG LẠI') {
+                badge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-amber-100 text-amber-800 py-1 px-2.5 rounded-lg';
+            } else {
+                badge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-green-100 text-green-800 py-1 px-2.5 rounded-lg';
+            }
+
+            // Fetch sales list
+            const staffList = document.getElementById('staff-list');
+            staffList.innerHTML = `<p class="text-center text-xs text-secondary py-6">⏳ Đang lấy danh sách nhân viên môi giới...</p>`;
+
+            // Show Modal Container
+            document.getElementById('reassign-modal').classList.remove('hidden');
+
+            try {
+                const response = await getAdminSalesAgents();
+                const agents = response.salesAgents || [];
+
+                staffList.innerHTML = '';
+                agents.forEach(ag => {
+                    const activeAssignedCount = ag.active_count;
+                    const isSuggested = suggestedAgent && suggestedAgent.user_id === ag.user_id;
+
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = `flex items-center justify-between p-3.5 border rounded-2xl hover:border-primary cursor-pointer transition-all ${isSuggested ? 'bg-emerald-50/30 border-emerald-200' : 'border-slate-100'}`;
+                    
+                    // On click select radio
+                    rowDiv.addEventListener('click', () => {
+                        document.getElementById(`radio-agent-${ag.user_id}`).checked = true;
+                    });
+
+                    rowDiv.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <input type="radio" name="reassign-sales-option" id="radio-agent-${ag.user_id}" value="${ag.user_id}" ${selectedSubmission.assigned_sales_id === ag.user_id ? 'checked' : ''} class="w-4.5 h-4.5 text-primary border-slate-300 focus:ring-primary">
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-800 text-sm">${ag.full_name}</span>
+                                    ${isSuggested ? '<span class="text-[9px] font-extrabold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-md uppercase tracking-wider">Đề xuất</span>' : ''}
+                                </div>
+                                <span class="text-xs text-secondary mt-0.5">${ag.email} - ${ag.phone || 'Chưa cập nhật SĐT'}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end shrink-0">
+                            <span class="text-xs font-extrabold text-slate-700 bg-slate-100 py-1 px-2.5 rounded-lg">
+                                Đang xử lý: ${activeAssignedCount} BĐS
+                            </span>
+                            <div class="w-20 bg-slate-100 rounded-full h-1 mt-1.5 overflow-hidden">
+                                <div class="bg-primary h-full" style="width: ${Math.min(activeAssignedCount * 15, 100)}%"></div>
+                            </div>
+                        </div>
+                    `;
+                    staffList.appendChild(rowDiv);
+                });
+
+            } catch (err) {
+                console.error(err);
+                staffList.innerHTML = `<p class="text-center text-xs text-red-600 font-semibold py-6">⚠️ Không thể tải danh sách nhân sự: ${err.message}</p>`;
+            }
+        }
+
+        // Close assignment popup
+        function closeReassignModal() {
+            document.getElementById('reassign-modal').classList.add('hidden');
+            selectedSubmission = null;
+        }
+
+        // Apply suggestions click handler inside modal
+        function applySystemSuggestion(e) {
+            e.stopPropagation();
+            if (suggestedAgent) {
+                const radio = document.getElementById(`radio-agent-${suggestedAgent.user_id}`);
+                if (radio) {
+                    radio.checked = true;
+                }
+            }
+        }
+
+        // Submit reassignment confirmation
+        async function performReassignment() {
+            if (!selectedSubmission) return;
+
+            const selectedRadio = document.querySelector('input[name="reassign-sales-option"]:checked');
+            if (!selectedRadio) {
+                alert('Vui lòng chọn một nhân sự để phân công.');
+                return;
+            }
+
+            const assignedSalesId = Number(selectedRadio.value);
+
+            const btnConfirm = document.getElementById('btn-confirm-reassign');
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '⏳ Đang phân công...';
+
+            try {
+                await assignSurveyor(selectedSubmission.submission_id, assignedSalesId);
+                closeReassignModal();
+                loadAssignmentsData();
+            } catch (err) {
+                alert('Phân công nhân sự khảo sát thất bại: ' + err.message);
+            } finally {
+                btnConfirm.disabled = false;
+                btnConfirm.innerHTML = 'Xác nhận phân công';
+            }
+        }
+    </script>
+</body>
+</html>

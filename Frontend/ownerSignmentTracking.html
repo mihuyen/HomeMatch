@@ -1,568 +1,865 @@
-<!DOCTYPE html><html class="light" lang="vi" style=""><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Phân công - Quản lý Bất động sản</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        "colors": {
-                "surface-container-lowest": "#ffffff",
-                "tertiary-fixed-dim": "#ffb691",
-                "secondary": "#505f76",
-                "on-secondary-fixed-variant": "#38485d",
-                "on-primary": "#ffffff",
-                "on-tertiary-container": "#f39461",
-                "inverse-on-surface": "#f1f0f7",
-                "surface-container-highest": "#e3e1e9",
-                "inverse-primary": "#b6c4ff",
-                "outline-variant": "#c5c5d3",
-                "on-tertiary": "#ffffff",
-                "error-container": "#ffdad6",
-                "on-primary-fixed-variant": "#264191",
-                "on-surface": "#1a1b21",
-                "on-tertiary-fixed": "#341100",
-                "on-error-container": "#93000a",
-                "surface-dim": "#dad9e1",
-                "on-secondary": "#ffffff",
-                "tertiary": "#4b1c00",
-                "secondary-container": "#d0e1fb",
-                "background": "#faf8ff",
-                "on-error": "#ffffff",
-                "on-background": "#1a1b21",
-                "on-surface-variant": "#444651",
-                "surface-bright": "#faf8ff",
-                "primary-fixed-dim": "#b6c4ff",
-                "on-primary-container": "#90a8ff",
-                "tertiary-container": "#6e2c00",
-                "surface-tint": "#4059aa",
-                "surface-container-high": "#e9e7ef",
-                "secondary-fixed-dim": "#b7c8e1",
-                "primary-container": "#1e3a8a",
-                "on-tertiary-fixed-variant": "#773205",
-                "surface": "#faf8ff",
-                "surface-container-low": "#f4f3fa",
-                "error": "#ba1a1a",
-                "surface-variant": "#e3e1e9",
-                "primary": "#00236f",
-                "on-secondary-fixed": "#0b1c30",
-                "primary-fixed": "#dce1ff",
-                "tertiary-fixed": "#ffdbcb",
-                "outline": "#757682",
-                "on-primary-fixed": "#00164e",
-                "secondary-fixed": "#d3e4fe",
-                "on-secondary-container": "#54647a",
-                "inverse-surface": "#2f3036",
-                "surface-container": "#eeedf4"
-        },
-        "borderRadius": {
-                "DEFAULT": "0.125rem",
-                "lg": "0.25rem",
-                "xl": "0.5rem",
-                "full": "0.75rem"
-        },
-        "spacing": {
-                "xs": "4px",
-                "md": "16px",
-                "margin-mobile": "16px",
-                "xl": "32px",
-                "lg": "24px",
-                "margin-desktop": "32px",
-                "sm": "8px",
-                "gutter": "24px",
-                "base": "8px"
-        },
-        "fontFamily": {
-                "headline-xl-mobile": [
-                        "Inter"
-                ],
-                "body-lg": [
-                        "Inter"
-                ],
-                "headline-lg": [
-                        "Inter"
-                ],
-                "headline-md": [
-                        "Inter"
-                ],
-                "body-md": [
-                        "Inter"
-                ],
-                "headline-xl": [
-                        "Inter"
-                ],
-                "label-md": [
-                        "Inter"
-                ],
-                "label-sm": [
-                        "Inter"
-                ],
-                "body-sm": [
-                        "Inter"
-                ]
-        },
-        "fontSize": {
-                "headline-xl-mobile": [
-                        "28px",
-                        {
-                                "lineHeight": "34px",
-                                "fontWeight": "700"
-                        }
-                ],
-                "body-lg": [
-                        "18px",
-                        {
-                                "lineHeight": "28px",
-                                "fontWeight": "400"
-                        }
-                ],
-                "headline-lg": [
-                        "24px",
-                        {
-                                "lineHeight": "32px",
-                                "letterSpacing": "-0.01em",
-                                "fontWeight": "600"
-                        }
-                ],
-                "headline-md": [
-                        "20px",
-                        {
-                                "lineHeight": "28px",
-                                "fontWeight": "600"
-                        }
-                ],
-                "body-md": [
-                        "16px",
-                        {
-                                "lineHeight": "24px",
-                                "fontWeight": "400"
-                        }
-                ],
-                "headline-xl": [
-                        "36px",
-                        {
-                                "lineHeight": "44px",
-                                "letterSpacing": "-0.02em",
-                                "fontWeight": "700"
-                        }
-                ],
-                "label-md": [
-                        "14px",
-                        {
-                                "lineHeight": "20px",
-                                "letterSpacing": "0.05em",
-                                "fontWeight": "500"
-                        }
-                ],
-                "label-sm": [
-                        "12px",
-                        {
-                                "lineHeight": "16px",
-                                "fontWeight": "600"
-                        }
-                ],
-                "body-sm": [
-                        "14px",
-                        {
-                                "lineHeight": "20px",
-                                "fontWeight": "400"
-                        }
-                ]
-        }
-},
-    },
-  }
-</script>
-<style>
-        body { background-color: #F8FAFC; } /* Custom background override to match guidelines */
-    </style>
+<!DOCTYPE html>
+<html class="light" lang="vi" style="">
+
+<head>
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>Phân công - Quản lý Bất động sản</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+                rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+                rel="stylesheet">
+        <script id="tailwind-config">
+                tailwind.config = {
+                        darkMode: "class",
+                        theme: {
+                                extend: {
+                                        "colors": {
+                                                "surface-container-lowest": "#ffffff",
+                                                "tertiary-fixed-dim": "#ffb691",
+                                                "secondary": "#505f76",
+                                                "on-secondary-fixed-variant": "#38485d",
+                                                "on-primary": "#ffffff",
+                                                "on-tertiary-container": "#f39461",
+                                                "inverse-on-surface": "#f1f0f7",
+                                                "surface-container-highest": "#e3e1e9",
+                                                "inverse-primary": "#b6c4ff",
+                                                "outline-variant": "#c5c5d3",
+                                                "on-tertiary": "#ffffff",
+                                                "error-container": "#ffdad6",
+                                                "on-primary-fixed-variant": "#264191",
+                                                "on-surface": "#1a1b21",
+                                                "on-tertiary-fixed": "#341100",
+                                                "on-error-container": "#93000a",
+                                                "surface-dim": "#dad9e1",
+                                                "on-secondary": "#ffffff",
+                                                "tertiary": "#4b1c00",
+                                                "secondary-container": "#d0e1fb",
+                                                "background": "#faf8ff",
+                                                "on-error": "#ffffff",
+                                                "on-background": "#1a1b21",
+                                                "on-surface-variant": "#444651",
+                                                "surface-bright": "#faf8ff",
+                                                "primary-fixed-dim": "#b6c4ff",
+                                                "on-primary-container": "#90a8ff",
+                                                "tertiary-container": "#6e2c00",
+                                                "surface-tint": "#4059aa",
+                                                "surface-container-high": "#e9e7ef",
+                                                "secondary-fixed-dim": "#b7c8e1",
+                                                "primary-container": "#1e3a8a",
+                                                "on-tertiary-fixed-variant": "#773205",
+                                                "surface": "#faf8ff",
+                                                "surface-container-low": "#f4f3fa",
+                                                "error": "#ba1a1a",
+                                                "surface-variant": "#e3e1e9",
+                                                "primary": "#00236f",
+                                                "on-secondary-fixed": "#0b1c30",
+                                                "primary-fixed": "#dce1ff",
+                                                "tertiary-fixed": "#ffdbcb",
+                                                "outline": "#757682",
+                                                "on-primary-fixed": "#00164e",
+                                                "secondary-fixed": "#d3e4fe",
+                                                "on-secondary-container": "#54647a",
+                                                "inverse-surface": "#2f3036",
+                                                "surface-container": "#eeedf4"
+                                        },
+                                        "borderRadius": {
+                                                "DEFAULT": "0.125rem",
+                                                "lg": "0.25rem",
+                                                "xl": "0.5rem",
+                                                "full": "0.75rem"
+                                        },
+                                        "spacing": {
+                                                "xs": "4px",
+                                                "md": "16px",
+                                                "margin-mobile": "16px",
+                                                "xl": "32px",
+                                                "lg": "24px",
+                                                "margin-desktop": "32px",
+                                                "sm": "8px",
+                                                "gutter": "24px",
+                                                "base": "8px"
+                                        },
+                                        "fontFamily": {
+                                                "headline-xl-mobile": [
+                                                        "Inter"
+                                                ],
+                                                "body-lg": [
+                                                        "Inter"
+                                                ],
+                                                "headline-lg": [
+                                                        "Inter"
+                                                ],
+                                                "headline-md": [
+                                                        "Inter"
+                                                ],
+                                                "body-md": [
+                                                        "Inter"
+                                                ],
+                                                "headline-xl": [
+                                                        "Inter"
+                                                ],
+                                                "label-md": [
+                                                        "Inter"
+                                                ],
+                                                "label-sm": [
+                                                        "Inter"
+                                                ],
+                                                "body-sm": [
+                                                        "Inter"
+                                                ]
+                                        },
+                                        "fontSize": {
+                                                "headline-xl-mobile": [
+                                                        "28px",
+                                                        {
+                                                                "lineHeight": "34px",
+                                                                "fontWeight": "700"
+                                                        }
+                                                ],
+                                                "body-lg": [
+                                                        "18px",
+                                                        {
+                                                                "lineHeight": "28px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ],
+                                                "headline-lg": [
+                                                        "24px",
+                                                        {
+                                                                "lineHeight": "32px",
+                                                                "letterSpacing": "-0.01em",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ],
+                                                "headline-md": [
+                                                        "20px",
+                                                        {
+                                                                "lineHeight": "28px",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ],
+                                                "body-md": [
+                                                        "16px",
+                                                        {
+                                                                "lineHeight": "24px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ],
+                                                "headline-xl": [
+                                                        "36px",
+                                                        {
+                                                                "lineHeight": "44px",
+                                                                "letterSpacing": "-0.02em",
+                                                                "fontWeight": "700"
+                                                        }
+                                                ],
+                                                "label-md": [
+                                                        "14px",
+                                                        {
+                                                                "lineHeight": "20px",
+                                                                "letterSpacing": "0.05em",
+                                                                "fontWeight": "500"
+                                                        }
+                                                ],
+                                                "label-sm": [
+                                                        "12px",
+                                                        {
+                                                                "lineHeight": "16px",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ],
+                                                "body-sm": [
+                                                        "14px",
+                                                        {
+                                                                "lineHeight": "20px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ]
+                                        }
+                                },
+                        },
+                }
+        </script>
+        <style>
+                body {
+                        background-color: #F8FAFC;
+                }
+
+                /* Custom background override to match guidelines */
+        </style>
 </head>
-<body class="font-sans text-on-surface flex min-h-screen flex-col">
 
-<!-- Top owner navigation (loaded from ownerSidebar.html) -->
-<div id="owner-sidebar"></div>
-<!-- Vertical side-bar removed; top horizontal ownerSidebar handles navigation -->
-<!-- Main Content Area -->
-<main class="flex-1 flex flex-col min-w-0 w-full bg-surface-container-lowest">
-<!-- Top App Bar removed to free vertical space for tracking -->
-<!-- Mobile Header -->
-<header class="flex md:hidden bg-surface border-b border-outline-variant items-center justify-between px-4 h-16 sticky top-0 z-10">
-<h1 class="font-headline-md text-headline-md font-extrabold text-primary">Theo dõi ký gửi</h1>
-<button class="text-on-surface-variant">
-<span class="material-symbols-outlined">menu</span>
-</button>
-</header>
-<div class="px-margin-desktop py-lg flex justify-between items-end border-b border-outline-variant/50">
-<div>
-<h1 class="font-headline-xl text-headline-xl text-on-surface">Theo dõi ký gửi</h1>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">Quản lý và giám sát các yêu cầu ký gửi tài sản của bạn.</p>
-</div>
-<div class="flex gap-4">
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-sm text-body-sm outline-none w-64 transition-colors" id="trackingSearch" placeholder="Tìm kiếm yêu cầu..." type="text">
-</div>
-<button class="flex items-center justify-center p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant">
-<span class="material-symbols-outlined">filter_list</span>
-</button>
-</div>
-</div>
-<!-- Content Grid: single-column so the tracking list uses full width -->
-<div class="flex-1 p-margin-mobile md:p-margin-desktop overflow-hidden flex flex-col gap-gutter bg-surface-container-lowest">
-<!-- Request List Table (Bento Card Style) -->
-<section class="flex-1 bg-surface border border-outline-variant rounded-xl overflow-hidden flex flex-col">
-<div class="px-md py-4 border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
-<h2 class="font-headline-md text-headline-md text-on-surface">Yêu cầu Đang hoạt động</h2>
-<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-1 rounded-full" id="trackingCount">0 Mục</span>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead class="bg-surface-container-low border-b border-outline-variant sticky top-0 z-0">
-<tr>
-<th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Mã Yêu cầu</th>
-<th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Địa chỉ</th>
-<th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Giá Đề xuất</th>
-<th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Ngày</th>
-<th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Trạng thái</th>
-</tr>
-</thead>
-<tbody class="font-body-sm text-body-sm" id="trackingTableBody">
-<!-- Row 1: Selected / Scheduled -->
-<tr class="border-b border-outline-variant hover:bg-[#F0F4F8] bg-[#F0F4F8] transition-colors cursor-pointer group">
-<td class="px-md py-4 font-medium text-primary">#KG-29042</td>
-<td class="px-md py-4">
-<div class="text-on-surface font-medium">142 Kensington High St</div>
-<div class="text-on-surface-variant text-xs mt-0.5">London, W8 7SA</div>
-</td>
-<td class="px-md py-4 text-on-surface">£4,250,000</td>
-<td class="px-md py-4 text-on-surface-variant">12 Th10, 2023</td>
-<td class="px-md py-4">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7]">
-<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span>
-                                        Chờ xử lý
-                                    </span>
-</td>
-</tr>
-<!-- Row 2: Surveyed -->
-<tr class="border-b border-outline-variant hover:bg-[#F0F4F8] transition-colors cursor-pointer">
-<td class="px-md py-4 font-medium text-primary">#MY-10884</td>
-<td class="px-md py-4">
-<div class="text-on-surface font-medium">88 Mayfair Place</div>
-<div class="text-on-surface-variant text-xs mt-0.5">London, W1J 8AJ</div>
-</td>
-<td class="px-md py-4 text-on-surface">£8,100,000</td>
-<td class="px-md py-4 text-on-surface-variant">09 Th10, 2023</td>
-<td class="px-md py-4">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#F0FDF4] text-[#15803D] border border-[#DCFCE7]">
-<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>
-                                        Đã khảo sát
-                                    </span>
-</td>
-</tr>
-<!-- Row 3: Pending -->
-<tr class="border-b border-outline-variant hover:bg-[#F0F4F8] transition-colors cursor-pointer">
-<td class="px-md py-4 font-medium text-primary">#CH-44910</td>
-<td class="px-md py-4">
-<div class="text-on-surface font-medium">21 Chelsea Embankment</div>
-<div class="text-on-surface-variant text-xs mt-0.5">London, SW3 4LA</div>
-</td>
-<td class="px-md py-4 text-on-surface">£12,500,000</td>
-<td class="px-md py-4 text-on-surface-variant">14 Th10, 2023</td>
-<td class="px-md py-4">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary-container/50 text-primary-container border border-secondary-container">
-<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
-                                        Đang chờ
-                                    </span>
-</td>
-</tr>
-<!-- Row 4: Cancelled -->
-<tr class="hover:bg-[#F0F4F8] transition-colors cursor-pointer">
-<td class="px-md py-4 font-medium text-primary">#IS-99212</td>
-<td class="px-md py-4">
-<div class="text-on-surface font-medium opacity-50 line-through">55 Islington Sq</div>
-<div class="text-on-surface-variant text-xs mt-0.5 opacity-50">London, N1 1AB</div>
-</td>
-<td class="px-md py-4 text-on-surface opacity-50">£1,850,000</td>
-<td class="px-md py-4 text-on-surface-variant opacity-50">02 Th10, 2023</td>
-<td class="px-md py-4">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-error-container/50 text-on-error-container border border-error-container">
-<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
-                                        Đã hủy
-                                    </span>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Pagination -->
-<div class="mt-auto px-md py-3 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-between">
-<span class="font-body-sm text-body-sm text-on-surface-variant" id="trackingSummary">Hiển thị 0 mục</span>
-<div class="flex gap-1">
-<button class="p-1 text-outline hover:text-on-surface disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-sm">chevron_left</span></button>
-<button class="p-1 text-outline hover:text-on-surface disabled:opacity-50" disabled=""><span class="material-symbols-outlined text-sm">chevron_right</span></button>
-</div>
-</div>
-</section>
-<!-- Details Pane -->
-<aside class="w-full bg-surface border border-outline-variant rounded-xl flex flex-col overflow-hidden shadow-sm" id="trackingDetailPane">
-<!-- Details Header -->
-<div class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
-<div>
-<div class="flex items-center gap-2 mb-1">
-<h3 class="font-headline-md text-headline-md text-on-surface">#KG-29042</h3>
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7] uppercase tracking-wider">Chờ xử lý</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant">142 Kensington High St, W8 7SA</p>
-</div>
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined">more_vert</span>
-</button>
-</div>
-<!-- Scrollable Body -->
-<div class="flex-1 overflow-y-auto p-md space-y-6">
-<!-- Property Summary Bento: responsive grid up to 7 columns -->
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
-<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
-<span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
-<span class="font-body-md text-body-md font-medium text-on-surface">Nhà phố</span>
-</div>
-<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
-<span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Giá Đề xuất</span>
-<span class="font-body-md text-body-md font-medium text-on-surface">£4.25M</span>
-</div>
-<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
-<span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Diện tích trong</span>
-<span class="font-body-md text-body-md font-medium text-on-surface">4,200 sq ft</span>
-</div>
-<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
-<span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Phòng ngủ</span>
-<span class="font-body-md text-body-md font-medium text-on-surface">5 Phòng</span>
-</div>
-</div>
-<!-- Appointment Info (Conditional content for 'Scheduled') -->
-<div class="border border-[#FEF3C7] bg-[#FFFBEB]/50 rounded-lg p-4">
-<h4 class="font-label-md text-label-md font-bold text-[#92400E] mb-3 flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">event</span>
-                            Khảo sát sắp tới
-                        </h4>
-<div class="space-y-2">
-<div class="flex justify-between items-center">
-<span class="font-body-sm text-body-sm text-on-surface-variant">Ngày &amp; Giờ</span>
-<span class="font-label-md text-label-md text-on-surface">18 Th10, 10:00 SA</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-body-sm text-body-sm text-on-surface-variant">Nhân viên Khảo sát</span>
-<div class="flex items-center gap-2">
-<span class="font-label-md text-label-md text-on-surface">Sarah Jenkins</span>
-<button class="text-primary hover:text-primary-container"><span class="material-symbols-outlined text-[16px]">mail</span></button>
-</div>
-</div>
-</div>
-</div>
-<!-- Timeline Progress -->
-<div>
-<h4 class="font-label-md text-label-md text-on-surface mb-4">Tiến độ Theo dõi</h4>
-<div class="relative pl-3 space-y-6 before:absolute before:inset-y-0 before:left-4 before:w-px before:bg-outline-variant/50 before:-z-10">
-<!-- Step 1: Done -->
-<div class="flex gap-4 relative">
-<div class="w-3 h-3 mt-1 rounded-full bg-primary-container ring-4 ring-surface relative z-10"></div>
-<div>
-<p class="font-label-md text-label-md text-on-surface">Đã nhận Yêu cầu</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">12 Th10, 2023 • 09:15 SA</p>
-</div>
-</div>
-<!-- Step 2: Done -->
-<div class="flex gap-4 relative">
-<div class="w-3 h-3 mt-1 rounded-full bg-primary-container ring-4 ring-surface relative z-10"></div>
-<div>
-<p class="font-label-md text-label-md text-on-surface">Đánh giá Ban đầu</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">13 Th10, 2023 • 14:30 CH</p>
-</div>
-</div>
-<!-- Step 3: Current (Scheduled) -->
-<div class="flex gap-4 relative">
-<div class="w-3 h-3 mt-1 rounded-full bg-[#D97706] ring-4 ring-[#FEF3C7] relative z-10"></div>
-<div>
-<p class="font-label-md text-label-md font-bold text-[#92400E]">Khảo sát Bất động sản</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">Đã lên lịch ngày 18 Th10</p>
-</div>
-</div>
-<!-- Step 4: Pending -->
-<div class="flex gap-4 relative">
-<div class="w-3 h-3 mt-1 rounded-full bg-surface border border-outline-variant ring-4 ring-surface relative z-10"></div>
-<div>
-<p class="font-label-md text-label-md text-outline">Báo cáo Định giá</p>
-</div>
-</div>
-<!-- Step 5: Pending -->
-<div class="flex gap-4 relative">
-<div class="w-3 h-3 mt-1 rounded-full bg-surface border border-outline-variant ring-4 ring-surface relative z-10"></div>
-<div>
-<p class="font-label-md text-label-md text-outline">Xác nhận Cuối cùng</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Photo Gallery Thumbnails -->
-<div>
-<h4 class="font-label-md text-label-md text-on-surface mb-3 flex items-center justify-between">
-                            Phương tiện cung cấp
-                            <span class="text-xs font-normal text-primary cursor-pointer hover:underline">Xem Tất cả</span>
-</h4>
-<div class="grid grid-cols-3 gap-2">
-<div class="aspect-square bg-surface-variant rounded border border-outline-variant overflow-hidden">
-<img alt="Exterior" class="w-full h-full object-cover" data-alt="A luxurious, modern British townhouse exterior shown in crisp daylight. The architecture features clean lines, large glass windows, and pristine pale brickwork. A sleek black front door and subtle landscaping enhance the high-end real estate aesthetic. The image is bright, professional, and composed for a premium property portfolio in light-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvft0FeyGrfJXJE0sgPWbuOiNZXfG1XUZurKzGAxidgYvyjFOCg6GUVcIbx5iVMsUO4mUpe9mkQh9rA99dLuaDXeoXNqdJ9YBGPrO0Nn9TUnAATsVuh3odkflU-u1Jua_sIzA-YYVSlZIK7E2hCxDJNxfcq4q4ht_-Nydqataxq3r_2b56knWnvHCPa3jA4ZcntZmfF9-fCpsv8lDDlLjHB23EtCzZW6mlULjJ15Lm1MD3Ct0W679FPySdDEhmcdSUWFJhIE1P7tg">
-</div>
-<div class="aspect-square bg-surface-variant rounded border border-outline-variant overflow-hidden">
-<img alt="Living Room" class="w-full h-full object-cover" data-alt="An expansive, elegantly staged living room in a high-end property. The room features wide-plank oak flooring, minimal designer furniture in neutral tones, and floor-to-ceiling windows letting in abundant natural light. The aesthetic is contemporary luxury, perfectly suited for an institutional real estate platform's gallery view. Bright, sharp, and inviting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoQBShZGDeZRACVJQ8SCYjbMIddKD6dZ5f8MxRKCxZfV8nBwxmvTgOEAPg4u-dIEFWbuSGKzz97E67jxlGkhkMN31uPmOHyBdaecJztWyUg_nycFNyNCb5RJWOCKEKLmgbIVa6P17XWLqJ1XICwhutb-fz3LPaZAe9hmYdnlFFEERseIKrRgvMEazUeXD0YU9tWyx42vLA2LQ_AOoBR3EG2uaYNRIX5vlDdR0oghq8NXVsh6u0qey5IvLY_eCX9Lc85BM8EpxezSY">
-</div>
-<div class="aspect-square bg-surface-variant rounded border border-outline-variant flex items-center justify-center cursor-pointer hover:bg-surface-container transition-colors">
-<span class="font-label-sm text-on-surface-variant">+4</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Action Footer -->
-<div class="p-md border-t border-outline-variant bg-surface-container-lowest">
-<button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-error text-error hover:bg-error-container/20 transition-colors font-label-md font-semibold">
-<span class="material-symbols-outlined text-[18px]">cancel</span>
-                        Hủy Yêu cầu
-                    </button>
-</div>
-</aside>
-</div>
-</main>
+<body
+        class="font-body-md text-on-surface flex min-h-screen flex-col antialiased selection:bg-primary-container selection:text-on-primary">
 
-<script src="ownerSidebar.js"></script>
-<script src="api.js"></script>
-<script>
-        const trackingSearch = document.getElementById('trackingSearch');
-        const trackingCount = document.getElementById('trackingCount');
-        const trackingTableBody = document.getElementById('trackingTableBody');
-        const trackingSummary = document.getElementById('trackingSummary');
-        const trackingDetailPane = document.getElementById('trackingDetailPane');
+        <!-- Top owner navigation (loaded from ownerSidebar.html) -->
+        <div id="owner-sidebar"></div>
+        <!-- Vertical side-bar removed; top horizontal ownerSidebar handles navigation -->
+        <!-- Main Content Area -->
+        <main
+                class="flex-grow w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0 bg-background">
+                <!-- Top App Bar removed to free vertical space for tracking -->
+                <!-- Mobile Header -->
+                <header
+                        class="flex md:hidden bg-surface border-b border-outline-variant items-center justify-between px-4 h-16 sticky top-0 z-10">
+                        <h1 class="font-headline-md text-headline-md font-extrabold text-primary">Theo dõi ký gửi</h1>
+                        <button class="text-on-surface-variant">
+                                <span class="material-symbols-outlined">menu</span>
+                        </button>
+                </header>
+                <div class="py-4 flex justify-between items-end border-b border-outline-variant/50">
+                        <div>
+                                <h1 class="font-headline-xl text-headline-xl text-on-surface">Theo dõi ký gửi</h1>
+                                <p class="font-body-md text-body-md text-on-surface-variant mt-1">Quản lý và giám sát
+                                        các yêu cầu ký gửi tài sản của bạn.</p>
+                        </div>
+                        <div class="flex gap-4">
+                                <div class="relative">
+                                        <span
+                                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                                        <input class="pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-sm text-body-sm outline-none w-64 transition-colors"
+                                                id="trackingSearch" placeholder="Tìm kiếm yêu cầu..." type="text">
+                                </div>
+                                <button
+                                        class="flex items-center justify-center p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant">
+                                        <span class="material-symbols-outlined">filter_list</span>
+                                </button>
+                        </div>
+                </div>
+                <!-- Content Grid: single-column so the tracking list uses full width -->
+                <div class="flex-1 py-lg overflow-hidden flex flex-col gap-gutter bg-surface-container-lowest">
+                        <!-- Request List Table (Bento Card Style) -->
+                        <section
+                                class="flex-1 bg-surface border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+                                <div
+                                        class="px-md py-4 border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
+                                        <h2 class="font-headline-md text-headline-md text-on-surface">Yêu cầu Đang hoạt
+                                                động</h2>
+                                        <span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-1 rounded-full"
+                                                id="trackingCount">0 Mục</span>
+                                </div>
+                                <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                                <thead
+                                                        class="bg-surface-container-low border-b border-outline-variant sticky top-0 z-0">
+                                                        <tr>
+                                                                <th
+                                                                        class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">
+                                                                        Mã Yêu cầu</th>
+                                                                <th
+                                                                        class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">
+                                                                        Địa chỉ</th>
+                                                                <th
+                                                                        class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">
+                                                                        Giá Đề xuất</th>
+                                                                <th
+                                                                        class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">
+                                                                        Ngày</th>
+                                                                <th
+                                                                        class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">
+                                                                        Trạng thái</th>
+                                                                <th
+                                                                        class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium text-center">
+                                                                        Hành động</th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody class="font-body-sm text-body-sm" id="trackingTableBody">
+                                                        <!-- Row 1: Selected / Scheduled -->
+                                                        <tr
+                                                                class="border-b border-outline-variant hover:bg-[#F0F4F8] bg-[#F0F4F8] transition-colors cursor-pointer group">
+                                                                <td class="px-md py-4 font-medium text-primary">
+                                                                        #KG-29042</td>
+                                                                <td class="px-md py-4">
+                                                                        <div class="text-on-surface font-medium">142
+                                                                                Kensington High St</div>
+                                                                        <div
+                                                                                class="text-on-surface-variant text-xs mt-0.5">
+                                                                                London, W8 7SA</div>
+                                                                </td>
+                                                                <td class="px-md py-4 text-on-surface">£4,250,000</td>
+                                                                <td class="px-md py-4 text-on-surface-variant">12 Th10,
+                                                                        2023</td>
+                                                                <td class="px-md py-4">
+                                                                        <span
+                                                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7]">
+                                                                                <span
+                                                                                        class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span>
+                                                                                Chờ xử lý
+                                                                        </span>
+                                                                </td>
+                                                        </tr>
+                                                        <!-- Row 2: Surveyed -->
+                                                        <tr
+                                                                class="border-b border-outline-variant hover:bg-[#F0F4F8] transition-colors cursor-pointer">
+                                                                <td class="px-md py-4 font-medium text-primary">
+                                                                        #MY-10884</td>
+                                                                <td class="px-md py-4">
+                                                                        <div class="text-on-surface font-medium">88
+                                                                                Mayfair Place</div>
+                                                                        <div
+                                                                                class="text-on-surface-variant text-xs mt-0.5">
+                                                                                London, W1J 8AJ</div>
+                                                                </td>
+                                                                <td class="px-md py-4 text-on-surface">£8,100,000</td>
+                                                                <td class="px-md py-4 text-on-surface-variant">09 Th10,
+                                                                        2023</td>
+                                                                <td class="px-md py-4">
+                                                                        <span
+                                                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#F0FDF4] text-[#15803D] border border-[#DCFCE7]">
+                                                                                <span
+                                                                                        class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>
+                                                                                Đã khảo sát
+                                                                        </span>
+                                                                </td>
+                                                        </tr>
+                                                        <!-- Row 3: Pending -->
+                                                        <tr
+                                                                class="border-b border-outline-variant hover:bg-[#F0F4F8] transition-colors cursor-pointer">
+                                                                <td class="px-md py-4 font-medium text-primary">
+                                                                        #CH-44910</td>
+                                                                <td class="px-md py-4">
+                                                                        <div class="text-on-surface font-medium">21
+                                                                                Chelsea Embankment</div>
+                                                                        <div
+                                                                                class="text-on-surface-variant text-xs mt-0.5">
+                                                                                London, SW3 4LA</div>
+                                                                </td>
+                                                                <td class="px-md py-4 text-on-surface">£12,500,000</td>
+                                                                <td class="px-md py-4 text-on-surface-variant">14 Th10,
+                                                                        2023</td>
+                                                                <td class="px-md py-4">
+                                                                        <span
+                                                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary-container/50 text-primary-container border border-secondary-container">
+                                                                                <span
+                                                                                        class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                                                                Đang chờ
+                                                                        </span>
+                                                                </td>
+                                                        </tr>
+                                                        <!-- Row 4: Cancelled -->
+                                                        <tr class="hover:bg-[#F0F4F8] transition-colors cursor-pointer">
+                                                                <td class="px-md py-4 font-medium text-primary">
+                                                                        #IS-99212</td>
+                                                                <td class="px-md py-4">
+                                                                        <div
+                                                                                class="text-on-surface font-medium opacity-50 line-through">
+                                                                                55 Islington Sq</div>
+                                                                        <div
+                                                                                class="text-on-surface-variant text-xs mt-0.5 opacity-50">
+                                                                                London, N1 1AB</div>
+                                                                </td>
+                                                                <td class="px-md py-4 text-on-surface opacity-50">
+                                                                        £1,850,000</td>
+                                                                <td
+                                                                        class="px-md py-4 text-on-surface-variant opacity-50">
+                                                                        02 Th10, 2023</td>
+                                                                <td class="px-md py-4">
+                                                                        <span
+                                                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-error-container/50 text-on-error-container border border-error-container">
+                                                                                <span
+                                                                                        class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                                                                Đã hủy
+                                                                        </span>
+                                                                </td>
+                                                        </tr>
+                                                </tbody>
+                                        </table>
+                                </div>
+                                <!-- Pagination -->
+                                <div
+                                        class="mt-auto px-md py-3 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-between">
+                                        <span class="font-body-sm text-body-sm text-on-surface-variant"
+                                                id="trackingSummary">Hiển thị 0 mục</span>
+                                        <div class="flex gap-1">
+                                                <button class="p-1 text-outline hover:text-on-surface disabled:opacity-50"
+                                                        disabled=""><span
+                                                                class="material-symbols-outlined text-sm">chevron_left</span></button>
+                                                <button class="p-1 text-outline hover:text-on-surface disabled:opacity-50"
+                                                        disabled=""><span
+                                                                class="material-symbols-outlined text-sm">chevron_right</span></button>
+                                        </div>
+                                </div>
+                        </section>
+                        <!-- Details Pane -->
+                        <aside class="w-full bg-surface border border-outline-variant rounded-xl flex flex-col overflow-hidden shadow-sm"
+                                id="trackingDetailPane">
+                                <!-- Details Header -->
+                                <div
+                                        class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
+                                        <div>
+                                                <div class="flex items-center gap-2 mb-1">
+                                                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                                                                #KG-29042</h3>
+                                                        <span
+                                                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7] uppercase tracking-wider">Chờ
+                                                                xử lý</span>
+                                                </div>
+                                                <p class="font-body-sm text-body-sm text-on-surface-variant">142
+                                                        Kensington High St, W8 7SA</p>
+                                        </div>
+                                        <button class="text-on-surface-variant hover:text-primary transition-colors">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                        </button>
+                                </div>
+                                <!-- Scrollable Body -->
+                                <div class="flex-1 overflow-y-auto p-md space-y-6">
+                                        <!-- Property Summary Bento: responsive grid up to 7 columns -->
+                                        <div
+                                                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+                                                <div
+                                                        class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
+                                                        <span
+                                                                class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
+                                                        <span
+                                                                class="font-body-md text-body-md font-medium text-on-surface">Nhà
+                                                                phố</span>
+                                                </div>
+                                                <div
+                                                        class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
+                                                        <span
+                                                                class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Giá
+                                                                Đề xuất</span>
+                                                        <span
+                                                                class="font-body-md text-body-md font-medium text-on-surface">£4.25M</span>
+                                                </div>
+                                                <div
+                                                        class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
+                                                        <span
+                                                                class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Diện
+                                                                tích trong</span>
+                                                        <span
+                                                                class="font-body-md text-body-md font-medium text-on-surface">4,200
+                                                                sq ft</span>
+                                                </div>
+                                                <div
+                                                        class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
+                                                        <span
+                                                                class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Phòng
+                                                                ngủ</span>
+                                                        <span
+                                                                class="font-body-md text-body-md font-medium text-on-surface">5
+                                                                Phòng</span>
+                                                </div>
+                                        </div>
+                                        <!-- Appointment Info (Conditional content for 'Scheduled') -->
+                                        <div class="border border-[#FEF3C7] bg-[#FFFBEB]/50 rounded-lg p-4">
+                                                <h4
+                                                        class="font-label-md text-label-md font-bold text-[#92400E] mb-3 flex items-center gap-2">
+                                                        <span class="material-symbols-outlined text-[18px]">event</span>
+                                                        Khảo sát sắp tới
+                                                </h4>
+                                                <div class="space-y-2">
+                                                        <div class="flex justify-between items-center">
+                                                                <span
+                                                                        class="font-body-sm text-body-sm text-on-surface-variant">Ngày
+                                                                        &amp; Giờ</span>
+                                                                <span
+                                                                        class="font-label-md text-label-md text-on-surface">18
+                                                                        Th10, 10:00 SA</span>
+                                                        </div>
+                                                        <div class="flex justify-between items-center">
+                                                                <span
+                                                                        class="font-body-sm text-body-sm text-on-surface-variant">Nhân
+                                                                        viên Khảo sát</span>
+                                                                <div class="flex items-center gap-2">
+                                                                        <span
+                                                                                class="font-label-md text-label-md text-on-surface">Sarah
+                                                                                Jenkins</span>
+                                                                        <button
+                                                                                class="text-primary hover:text-primary-container"><span
+                                                                                        class="material-symbols-outlined text-[16px]">mail</span></button>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Timeline Progress -->
+                                        <div>
+                                                <h4 class="font-label-md text-label-md text-on-surface mb-4">Tiến độ
+                                                        Theo dõi</h4>
+                                                <div
+                                                        class="relative pl-3 space-y-6 before:absolute before:inset-y-0 before:left-4 before:w-px before:bg-outline-variant/50 before:-z-10">
+                                                        <!-- Step 1: Done -->
+                                                        <div class="flex gap-4 relative">
+                                                                <div
+                                                                        class="w-3 h-3 mt-1 rounded-full bg-primary-container ring-4 ring-surface relative z-10">
+                                                                </div>
+                                                                <div>
+                                                                        <p
+                                                                                class="font-label-md text-label-md text-on-surface">
+                                                                                Đã nhận Yêu cầu</p>
+                                                                        <p
+                                                                                class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">
+                                                                                12 Th10, 2023 • 09:15 SA</p>
+                                                                </div>
+                                                        </div>
+                                                        <!-- Step 2: Done -->
+                                                        <div class="flex gap-4 relative">
+                                                                <div
+                                                                        class="w-3 h-3 mt-1 rounded-full bg-primary-container ring-4 ring-surface relative z-10">
+                                                                </div>
+                                                                <div>
+                                                                        <p
+                                                                                class="font-label-md text-label-md text-on-surface">
+                                                                                Đánh giá Ban đầu</p>
+                                                                        <p
+                                                                                class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">
+                                                                                13 Th10, 2023 • 14:30 CH</p>
+                                                                </div>
+                                                        </div>
+                                                        <!-- Step 3: Current (Scheduled) -->
+                                                        <div class="flex gap-4 relative">
+                                                                <div
+                                                                        class="w-3 h-3 mt-1 rounded-full bg-[#D97706] ring-4 ring-[#FEF3C7] relative z-10">
+                                                                </div>
+                                                                <div>
+                                                                        <p
+                                                                                class="font-label-md text-label-md font-bold text-[#92400E]">
+                                                                                Khảo sát Bất động sản</p>
+                                                                        <p
+                                                                                class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">
+                                                                                Đã lên lịch ngày 18 Th10</p>
+                                                                </div>
+                                                        </div>
+                                                        <!-- Step 4: Pending -->
+                                                        <div class="flex gap-4 relative">
+                                                                <div
+                                                                        class="w-3 h-3 mt-1 rounded-full bg-surface border border-outline-variant ring-4 ring-surface relative z-10">
+                                                                </div>
+                                                                <div>
+                                                                        <p
+                                                                                class="font-label-md text-label-md text-outline">
+                                                                                Báo cáo Định giá</p>
+                                                                </div>
+                                                        </div>
+                                                        <!-- Step 5: Pending -->
+                                                        <div class="flex gap-4 relative">
+                                                                <div
+                                                                        class="w-3 h-3 mt-1 rounded-full bg-surface border border-outline-variant ring-4 ring-surface relative z-10">
+                                                                </div>
+                                                                <div>
+                                                                        <p
+                                                                                class="font-label-md text-label-md text-outline">
+                                                                                Xác nhận Cuối cùng</p>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Photo Gallery Thumbnails -->
+                                        <div>
+                                                <h4
+                                                        class="font-label-md text-label-md text-on-surface mb-3 flex items-center justify-between">
+                                                        Phương tiện cung cấp
+                                                        <span
+                                                                class="text-xs font-normal text-primary cursor-pointer hover:underline">Xem
+                                                                Tất cả</span>
+                                                </h4>
+                                                <div class="grid grid-cols-3 gap-2">
+                                                        <div
+                                                                class="aspect-square bg-surface-variant rounded border border-outline-variant overflow-hidden">
+                                                                <img alt="Exterior" class="w-full h-full object-cover"
+                                                                        data-alt="A luxurious, modern British townhouse exterior shown in crisp daylight. The architecture features clean lines, large glass windows, and pristine pale brickwork. A sleek black front door and subtle landscaping enhance the high-end real estate aesthetic. The image is bright, professional, and composed for a premium property portfolio in light-mode UI."
+                                                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvft0FeyGrfJXJE0sgPWbuOiNZXfG1XUZurKzGAxidgYvyjFOCg6GUVcIbx5iVMsUO4mUpe9mkQh9rA99dLuaDXeoXNqdJ9YBGPrO0Nn9TUnAATsVuh3odkflU-u1Jua_sIzA-YYVSlZIK7E2hCxDJNxfcq4q4ht_-Nydqataxq3r_2b56knWnvHCPa3jA4ZcntZmfF9-fCpsv8lDDlLjHB23EtCzZW6mlULjJ15Lm1MD3Ct0W679FPySdDEhmcdSUWFJhIE1P7tg">
+                                                        </div>
+                                                        <div
+                                                                class="aspect-square bg-surface-variant rounded border border-outline-variant overflow-hidden">
+                                                                <img alt="Living Room"
+                                                                        class="w-full h-full object-cover"
+                                                                        data-alt="An expansive, elegantly staged living room in a high-end property. The room features wide-plank oak flooring, minimal designer furniture in neutral tones, and floor-to-ceiling windows letting in abundant natural light. The aesthetic is contemporary luxury, perfectly suited for an institutional real estate platform's gallery view. Bright, sharp, and inviting."
+                                                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoQBShZGDeZRACVJQ8SCYjbMIddKD6dZ5f8MxRKCxZfV8nBwxmvTgOEAPg4u-dIEFWbuSGKzz97E67jxlGkhkMN31uPmOHyBdaecJztWyUg_nycFNyNCb5RJWOCKEKLmgbIVa6P17XWLqJ1XICwhutb-fz3LPaZAe9hmYdnlFFEERseIKrRgvMEazUeXD0YU9tWyx42vLA2LQ_AOoBR3EG2uaYNRIX5vlDdR0oghq8NXVsh6u0qey5IvLY_eCX9Lc85BM8EpxezSY">
+                                                        </div>
+                                                        <div
+                                                                class="aspect-square bg-surface-variant rounded border border-outline-variant flex items-center justify-center cursor-pointer hover:bg-surface-container transition-colors">
+                                                                <span
+                                                                        class="font-label-sm text-on-surface-variant">+4</span>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                                <!-- Action Footer -->
+                                <div class="p-md border-t border-outline-variant bg-surface-container-lowest">
+                                        <button
+                                                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-error text-error hover:bg-error-container/20 transition-colors font-label-md font-semibold">
+                                                <span class="material-symbols-outlined text-[18px]">cancel</span>
+                                                Hủy Yêu cầu
+                                        </button>
+                                </div>
+                        </aside>
+                </div>
+        </main>
 
-        let trackingItems = [];
-        let selectedSubmissionId = null;
+        <!-- Appointment Detail Modal -->
+        <div id="appointmentModal"
+                class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+                <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col transform transition-transform duration-300 scale-95"
+                        id="appointmentModalContent">
+                        <!-- Header -->
+                        <div
+                                class="px-8 py-6 border-b border-gray-100 flex justify-between items-start relative bg-white">
+                                <div class="flex flex-col gap-1.5">
+                                        <div class="flex items-center gap-3">
+                                                <span
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E0E7FF] text-[#3730A3] border border-[#C7D2FE]">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#4F46E5]"></span>
+                                                        Đã lên lịch
+                                                </span>
+                                                <span class="text-xs text-gray-500 font-semibold">NGÀY GỬI YÊU CẦU:
+                                                        <span id="modalRequestDate">18/10/2023</span></span>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-[#00236f] mt-1" id="modalTitle">Chi tiết Lịch
+                                                hẹn khảo sát</h3>
+                                        <p class="text-sm text-gray-500 font-medium" id="modalAppointmentCode">Mã lịch
+                                                hẹn: SA-992144</p>
+                                </div>
+                                <button onclick="closeAppointmentModal()"
+                                        class="text-gray-400 hover:text-gray-600 transition-colors p-1.5 hover:bg-gray-100 rounded-full">
+                                        <span class="material-symbols-outlined text-[24px]">close</span>
+                                </button>
+                        </div>
 
-        function escapeHtml(value) {
-                return String(value || '')
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#39;');
-        }
+                        <!-- Body -->
+                        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white overflow-y-auto max-h-[70vh]">
+                                <!-- Left Column: Survey Time & Location -->
+                                <div class="space-y-6">
+                                        <!-- Survey Time -->
+                                        <div class="border-l-4 border-[#00236f] pl-4">
+                                                <h4
+                                                        class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-[16px] text-gray-400">calendar_month</span>
+                                                        THỜI GIAN KHẢO SÁT
+                                                </h4>
+                                                <p class="text-2xl font-extrabold text-[#00236f]" id="modalTimeRange">
+                                                        14:00 - 15:30</p>
+                                                <p class="text-sm text-gray-600 font-semibold mt-1" id="modalDayDate">
+                                                        Thứ Năm, 24/10/2023</p>
+                                        </div>
 
-        function formatDate(value) {
-                if (!value) return 'Chưa có';
-                const d = new Date(value);
-                if (Number.isNaN(d.getTime())) return 'Chưa có';
-                return d.toLocaleString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                });
-        }
+                                        <!-- Survey Location -->
+                                        <div class="border-l-4 border-[#00236f] pl-4">
+                                                <h4
+                                                        class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-[16px] text-gray-400">location_on</span>
+                                                        ĐỊA ĐIỂM
+                                                </h4>
+                                                <p class="text-sm font-semibold text-gray-800 leading-relaxed"
+                                                        id="modalLocation">
+                                                        Vinhomes Central Park, Park 7, Tầng 22, Căn 08<br>
+                                                        <span class="text-xs text-gray-500 font-normal">720A Điện Biên
+                                                                Phủ, Phường 22, Quận Bình Thạnh, TP.HCM</span>
+                                                </p>
 
-        function formatMoney(value) {
-                const num = Number(value);
-                if (!Number.isFinite(num)) return 'Chưa có';
-                return num.toLocaleString('vi-VN') + ' VNĐ';
-        }
+                                                <!-- Map Preview Card -->
+                                                <div
+                                                        class="mt-4 relative rounded-xl overflow-hidden shadow-sm border border-gray-200 aspect-[2/1] group">
+                                                        <img id="modalMapImg" src="map_preview.png" alt="Bản đồ"
+                                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                                        <div
+                                                                class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                                                <a id="modalMapBtn" href="#" target="_blank"
+                                                                        class="bg-[#00236f] hover:bg-[#1e3a8a] text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center gap-1.5">
+                                                                        <span
+                                                                                class="material-symbols-outlined text-[16px]">map</span>
+                                                                        Xem bản đồ
+                                                                </a>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
 
-        function getSurveyAppointment(appointments) {
-                if (!Array.isArray(appointments) || appointments.length === 0) return null;
-                return appointments.find(item => String(item.appointment_type || '').toLowerCase().includes('khảo sát')) || appointments[0];
-        }
+                                <!-- Right Column: Agent & Info -->
+                                <div class="space-y-6 flex flex-col justify-between">
+                                        <!-- Broker Info -->
+                                        <div class="border-l-4 border-[#00236f] pl-4">
+                                                <h4
+                                                        class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                                                        <span
+                                                                class="material-symbols-outlined text-[16px] text-gray-400">support_agent</span>
+                                                        MÔ GIỚI PHỤ TRÁCH
+                                                </h4>
+                                                <div
+                                                        class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                                        <div class="flex-1">
+                                                                <h5 class="text-base font-bold text-gray-800"
+                                                                        id="modalAgentName">Nguyễn Minh Quân</h5>
+                                                                <p class="text-xs text-gray-500 font-medium mt-0.5"
+                                                                        id="modalAgentTitle">Senior Property Consultant
+                                                                </p>
 
-        function formatAppointmentSummary(value) {
-                if (!value) return 'Chưa có';
-                const d = new Date(value);
-                if (Number.isNaN(d.getTime())) return 'Chưa có';
-                return d.toLocaleString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                });
-        }
+                                                                <div class="flex flex-col gap-1 mt-2">
+                                                                        <a id="modalAgentPhone" href="tel:0902123456"
+                                                                                class="text-xs text-gray-600 hover:text-[#00236f] transition-colors flex items-center gap-1.5 font-medium">
+                                                                                <span
+                                                                                        class="material-symbols-outlined text-[14px]">phone</span>
+                                                                                0902 ••• •••
+                                                                        </a>
+                                                                        <a id="modalAgentEmail"
+                                                                                href="mailto:quan.nguyen@homematch.vn"
+                                                                                class="text-xs text-gray-600 hover:text-[#00236f] transition-colors flex items-center gap-1.5 font-medium break-all">
+                                                                                <span
+                                                                                        class="material-symbols-outlined text-[14px]">mail</span>
+                                                                                quan.nguyen@homematch.vn
+                                                                        </a>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
 
-        function getStatusBadge(statusLabel) {
-                const text = (statusLabel || '').toLowerCase();
-                if (text.includes('hủy') || text.includes('từ chối')) {
-                        return 'bg-error-container/50 text-on-error-container border border-error-container';
+                                        <!-- Reminder Info -->
+                                        <div
+                                                class="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-start gap-3 mt-4">
+                                                <span
+                                                        class="material-symbols-outlined text-[#1E40AF] text-[20px] shrink-0 mt-0.5">info</span>
+                                                <p class="text-xs font-medium text-blue-800 leading-relaxed">
+                                                        Vui lòng có mặt tại địa điểm vào thời gian đã hẹn để buổi khảo
+                                                        sát diễn ra thuận lợi.
+                                                </p>
+                                        </div>
+                                </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div
+                                class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <div
+                                        class="flex items-center gap-2 text-xs text-gray-500 font-semibold text-center sm:text-left">
+                                        <span>Cần thay đổi lịch hẹn? Vui lòng thông báo trước ít nhất 24 giờ.</span>
+                                        <span
+                                                class="inline-flex items-center gap-0.5 text-[#00236f] hover:underline cursor-pointer">
+                                                <span class="material-symbols-outlined text-[14px]">help</span>
+                                                Liên hệ hỗ trợ
+                                        </span>
+                                </div>
+
+                                <a id="modalCalendarBtn" href="#" target="_blank"
+                                        class="w-full sm:w-auto bg-[#00236f] hover:bg-[#1e3a8a] text-white text-xs font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+                                        Thêm vào Google Calendar
+                                </a>
+                        </div>
+                </div>
+        </div>
+
+        <script src="ownerSidebar.js"></script>
+        <script src="api.js"></script>
+        <script>
+                const trackingSearch = document.getElementById('trackingSearch');
+                const trackingCount = document.getElementById('trackingCount');
+                const trackingTableBody = document.getElementById('trackingTableBody');
+                const trackingSummary = document.getElementById('trackingSummary');
+                const trackingDetailPane = document.getElementById('trackingDetailPane');
+
+                let trackingItems = [];
+                let selectedSubmissionId = null;
+                let currentDetail = null;
+
+                function escapeHtml(value) {
+                        return String(value || '')
+                                .replace(/&/g, '&amp;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;')
+                                .replace(/"/g, '&quot;')
+                                .replace(/'/g, '&#39;');
                 }
-                if (text.includes('khảo sát') || text.includes('hoạt động') || text.includes('phê duyệt')) {
-                        return 'bg-[#F0FDF4] text-[#15803D] border border-[#DCFCE7]';
-                }
-                if (text.includes('chờ') || text.includes('draft') || text.includes('nháp')) {
-                        return 'bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7]';
-                }
-                return 'bg-secondary-container/50 text-primary-container border border-secondary-container';
-        }
 
-        function normalizeTimelineState(status) {
-                const text = String(status || '').toLowerCase();
-                if (text.includes('cancel') || text.includes('reject') || text.includes('fail') || text.includes('hủy') || text.includes('từ chối')) {
-                        return 'cancelled';
+                function formatDate(value) {
+                        if (!value) return 'Chưa có';
+                        const d = new Date(value);
+                        if (Number.isNaN(d.getTime())) return 'Chưa có';
+                        return d.toLocaleString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                        });
                 }
-                if (text.includes('pending') || text.includes('scheduled') || text.includes('draft') || text.includes('processing')) {
-                        return 'current';
-                }
-                if (text.includes('done') || text.includes('approved') || text.includes('completed') || text.includes('active') || text.includes('surveyed') || text.includes('rented')) {
-                        return 'done';
-                }
-                return 'pending';
-        }
 
-        function getTimelineNodeClass(status) {
-                const state = normalizeTimelineState(status);
-                if (state === 'done') {
-                        return 'bg-[#16A34A] ring-[#DCFCE7]';
+                function formatMoney(value) {
+                        const num = Number(value);
+                        if (!Number.isFinite(num)) return 'Chưa có';
+                        return num.toLocaleString('vi-VN') + ' VNĐ';
                 }
-                if (state === 'current') {
-                        return 'bg-[#D97706] ring-[#FEF3C7]';
+
+                function getStatusBadge(statusLabel) {
+                        const text = (statusLabel || '').toLowerCase();
+                        if (text.includes('hủy') || text.includes('từ chối')) {
+                                return 'bg-error-container/50 text-on-error-container border border-error-container';
+                        }
+                        if (text.includes('khảo sát') || text.includes('hoạt động') || text.includes('phê duyệt')) {
+                                return 'bg-[#F0FDF4] text-[#15803D] border border-[#DCFCE7]';
+                        }
+                        if (text.includes('chờ') || text.includes('draft') || text.includes('nháp')) {
+                                return 'bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7]';
+                        }
+                        return 'bg-secondary-container/50 text-primary-container border border-secondary-container';
                 }
-                if (state === 'cancelled') {
-                        return 'bg-[#DC2626] ring-[#FEE2E2]';
+
+                function normalizeTimelineState(status) {
+                        const text = String(status || '').toLowerCase();
+                        if (text.includes('cancel') || text.includes('reject') || text.includes('fail') || text.includes('hủy') || text.includes('từ chối')) {
+                                return 'cancelled';
+                        }
+                        if (text.includes('pending') || text.includes('scheduled') || text.includes('draft') || text.includes('processing')) {
+                                return 'current';
+                        }
+                        if (text.includes('done') || text.includes('approved') || text.includes('completed') || text.includes('active') || text.includes('surveyed') || text.includes('rented')) {
+                                return 'done';
+                        }
+                        return 'pending';
                 }
-                return 'bg-surface border border-outline-variant ring-surface';
-        }
 
-        function getTimelineLabelClass(status) {
-                const state = normalizeTimelineState(status);
-                if (state === 'done') return 'text-[#166534]';
-                if (state === 'current') return 'text-[#92400E]';
-                if (state === 'cancelled') return 'text-[#991B1B]';
-                return 'text-on-surface';
-        }
+                function getTimelineNodeClass(status) {
+                        const state = normalizeTimelineState(status);
+                        if (state === 'done') {
+                                return 'bg-[#16A34A] ring-[#DCFCE7]';
+                        }
+                        if (state === 'current') {
+                                return 'bg-[#D97706] ring-[#FEF3C7]';
+                        }
+                        if (state === 'cancelled') {
+                                return 'bg-[#DC2626] ring-[#FEE2E2]';
+                        }
+                        return 'bg-surface border border-outline-variant ring-surface';
+                }
 
-        function renderTable(items) {
-                trackingItems = items;
-                trackingCount.textContent = `${items.length} Mục`;
-                trackingSummary.textContent = `Hiển thị ${items.length} mục`;
+                function getTimelineLabelClass(status) {
+                        const state = normalizeTimelineState(status);
+                        if (state === 'done') return 'text-[#166534]';
+                        if (state === 'current') return 'text-[#92400E]';
+                        if (state === 'cancelled') return 'text-[#991B1B]';
+                        return 'text-on-surface';
+                }
 
-                if (items.length === 0) {
-                        trackingTableBody.innerHTML = `
+                function renderTable(items) {
+                        trackingItems = items;
+                        trackingCount.textContent = `${items.length} Mục`;
+                        trackingSummary.textContent = `Hiển thị ${items.length} mục`;
+
+                        if (items.length === 0) {
+                                trackingTableBody.innerHTML = `
                                 <tr>
-                                        <td colspan="5" class="px-md py-8 text-center text-on-surface-variant">Chưa có hồ sơ ký gửi nào.</td>
+                                        <td colspan="6" class="px-md py-8 text-center text-on-surface-variant">Chưa có hồ sơ ký gửi nào.</td>
                                 </tr>
                         `;
-                        renderEmptyDetail();
-                        return;
-                }
+                                renderEmptyDetail();
+                                return;
+                        }
 
-                trackingTableBody.innerHTML = items.map(item => {
-                        const isSelected = Number(item.submission_id) === Number(selectedSubmissionId);
-                        return `
+                        trackingTableBody.innerHTML = items.map(item => {
+                                const isSelected = Number(item.submission_id) === Number(selectedSubmissionId);
+
+                                const hasSurveyAppt = item.next_survey_time || (item.steps && item.steps.some(step => step.key === 'survey' && (step.state === 'done' || step.state === 'current')));
+                                const buttonHtml = hasSurveyAppt
+                                        ? `<button class="view-appt-btn bg-[#00236f] hover:bg-[#1e3a8a] text-white text-[11px] font-bold py-1.5 px-3 rounded-lg shadow-sm transition-all flex items-center gap-1 mx-auto" data-submission-id="${item.submission_id}">
+                                        <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+                                        Lịch hẹn
+                                   </button>`
+                                        : `<span class="text-xs text-gray-400 italic block text-center">Chưa có lịch</span>`;
+
+                                return `
                                 <tr class="border-b border-outline-variant hover:bg-[#F0F4F8] transition-colors cursor-pointer ${isSelected ? 'bg-[#F0F4F8]' : ''}" data-submission-id="${item.submission_id}">
                                         <td class="px-md py-4 font-medium text-primary">#${escapeHtml(item.request_code)}</td>
                                         <td class="px-md py-4">
@@ -577,96 +874,96 @@
                                                         ${escapeHtml(item.status_label)}
                                                 </span>
                                         </td>
+                                        <td class="px-md py-4 text-center">
+                                                ${buttonHtml}
+                                        </td>
                                 </tr>
                         `;
-                }).join('');
+                        }).join('');
 
-                trackingTableBody.querySelectorAll('tr[data-submission-id]').forEach(row => {
-                        row.addEventListener('click', async () => {
-                                const submissionId = Number(row.getAttribute('data-submission-id'));
-                                await loadDetail(submissionId);
+                        trackingTableBody.querySelectorAll('tr[data-submission-id]').forEach(row => {
+                                row.addEventListener('click', async () => {
+                                        const submissionId = Number(row.getAttribute('data-submission-id'));
+                                        await loadDetail(submissionId);
+                                });
                         });
-                });
-        }
 
-        function renderEmptyDetail() {
-                trackingDetailPane.innerHTML = `
+                        trackingTableBody.querySelectorAll('.view-appt-btn').forEach(btn => {
+                                btn.addEventListener('click', async (e) => {
+                                        e.stopPropagation();
+                                        const submissionId = Number(btn.getAttribute('data-submission-id'));
+                                        await loadDetail(submissionId);
+                                        if (currentDetail) {
+                                                const appts = currentDetail.appointments || [];
+                                                const surveyAppt = appts.find(ap => ap.appointment_type === 'khảo sát');
+                                                if (surveyAppt) {
+                                                        openAppointmentModal(surveyAppt.appointment_id);
+                                                }
+                                        }
+                                });
+                        });
+                }
+
+                function renderEmptyDetail() {
+                        trackingDetailPane.innerHTML = `
                         <div class="p-md border-b border-outline-variant bg-surface-container-lowest">
                                 <h3 class="font-headline-md text-headline-md text-on-surface">Chi tiết hồ sơ</h3>
                         </div>
                         <div class="p-md text-on-surface-variant">Chọn một hồ sơ ở bảng bên trái để xem tiến trình xử lý.</div>
                 `;
-        }
+                }
 
-        function renderDetail(detail) {
-                const s = detail.submission;
-                const surveyAppointment = getSurveyAppointment(detail.appointments);
-                const timelineHtml = detail.timeline.length === 0
-                        ? '<p class="text-on-surface-variant text-sm">Chưa có mốc tiến trình nào.</p>'
-                        : detail.timeline.map(item => `
+                function renderDetail(detail) {
+                        currentDetail = detail;
+                        const s = detail.submission;
+                        const timelineHtml = detail.timeline.length === 0
+                                ? '<p class="text-on-surface-variant text-sm">Chưa có mốc tiến trình nào.</p>'
+                                : detail.timeline.map(item => `
                                 <div class="flex gap-4 relative">
                                         <div class="w-3 h-3 mt-1 rounded-full ring-4 relative z-10 ${getTimelineNodeClass(item.status)}"></div>
                                         <div>
                                                 <p class="font-label-md text-label-md ${getTimelineLabelClass(item.status)}">${escapeHtml(item.title)}</p>
                                                 <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">${escapeHtml(formatDate(item.at))}</p>
                                                 ${item.note ? `<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">${escapeHtml(item.note)}</p>` : ''}
+                                                ${item.type === 'appointment' ? `<button onclick="openAppointmentModal(${item.id})" class="text-xs text-primary font-semibold hover:underline mt-1 flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">visibility</span>Xem chi tiết lịch hẹn</button>` : ''}
                                         </div>
                                 </div>
                         `).join('');
 
-                const appointmentHtml = surveyAppointment ? `
-                        <div class="border border-[#FEF3C7] bg-[#FFFBEB]/60 rounded-lg p-4">
-                                <div class="flex items-start justify-between gap-3 flex-wrap mb-3">
-                                        <div>
-                                                <h4 class="font-label-md text-label-md font-bold text-[#92400E] flex items-center gap-2">
-                                                        <span class="material-symbols-outlined text-[18px]">event</span>
-                                                        Lịch hẹn khảo sát
-                                                </h4>
-                                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Mỗi hồ sơ chỉ có một lịch hẹn khảo sát, do sale tạo và hiển thị thông tin tại đây.</p>
-                                        </div>
-                                        <button id="appointmentToggleBtn" class="px-3 py-1.5 rounded-full border border-[#FEF3C7] bg-white text-[#92400E] font-label-md text-label-sm hover:bg-[#FFF7D6] transition-colors" type="button">
-                                                Xem lịch hẹn
-                                        </button>
-                                </div>
-                                <div id="appointmentInfoPanel" class="space-y-2">
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Ngày &amp; giờ</span>
-                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml(formatAppointmentSummary(surveyAppointment.scheduled_time))}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Trạng thái</span>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${getStatusBadge(surveyAppointment.status || 'scheduled')}">${escapeHtml(surveyAppointment.status || 'scheduled')}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Địa điểm</span>
-                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml(surveyAppointment.location || 'Chưa có')}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Người tạo lịch</span>
-                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml((detail.assigned_sales && detail.assigned_sales.full_name) || 'Sale phụ trách')}</span>
-                                        </div>
-                                </div>
-                        </div>
-                ` : `
-                        <div class="border border-outline-variant bg-surface-container-low rounded-lg p-4">
-                                <h4 class="font-label-md text-label-md text-on-surface mb-2 flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[18px]">event_busy</span>
-                                        Lịch hẹn khảo sát
-                                </h4>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant">Chưa có lịch hẹn khảo sát cho hồ sơ này.</p>
-                        </div>
-                `;
-
-                const images = Array.isArray(s.images_uploaded) ? s.images_uploaded : [];
-                const imagesHtml = images.length === 0
-                        ? '<p class="text-on-surface-variant text-sm">Chưa có ảnh minh họa.</p>'
-                        : `<div class="grid grid-cols-3 gap-2">${images.slice(0, 6).map(url => `
+                        const images = Array.isArray(s.images_uploaded) ? s.images_uploaded : [];
+                        const imagesHtml = images.length === 0
+                                ? '<p class="text-on-surface-variant text-sm">Chưa có ảnh minh họa.</p>'
+                                : `<div class="grid grid-cols-3 gap-2">${images.slice(0, 6).map(url => `
                                 <div class="aspect-square bg-surface-variant rounded border border-outline-variant overflow-hidden">
                                         <img class="w-full h-full object-cover" src="${escapeHtml(url)}" alt="Ảnh bất động sản" />
                                 </div>
                         `).join('')}</div>`;
 
-                trackingDetailPane.innerHTML = `
+                        // Active survey appointment banner if exists
+                        const appointments = detail.appointments || [];
+                        const surveyAppointment = appointments.find(ap => ap.appointment_type === 'khảo sát');
+
+                        let appointmentBannerHtml = '';
+                        if (surveyAppointment) {
+                                const { timeRange, dateStr } = formatAppointmentTimeRange(surveyAppointment.scheduled_time);
+                                appointmentBannerHtml = `
+                                <div class="border border-[#BFDBFE] bg-[#EFF6FF] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm mb-4">
+                                        <div class="flex items-center gap-3">
+                                                <span class="material-symbols-outlined text-[#1E40AF] text-[28px] bg-blue-100 p-2 rounded-xl shrink-0">calendar_month</span>
+                                                <div>
+                                                        <h4 class="font-label-md text-label-md font-bold text-[#1E40AF]">Lịch hẹn khảo sát đã được lên lịch</h4>
+                                                        <p class="font-body-sm text-body-sm text-[#1E40AF]/80 mt-0.5">Thời gian: ${escapeHtml(timeRange)} • ${escapeHtml(dateStr)}</p>
+                                                </div>
+                                        </div>
+                                        <button onclick="openAppointmentModal(${surveyAppointment.appointment_id})" class="bg-[#00236f] hover:bg-[#1e3a8a] text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                                Xem lịch hẹn
+                                        </button>
+                                </div>
+                        `;
+                        }
+
+                        trackingDetailPane.innerHTML = `
                         <div class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
                                 <div>
                                         <div class="flex items-center gap-2 mb-1">
@@ -679,6 +976,7 @@
                                 </div>
                         </div>
                         <div class="flex-1 overflow-y-auto p-md space-y-6">
+                                ${appointmentBannerHtml}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
                                         <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
                                                 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
@@ -703,7 +1001,6 @@
                                                 ${timelineHtml}
                                         </div>
                                 </div>
-                                ${appointmentHtml}
                                 <div>
                                         <h4 class="font-label-md text-label-md text-on-surface mb-3">Ảnh đã gửi</h4>
                                         ${imagesHtml}
@@ -717,76 +1014,208 @@
                         </div>
                 `;
 
-                const cancelBtn = document.getElementById('cancelRequestBtn');
-                if (cancelBtn && s.status !== 'cancelled') {
-                        cancelBtn.addEventListener('click', async () => {
-                                try {
-                                        await apiCall(`/consignments/${s.submission_id}/status`, {
-                                                method: 'PATCH',
-                                                body: JSON.stringify({ status: 'cancelled' })
-                                        });
-                                        await loadTrackingList();
-                                        await loadDetail(s.submission_id);
-                                } catch (error) {
-                                        alert(error.message);
-                                }
-                        });
-                }
-
-                const appointmentToggleBtn = document.getElementById('appointmentToggleBtn');
-                const appointmentInfoPanel = document.getElementById('appointmentInfoPanel');
-                if (appointmentToggleBtn && appointmentInfoPanel) {
-                        appointmentToggleBtn.addEventListener('click', () => {
-                                appointmentInfoPanel.classList.toggle('hidden');
-                                appointmentToggleBtn.textContent = appointmentInfoPanel.classList.contains('hidden') ? 'Xem lịch hẹn' : 'Ẩn lịch hẹn';
-                        });
-                }
-        }
-
-        async function loadDetail(submissionId) {
-                selectedSubmissionId = submissionId;
-                try {
-                        const detail = await getOwnerTrackingDetail(submissionId);
-                        renderTable(trackingItems);
-                        renderDetail(detail);
-                } catch (error) {
-                        alert(error.message);
-                }
-        }
-
-        async function loadTrackingList() {
-                const search = trackingSearch.value.trim();
-                try {
-                        const data = await listOwnerTracking({ search, limit: 50 });
-                        renderTable(data.items || []);
-
-                        if ((data.items || []).length > 0) {
-                                const firstId = selectedSubmissionId || data.items[0].submission_id;
-                                const selectedExists = data.items.some(item => Number(item.submission_id) === Number(firstId));
-                                await loadDetail(selectedExists ? firstId : data.items[0].submission_id);
+                        const cancelBtn = document.getElementById('cancelRequestBtn');
+                        if (cancelBtn && s.status !== 'cancelled') {
+                                cancelBtn.addEventListener('click', async () => {
+                                        try {
+                                                await apiCall(`/consignments/${s.submission_id}/status`, {
+                                                        method: 'PATCH',
+                                                        body: JSON.stringify({ status: 'cancelled' })
+                                                });
+                                                await loadTrackingList();
+                                                await loadDetail(s.submission_id);
+                                        } catch (error) {
+                                                alert(error.message);
+                                        }
+                                });
                         }
-                } catch (error) {
-                        trackingTableBody.innerHTML = `
+                }
+
+                async function loadDetail(submissionId) {
+                        selectedSubmissionId = submissionId;
+                        try {
+                                const detail = await getOwnerTrackingDetail(submissionId);
+                                renderTable(trackingItems);
+                                renderDetail(detail);
+                        } catch (error) {
+                                alert(error.message);
+                        }
+                }
+
+                async function loadTrackingList() {
+                        const search = trackingSearch.value.trim();
+                        try {
+                                const data = await listOwnerTracking({ search, limit: 50 });
+                                renderTable(data.items || []);
+
+                                if ((data.items || []).length > 0) {
+                                        const firstId = selectedSubmissionId || data.items[0].submission_id;
+                                        const selectedExists = data.items.some(item => Number(item.submission_id) === Number(firstId));
+                                        await loadDetail(selectedExists ? firstId : data.items[0].submission_id);
+                                }
+                        } catch (error) {
+                                trackingTableBody.innerHTML = `
                                 <tr>
                                         <td colspan="5" class="px-md py-8 text-center text-error">${escapeHtml(error.message)}</td>
                                 </tr>
                         `;
-                        renderEmptyDetail();
+                                renderEmptyDetail();
+                        }
                 }
-        }
 
-        let searchTimer = null;
-        trackingSearch.addEventListener('input', () => {
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => {
-                        loadTrackingList();
-                }, 300);
-        });
+                let searchTimer = null;
+                trackingSearch.addEventListener('input', () => {
+                        clearTimeout(searchTimer);
+                        searchTimer = setTimeout(() => {
+                                loadTrackingList();
+                        }, 300);
+                });
 
-        (async function initOwnerTrackingPage() {
-                const user = await requireLogin();
-                if (!user) return;
-                await loadTrackingList();
-        })();
-</script>
-</body></html>
+                function formatAppointmentTimeRange(scheduledTimeStr) {
+                        if (!scheduledTimeStr) return { timeRange: '14:00 - 15:30', dateStr: 'Chưa xác định' };
+                        const date = new Date(scheduledTimeStr);
+                        if (Number.isNaN(date.getTime())) return { timeRange: '14:00 - 15:30', dateStr: 'Chưa xác định' };
+
+                        // Start time
+                        const startHour = String(date.getHours()).padStart(2, '0');
+                        const startMinute = String(date.getMinutes()).padStart(2, '0');
+                        const startTimeStr = `${startHour}:${startMinute}`;
+
+                        // End time (90 minutes later)
+                        const endDate = new Date(date.getTime() + 90 * 60 * 1000);
+                        const endHour = String(endDate.getHours()).padStart(2, '0');
+                        const endMinute = String(endDate.getMinutes()).padStart(2, '0');
+                        const endTimeStr = `${endHour}:${endMinute}`;
+
+                        const timeRange = `${startTimeStr} - ${endTimeStr}`;
+
+                        // Vietnamese day of week
+                        const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                        const dayName = daysOfWeek[date.getDay()];
+
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        const dateStr = `${dayName}, ${day}/${month}/${year}`;
+
+                        return { timeRange, dateStr };
+                }
+
+                function generateGoogleCalendarLink(appointment, detail) {
+                        if (!appointment || !appointment.scheduled_time) return '#';
+                        const startDate = new Date(appointment.scheduled_time);
+                        const endDate = new Date(startDate.getTime() + 90 * 60 * 1000); // 1.5 hours later
+
+                        const formatGCalDate = (date) => {
+                                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                        };
+
+                        const sub = detail.submission || {};
+                        const sales = detail.assigned_sales || {};
+                        const requestCode = detail.request_code || `KG-${sub.submission_id}`;
+
+                        const title = encodeURIComponent(`Khảo sát Bất động sản - Yêu cầu #${requestCode}`);
+                        const dates = `${formatGCalDate(startDate)}/${formatGCalDate(endDate)}`;
+                        const detailsText = encodeURIComponent(`Lịch khảo sát thực địa được phối hợp bởi HomeMatch.\nMôi giới phụ trách: ${sales.full_name || 'Nguyễn Minh Quân'}\nSố điện thoại: ${sales.phone || '0902 ... ...'}`);
+                        const location = encodeURIComponent(appointment.location || sub.address || '');
+
+                        return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${detailsText}&location=${location}`;
+                }
+
+                function openAppointmentModal(appointmentId) {
+                        if (!currentDetail) return;
+                        const appointments = currentDetail.appointments || [];
+                        const appt = appointments.find(ap => ap.appointment_id === appointmentId) || appointments[0];
+                        if (!appt) return;
+
+                        const sub = currentDetail.submission;
+                        const sales = currentDetail.assigned_sales || {};
+
+                        // Request Date formatting
+                        let requestDateStr = 'Chưa xác định';
+                        if (sub.submitted_at) {
+                                const rDate = new Date(sub.submitted_at);
+                                if (!Number.isNaN(rDate.getTime())) {
+                                        const d = String(rDate.getDate()).padStart(2, '0');
+                                        const m = String(rDate.getMonth() + 1).padStart(2, '0');
+                                        const y = rDate.getFullYear();
+                                        requestDateStr = `${d}/${m}/${y}`;
+                                }
+                        }
+
+                        // Time & Date format
+                        const { timeRange, dateStr } = formatAppointmentTimeRange(appt.scheduled_time);
+
+                        // Populate Modal Elements
+                        document.getElementById('modalRequestDate').textContent = requestDateStr;
+                        document.getElementById('modalAppointmentCode').textContent = `Mã lịch hẹn: SA-${String(appt.appointment_id).padStart(6, '0')}`;
+                        document.getElementById('modalTimeRange').textContent = timeRange;
+                        document.getElementById('modalDayDate').textContent = dateStr;
+
+                        // Location formatting
+                        const fullLocation = appt.location || sub.address || 'Chưa có địa điểm';
+                        const parts = fullLocation.split(',');
+                        const mainPart = parts[0] || 'Chưa có địa điểm';
+                        const subPart = parts.slice(1).join(',').trim();
+                        document.getElementById('modalLocation').innerHTML = `
+                        ${escapeHtml(mainPart)}
+                        ${subPart ? `<br><span class="text-xs text-gray-500 font-normal">${escapeHtml(subPart)}</span>` : ''}
+                `;
+
+                        // Map link
+                        const mapBtn = document.getElementById('modalMapBtn');
+                        mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullLocation)}`;
+
+                        // Sales info
+                        document.getElementById('modalAgentName').textContent = sales.full_name || 'Nguyễn Minh Quân';
+                        document.getElementById('modalAgentPhone').textContent = sales.phone || '0902 ••• •••';
+                        document.getElementById('modalAgentPhone').href = sales.phone ? `tel:${sales.phone}` : 'tel:0902123456';
+                        document.getElementById('modalAgentEmail').textContent = sales.email || 'quan.nguyen@homematch.vn';
+                        document.getElementById('modalAgentEmail').href = sales.email ? `mailto:${sales.email}` : 'mailto:quan.nguyen@homematch.vn';
+
+                        // Calendar Link
+                        const calendarBtn = document.getElementById('modalCalendarBtn');
+                        calendarBtn.href = generateGoogleCalendarLink(appt, currentDetail);
+
+                        // Open modal with smooth animation
+                        const modal = document.getElementById('appointmentModal');
+                        const content = document.getElementById('appointmentModalContent');
+
+                        modal.classList.remove('hidden');
+                        setTimeout(() => {
+                                modal.classList.add('opacity-100');
+                                content.classList.remove('scale-95');
+                                content.classList.add('scale-100');
+                        }, 10);
+                }
+
+                function closeAppointmentModal() {
+                        const modal = document.getElementById('appointmentModal');
+                        const content = document.getElementById('appointmentModalContent');
+
+                        modal.classList.remove('opacity-100');
+                        content.classList.remove('scale-100');
+                        content.classList.add('scale-95');
+
+                        setTimeout(() => {
+                                modal.classList.add('hidden');
+                        }, 300);
+                }
+
+                // Close modal when clicking outside
+                window.addEventListener('click', (e) => {
+                        const modal = document.getElementById('appointmentModal');
+                        if (e.target === modal) {
+                                closeAppointmentModal();
+                        }
+                });
+
+                (async function initOwnerTrackingPage() {
+                        const user = await requireLogin();
+                        if (!user) return;
+                        await loadTrackingList();
+                })();
+        </script>
+</body>
+
+</html>
