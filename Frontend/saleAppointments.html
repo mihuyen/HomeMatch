@@ -5,38 +5,145 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Thông tin Lịch hẹn - HomeMatch</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e3e1e9",
+                        "surface": "#faf8ff",
+                        "outline-variant": "#c5c5d3",
+                        "surface-dim": "#dad9e1",
+                        "surface-container": "#eeedf4",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "surface-bright": "#faf8ff",
+                        "surface-tint": "#4059aa",
+                        "on-secondary-container": "#54647a",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcb",
+                        "outline": "#757682",
+                        "tertiary-container": "#6e2c00",
+                        "inverse-primary": "#b6c4ff",
+                        "primary-container": "#1e3a8a",
+                        "primary": "#00236f",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00164e",
+                        "inverse-surface": "#2f3036",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-surface": "#1a1b21",
+                        "secondary-fixed": "#d3e4fe",
+                        "background": "#faf8ff",
+                        "on-surface-variant": "#444651",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dce1ff",
+                        "secondary": "#505f76",
+                        "tertiary": "#4b1c00",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f4f3fa",
+                        "on-tertiary-container": "#f39461",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e3e1e9",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-container": "#90a8ff",
+                        "on-background": "#1a1b21",
+                        "on-primary-fixed-variant": "#264191",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-container-high": "#e9e7ef",
+                        "inverse-on-surface": "#f1f0f7",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "secondary-container": "#d0e1fb",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "base": "8px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-xl": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
 <style>
   body{font-family:Inter, sans-serif;background:#faf8ff}
 </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen bg-background">
   <div id="sale-sidebar"></div>
   <script src="saleSidebar.js"></script>
-  <main class="flex-1 p-6">
-    <div class="max-w-5xl mx-auto">
-      <div class="mb-6 flex items-center justify-between">
+
+  <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0 bg-background">
+    <div class="w-full">
+      <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md mb-6">
         <div>
-          <h1 class="text-3xl font-bold">Lịch hẹn - Thông tin căn nhà</h1>
-          <p class="text-sm text-slate-600">Chi tiết lịch hẹn và thông tin bất động sản</p>
+          <h1 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Lịch hẹn - Thông tin căn nhà</h1>
+          <p class="font-body-md text-body-md text-on-surface-variant">Chi tiết lịch hẹn và thông tin bất động sản</p>
         </div>
         <div>
-          <a href="saleAssign.html" class="px-4 py-2 border rounded-md">Quay lại phân công</a>
+          <a href="saleAssign.html" class="px-6 py-2.5 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant font-bold text-on-surface rounded-lg transition-colors active:scale-95 text-[14px]">Quay lại phân công</a>
         </div>
       </div>
 
-      <div id="property-card" class="mb-6 bg-white rounded-lg p-4 border hidden"></div>
+      <div id="property-card" class="mb-lg bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm hidden relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+      </div>
 
       <div id="appointments-list" class="space-y-4"></div>
 
-      <div id="no-appointments" class="hidden p-4 rounded bg-surface-container flex items-center justify-between">
+      <div id="no-appointments" class="hidden p-lg rounded-xl border border-outline-variant bg-surface-container-lowest flex flex-col md:flex-row items-center justify-between gap-md relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
         <div>
-          <p class="font-medium">Chưa có lịch hẹn</p>
-          <p class="text-sm text-slate-600">Hiện tại chưa có lịch hẹn cho yêu cầu này.</p>
+          <p class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">warning</span>
+            Chưa có lịch hẹn
+          </p>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-1">Hiện tại chưa có lịch hẹn cho yêu cầu này.</p>
         </div>
         <div>
-          <a id="create-link" class="px-4 py-2 bg-blue-700 text-white rounded-md" href="#">Tạo lịch hẹn</a>
+          <a id="create-link" class="px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center gap-sm" href="#">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            Tạo lịch hẹn
+          </a>
         </div>
       </div>
 
@@ -64,18 +171,18 @@
     const prop = await getConsignment(submissionId);
     if(prop){
       propCard.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <p class="text-xs text-slate-500">Mã yêu cầu</p>
-            <p class="font-medium">${prop.request_code || ''}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+          <div class="flex flex-col gap-xs">
+            <p class="font-label-sm text-label-sm text-secondary">Mã yêu cầu</p>
+            <p class="font-body-md text-body-md font-semibold text-on-surface">${prop.request_code || ''}</p>
           </div>
-          <div>
-            <p class="text-xs text-slate-500">Chủ nhà</p>
-            <p class="font-medium">${(prop.owner && prop.owner.full_name) || '-'}</p>
+          <div class="flex flex-col gap-xs">
+            <p class="font-label-sm text-label-sm text-secondary">Chủ nhà</p>
+            <p class="font-body-md text-body-md font-semibold text-on-surface">${(prop.owner && prop.owner.full_name) || '-'}</p>
           </div>
-          <div>
-            <p class="text-xs text-slate-500">Địa chỉ</p>
-            <p class="font-medium">${prop.address || '-'}</p>
+          <div class="flex flex-col gap-xs">
+            <p class="font-label-sm text-label-sm text-secondary">Địa chỉ</p>
+            <p class="font-body-md text-body-md font-semibold text-on-surface">${prop.address || '-'}</p>
           </div>
         </div>
       `;
@@ -96,22 +203,34 @@
       const scheduled = a.scheduled_time || a.appointment_date;
       const dateStr = scheduled ? new Date(scheduled).toLocaleString() : '-';
       const item = document.createElement('div');
-      item.className = 'p-4 bg-white border rounded-lg';
+      item.className = 'p-md md:p-lg bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden mb-4';
       item.innerHTML = `
-        <div class="flex justify-between items-start">
+        <div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
           <div>
-            <p class="text-xs text-slate-500">Ngày giờ</p>
-            <p class="font-medium">${dateStr}</p>
-            <p class="text-sm text-slate-600 mt-1">${a.location || '-'}</p>
+            <p class="font-label-sm text-label-sm text-secondary mb-1">Ngày giờ khảo sát</p>
+            <p class="font-headline-md text-[18px] text-primary font-bold flex items-center gap-xs">
+              <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+              ${dateStr}
+            </p>
+            <div class="flex items-center gap-xs text-on-surface-variant font-body-sm mt-2">
+              <span class="material-symbols-outlined text-[18px]">location_on</span>
+              <span>${a.location || '-'}</span>
+            </div>
           </div>
-          <div class="text-right">
-            <p class="text-xs text-slate-500">Trạng thái</p>
-            <p class="font-medium">${a.status || 'Đã lên lịch'}</p>
-            <p class="text-sm text-slate-600 mt-1">${a.result_note || a.notes || ''}</p>
+          <div class="text-left md:text-right flex flex-col gap-xs">
+            <p class="font-label-sm text-label-sm text-secondary">Trạng thái</p>
+            <span class="inline-block px-3 py-1 bg-primary/10 text-primary font-label-sm text-label-sm rounded-full w-fit md:ml-auto">
+              ${a.status || 'Đã lên lịch'}
+            </span>
+            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">${a.result_note || a.notes || ''}</p>
           </div>
         </div>
-        <div class="mt-4 flex justify-end">
-          <a href="saleSurvey.html?submissionId=${submissionId}&appointmentId=${a.appointment_id}" class="px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800">Nhập kết quả</a>
+        <div class="mt-md pt-md border-t border-outline-variant flex justify-end">
+          <a href="saleSurvey.html?submissionId=${submissionId}&appointmentId=${a.appointment_id}" class="px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center gap-sm">
+            <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+            Nhập kết quả khảo sát
+          </a>
         </div>
       `;
       list.appendChild(item);

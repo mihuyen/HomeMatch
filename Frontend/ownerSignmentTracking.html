@@ -228,6 +228,7 @@
 <th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Giá Đề xuất</th>
 <th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Ngày</th>
 <th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium">Trạng thái</th>
+<th class="font-label-md text-label-md text-on-surface-variant px-md py-3 font-medium text-center">Hành động</th>
 </tr>
 </thead>
 <tbody class="font-body-sm text-body-sm" id="trackingTableBody">
@@ -437,6 +438,120 @@
 </div>
 </main>
 
+<!-- Appointment Detail Modal -->
+<div id="appointmentModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col transform transition-transform duration-300 scale-95" id="appointmentModalContent">
+        <!-- Header -->
+        <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-start relative bg-white">
+            <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E0E7FF] text-[#3730A3] border border-[#C7D2FE]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#4F46E5]"></span>
+                        Đã lên lịch
+                    </span>
+                    <span class="text-xs text-gray-500 font-semibold">NGÀY GỬI YÊU CẦU: <span id="modalRequestDate">18/10/2023</span></span>
+                </div>
+                <h3 class="text-2xl font-bold text-[#00236f] mt-1" id="modalTitle">Chi tiết Lịch hẹn khảo sát</h3>
+                <p class="text-sm text-gray-500 font-medium" id="modalAppointmentCode">Mã lịch hẹn: SA-992144</p>
+            </div>
+            <button onclick="closeAppointmentModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1.5 hover:bg-gray-100 rounded-full">
+                <span class="material-symbols-outlined text-[24px]">close</span>
+            </button>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white overflow-y-auto max-h-[70vh]">
+            <!-- Left Column: Survey Time & Location -->
+            <div class="space-y-6">
+                <!-- Survey Time -->
+                <div class="border-l-4 border-[#00236f] pl-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-[16px] text-gray-400">calendar_month</span>
+                        THỜI GIAN KHẢO SÁT
+                    </h4>
+                    <p class="text-2xl font-extrabold text-[#00236f]" id="modalTimeRange">14:00 - 15:30</p>
+                    <p class="text-sm text-gray-600 font-semibold mt-1" id="modalDayDate">Thứ Năm, 24/10/2023</p>
+                </div>
+                
+                <!-- Survey Location -->
+                <div class="border-l-4 border-[#00236f] pl-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-[16px] text-gray-400">location_on</span>
+                        ĐỊA ĐIỂM
+                    </h4>
+                    <p class="text-sm font-semibold text-gray-800 leading-relaxed" id="modalLocation">
+                        Vinhomes Central Park, Park 7, Tầng 22, Căn 08<br>
+                        <span class="text-xs text-gray-500 font-normal">720A Điện Biên Phủ, Phường 22, Quận Bình Thạnh, TP.HCM</span>
+                    </p>
+                    
+                    <!-- Map Preview Card -->
+                    <div class="mt-4 relative rounded-xl overflow-hidden shadow-sm border border-gray-200 aspect-[2/1] group">
+                        <img id="modalMapImg" src="map_preview.png" alt="Bản đồ" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                            <a id="modalMapBtn" href="#" target="_blank" class="bg-[#00236f] hover:bg-[#1e3a8a] text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">map</span>
+                                Xem bản đồ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Agent & Info -->
+            <div class="space-y-6 flex flex-col justify-between">
+                <!-- Broker Info -->
+                <div class="border-l-4 border-[#00236f] pl-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined text-[16px] text-gray-400">support_agent</span>
+                        MÔ GIỚI PHỤ TRÁCH
+                    </h4>
+                    <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div class="flex-1">
+                            <h5 class="text-base font-bold text-gray-800" id="modalAgentName">Nguyễn Minh Quân</h5>
+                            <p class="text-xs text-gray-500 font-medium mt-0.5" id="modalAgentTitle">Senior Property Consultant</p>
+                            
+                            <div class="flex flex-col gap-1 mt-2">
+                                <a id="modalAgentPhone" href="tel:0902123456" class="text-xs text-gray-600 hover:text-[#00236f] transition-colors flex items-center gap-1.5 font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">phone</span>
+                                    0902 ••• •••
+                                </a>
+                                <a id="modalAgentEmail" href="mailto:quan.nguyen@homematch.vn" class="text-xs text-gray-600 hover:text-[#00236f] transition-colors flex items-center gap-1.5 font-medium break-all">
+                                    <span class="material-symbols-outlined text-[14px]">mail</span>
+                                    quan.nguyen@homematch.vn
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reminder Info -->
+                <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-start gap-3 mt-4">
+                    <span class="material-symbols-outlined text-[#1E40AF] text-[20px] shrink-0 mt-0.5">info</span>
+                    <p class="text-xs font-medium text-blue-800 leading-relaxed">
+                        Vui lòng có mặt tại địa điểm vào thời gian đã hẹn để buổi khảo sát diễn ra thuận lợi.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2 text-xs text-gray-500 font-semibold text-center sm:text-left">
+                <span>Cần thay đổi lịch hẹn? Vui lòng thông báo trước ít nhất 24 giờ.</span>
+                <span class="inline-flex items-center gap-0.5 text-[#00236f] hover:underline cursor-pointer">
+                    <span class="material-symbols-outlined text-[14px]">help</span>
+                    Liên hệ hỗ trợ
+                </span>
+            </div>
+            
+            <a id="modalCalendarBtn" href="#" target="_blank" class="w-full sm:w-auto bg-[#00236f] hover:bg-[#1e3a8a] text-white text-xs font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+                Thêm vào Google Calendar
+            </a>
+        </div>
+    </div>
+</div>
+
 <script src="ownerSidebar.js"></script>
 <script src="api.js"></script>
 <script>
@@ -448,6 +563,7 @@
 
         let trackingItems = [];
         let selectedSubmissionId = null;
+        let currentDetail = null;
 
         function escapeHtml(value) {
                 return String(value || '')
@@ -475,24 +591,6 @@
                 const num = Number(value);
                 if (!Number.isFinite(num)) return 'Chưa có';
                 return num.toLocaleString('vi-VN') + ' VNĐ';
-        }
-
-        function getSurveyAppointment(appointments) {
-                if (!Array.isArray(appointments) || appointments.length === 0) return null;
-                return appointments.find(item => String(item.appointment_type || '').toLowerCase().includes('khảo sát')) || appointments[0];
-        }
-
-        function formatAppointmentSummary(value) {
-                if (!value) return 'Chưa có';
-                const d = new Date(value);
-                if (Number.isNaN(d.getTime())) return 'Chưa có';
-                return d.toLocaleString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                });
         }
 
         function getStatusBadge(statusLabel) {
@@ -553,7 +651,7 @@
                 if (items.length === 0) {
                         trackingTableBody.innerHTML = `
                                 <tr>
-                                        <td colspan="5" class="px-md py-8 text-center text-on-surface-variant">Chưa có hồ sơ ký gửi nào.</td>
+                                        <td colspan="6" class="px-md py-8 text-center text-on-surface-variant">Chưa có hồ sơ ký gửi nào.</td>
                                 </tr>
                         `;
                         renderEmptyDetail();
@@ -562,6 +660,15 @@
 
                 trackingTableBody.innerHTML = items.map(item => {
                         const isSelected = Number(item.submission_id) === Number(selectedSubmissionId);
+                        
+                        const hasSurveyAppt = item.next_survey_time || (item.steps && item.steps.some(step => step.key === 'survey' && (step.state === 'done' || step.state === 'current')));
+                        const buttonHtml = hasSurveyAppt
+                                ? `<button class="view-appt-btn bg-[#00236f] hover:bg-[#1e3a8a] text-white text-[11px] font-bold py-1.5 px-3 rounded-lg shadow-sm transition-all flex items-center gap-1 mx-auto" data-submission-id="${item.submission_id}">
+                                        <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+                                        Lịch hẹn
+                                   </button>`
+                                : `<span class="text-xs text-gray-400 italic block text-center">Chưa có lịch</span>`;
+
                         return `
                                 <tr class="border-b border-outline-variant hover:bg-[#F0F4F8] transition-colors cursor-pointer ${isSelected ? 'bg-[#F0F4F8]' : ''}" data-submission-id="${item.submission_id}">
                                         <td class="px-md py-4 font-medium text-primary">#${escapeHtml(item.request_code)}</td>
@@ -577,6 +684,9 @@
                                                         ${escapeHtml(item.status_label)}
                                                 </span>
                                         </td>
+                                        <td class="px-md py-4 text-center">
+                                                ${buttonHtml}
+                                        </td>
                                 </tr>
                         `;
                 }).join('');
@@ -585,6 +695,21 @@
                         row.addEventListener('click', async () => {
                                 const submissionId = Number(row.getAttribute('data-submission-id'));
                                 await loadDetail(submissionId);
+                        });
+                });
+
+                trackingTableBody.querySelectorAll('.view-appt-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                                e.stopPropagation();
+                                const submissionId = Number(btn.getAttribute('data-submission-id'));
+                                await loadDetail(submissionId);
+                                if (currentDetail) {
+                                        const appts = currentDetail.appointments || [];
+                                        const surveyAppt = appts.find(ap => ap.appointment_type === 'khảo sát');
+                                        if (surveyAppt) {
+                                                openAppointmentModal(surveyAppt.appointment_id);
+                                        }
+                                }
                         });
                 });
         }
@@ -599,8 +724,8 @@
         }
 
         function renderDetail(detail) {
+                currentDetail = detail;
                 const s = detail.submission;
-                const surveyAppointment = getSurveyAppointment(detail.appointments);
                 const timelineHtml = detail.timeline.length === 0
                         ? '<p class="text-on-surface-variant text-sm">Chưa có mốc tiến trình nào.</p>'
                         : detail.timeline.map(item => `
@@ -610,52 +735,10 @@
                                                 <p class="font-label-md text-label-md ${getTimelineLabelClass(item.status)}">${escapeHtml(item.title)}</p>
                                                 <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">${escapeHtml(formatDate(item.at))}</p>
                                                 ${item.note ? `<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">${escapeHtml(item.note)}</p>` : ''}
+                                                ${item.type === 'appointment' ? `<button onclick="openAppointmentModal(${item.id})" class="text-xs text-primary font-semibold hover:underline mt-1 flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">visibility</span>Xem chi tiết lịch hẹn</button>` : ''}
                                         </div>
                                 </div>
                         `).join('');
-
-                const appointmentHtml = surveyAppointment ? `
-                        <div class="border border-[#FEF3C7] bg-[#FFFBEB]/60 rounded-lg p-4">
-                                <div class="flex items-start justify-between gap-3 flex-wrap mb-3">
-                                        <div>
-                                                <h4 class="font-label-md text-label-md font-bold text-[#92400E] flex items-center gap-2">
-                                                        <span class="material-symbols-outlined text-[18px]">event</span>
-                                                        Lịch hẹn khảo sát
-                                                </h4>
-                                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Mỗi hồ sơ chỉ có một lịch hẹn khảo sát, do sale tạo và hiển thị thông tin tại đây.</p>
-                                        </div>
-                                        <button id="appointmentToggleBtn" class="px-3 py-1.5 rounded-full border border-[#FEF3C7] bg-white text-[#92400E] font-label-md text-label-sm hover:bg-[#FFF7D6] transition-colors" type="button">
-                                                Xem lịch hẹn
-                                        </button>
-                                </div>
-                                <div id="appointmentInfoPanel" class="space-y-2">
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Ngày &amp; giờ</span>
-                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml(formatAppointmentSummary(surveyAppointment.scheduled_time))}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Trạng thái</span>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${getStatusBadge(surveyAppointment.status || 'scheduled')}">${escapeHtml(surveyAppointment.status || 'scheduled')}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Địa điểm</span>
-                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml(surveyAppointment.location || 'Chưa có')}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-3 flex-wrap">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Người tạo lịch</span>
-                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml((detail.assigned_sales && detail.assigned_sales.full_name) || 'Sale phụ trách')}</span>
-                                        </div>
-                                </div>
-                        </div>
-                ` : `
-                        <div class="border border-outline-variant bg-surface-container-low rounded-lg p-4">
-                                <h4 class="font-label-md text-label-md text-on-surface mb-2 flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[18px]">event_busy</span>
-                                        Lịch hẹn khảo sát
-                                </h4>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant">Chưa có lịch hẹn khảo sát cho hồ sơ này.</p>
-                        </div>
-                `;
 
                 const images = Array.isArray(s.images_uploaded) ? s.images_uploaded : [];
                 const imagesHtml = images.length === 0
@@ -665,6 +748,30 @@
                                         <img class="w-full h-full object-cover" src="${escapeHtml(url)}" alt="Ảnh bất động sản" />
                                 </div>
                         `).join('')}</div>`;
+
+                // Active survey appointment banner if exists
+                const appointments = detail.appointments || [];
+                const surveyAppointment = appointments.find(ap => ap.appointment_type === 'khảo sát');
+                
+                let appointmentBannerHtml = '';
+                if (surveyAppointment) {
+                        const { timeRange, dateStr } = formatAppointmentTimeRange(surveyAppointment.scheduled_time);
+                        appointmentBannerHtml = `
+                                <div class="border border-[#BFDBFE] bg-[#EFF6FF] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm mb-4">
+                                        <div class="flex items-center gap-3">
+                                                <span class="material-symbols-outlined text-[#1E40AF] text-[28px] bg-blue-100 p-2 rounded-xl shrink-0">calendar_month</span>
+                                                <div>
+                                                        <h4 class="font-label-md text-label-md font-bold text-[#1E40AF]">Lịch hẹn khảo sát đã được lên lịch</h4>
+                                                        <p class="font-body-sm text-body-sm text-[#1E40AF]/80 mt-0.5">Thời gian: ${escapeHtml(timeRange)} • ${escapeHtml(dateStr)}</p>
+                                                </div>
+                                        </div>
+                                        <button onclick="openAppointmentModal(${surveyAppointment.appointment_id})" class="bg-[#00236f] hover:bg-[#1e3a8a] text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                                Xem lịch hẹn
+                                        </button>
+                                </div>
+                        `;
+                }
 
                 trackingDetailPane.innerHTML = `
                         <div class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
@@ -679,6 +786,7 @@
                                 </div>
                         </div>
                         <div class="flex-1 overflow-y-auto p-md space-y-6">
+                                ${appointmentBannerHtml}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
                                         <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
                                                 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
@@ -703,7 +811,6 @@
                                                 ${timelineHtml}
                                         </div>
                                 </div>
-                                ${appointmentHtml}
                                 <div>
                                         <h4 class="font-label-md text-label-md text-on-surface mb-3">Ảnh đã gửi</h4>
                                         ${imagesHtml}
@@ -730,15 +837,6 @@
                                 } catch (error) {
                                         alert(error.message);
                                 }
-                        });
-                }
-
-                const appointmentToggleBtn = document.getElementById('appointmentToggleBtn');
-                const appointmentInfoPanel = document.getElementById('appointmentInfoPanel');
-                if (appointmentToggleBtn && appointmentInfoPanel) {
-                        appointmentToggleBtn.addEventListener('click', () => {
-                                appointmentInfoPanel.classList.toggle('hidden');
-                                appointmentToggleBtn.textContent = appointmentInfoPanel.classList.contains('hidden') ? 'Xem lịch hẹn' : 'Ẩn lịch hẹn';
                         });
                 }
         }
@@ -781,6 +879,145 @@
                 searchTimer = setTimeout(() => {
                         loadTrackingList();
                 }, 300);
+        });
+
+        function formatAppointmentTimeRange(scheduledTimeStr) {
+                if (!scheduledTimeStr) return { timeRange: '14:00 - 15:30', dateStr: 'Chưa xác định' };
+                const date = new Date(scheduledTimeStr);
+                if (Number.isNaN(date.getTime())) return { timeRange: '14:00 - 15:30', dateStr: 'Chưa xác định' };
+                
+                // Start time
+                const startHour = String(date.getHours()).padStart(2, '0');
+                const startMinute = String(date.getMinutes()).padStart(2, '0');
+                const startTimeStr = `${startHour}:${startMinute}`;
+                
+                // End time (90 minutes later)
+                const endDate = new Date(date.getTime() + 90 * 60 * 1000);
+                const endHour = String(endDate.getHours()).padStart(2, '0');
+                const endMinute = String(endDate.getMinutes()).padStart(2, '0');
+                const endTimeStr = `${endHour}:${endMinute}`;
+                
+                const timeRange = `${startTimeStr} - ${endTimeStr}`;
+                
+                // Vietnamese day of week
+                const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                const dayName = daysOfWeek[date.getDay()];
+                
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const dateStr = `${dayName}, ${day}/${month}/${year}`;
+                
+                return { timeRange, dateStr };
+        }
+
+        function generateGoogleCalendarLink(appointment, detail) {
+                if (!appointment || !appointment.scheduled_time) return '#';
+                const startDate = new Date(appointment.scheduled_time);
+                const endDate = new Date(startDate.getTime() + 90 * 60 * 1000); // 1.5 hours later
+                
+                const formatGCalDate = (date) => {
+                        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                };
+                
+                const sub = detail.submission || {};
+                const sales = detail.assigned_sales || {};
+                const requestCode = detail.request_code || `KG-${sub.submission_id}`;
+                
+                const title = encodeURIComponent(`Khảo sát Bất động sản - Yêu cầu #${requestCode}`);
+                const dates = `${formatGCalDate(startDate)}/${formatGCalDate(endDate)}`;
+                const detailsText = encodeURIComponent(`Lịch khảo sát thực địa được phối hợp bởi HomeMatch.\nMôi giới phụ trách: ${sales.full_name || 'Nguyễn Minh Quân'}\nSố điện thoại: ${sales.phone || '0902 ... ...'}`);
+                const location = encodeURIComponent(appointment.location || sub.address || '');
+                
+                return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${detailsText}&location=${location}`;
+        }
+
+        function openAppointmentModal(appointmentId) {
+                if (!currentDetail) return;
+                const appointments = currentDetail.appointments || [];
+                const appt = appointments.find(ap => ap.appointment_id === appointmentId) || appointments[0];
+                if (!appt) return;
+                
+                const sub = currentDetail.submission;
+                const sales = currentDetail.assigned_sales || {};
+                
+                // Request Date formatting
+                let requestDateStr = 'Chưa xác định';
+                if (sub.submitted_at) {
+                        const rDate = new Date(sub.submitted_at);
+                        if (!Number.isNaN(rDate.getTime())) {
+                                const d = String(rDate.getDate()).padStart(2, '0');
+                                const m = String(rDate.getMonth() + 1).padStart(2, '0');
+                                const y = rDate.getFullYear();
+                                requestDateStr = `${d}/${m}/${y}`;
+                        }
+                }
+                
+                // Time & Date format
+                const { timeRange, dateStr } = formatAppointmentTimeRange(appt.scheduled_time);
+                
+                // Populate Modal Elements
+                document.getElementById('modalRequestDate').textContent = requestDateStr;
+                document.getElementById('modalAppointmentCode').textContent = `Mã lịch hẹn: SA-${String(appt.appointment_id).padStart(6, '0')}`;
+                document.getElementById('modalTimeRange').textContent = timeRange;
+                document.getElementById('modalDayDate').textContent = dateStr;
+                
+                // Location formatting
+                const fullLocation = appt.location || sub.address || 'Chưa có địa điểm';
+                const parts = fullLocation.split(',');
+                const mainPart = parts[0] || 'Chưa có địa điểm';
+                const subPart = parts.slice(1).join(',').trim();
+                document.getElementById('modalLocation').innerHTML = `
+                        ${escapeHtml(mainPart)}
+                        ${subPart ? `<br><span class="text-xs text-gray-500 font-normal">${escapeHtml(subPart)}</span>` : ''}
+                `;
+                
+                // Map link
+                const mapBtn = document.getElementById('modalMapBtn');
+                mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullLocation)}`;
+                
+                // Sales info
+                document.getElementById('modalAgentName').textContent = sales.full_name || 'Nguyễn Minh Quân';
+                document.getElementById('modalAgentPhone').textContent = sales.phone || '0902 ••• •••';
+                document.getElementById('modalAgentPhone').href = sales.phone ? `tel:${sales.phone}` : 'tel:0902123456';
+                document.getElementById('modalAgentEmail').textContent = sales.email || 'quan.nguyen@homematch.vn';
+                document.getElementById('modalAgentEmail').href = sales.email ? `mailto:${sales.email}` : 'mailto:quan.nguyen@homematch.vn';
+                
+                // Calendar Link
+                const calendarBtn = document.getElementById('modalCalendarBtn');
+                calendarBtn.href = generateGoogleCalendarLink(appt, currentDetail);
+                
+                // Open modal with smooth animation
+                const modal = document.getElementById('appointmentModal');
+                const content = document.getElementById('appointmentModalContent');
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                        modal.classList.add('opacity-100');
+                        content.classList.remove('scale-95');
+                        content.classList.add('scale-100');
+                }, 10);
+        }
+
+        function closeAppointmentModal() {
+                const modal = document.getElementById('appointmentModal');
+                const content = document.getElementById('appointmentModalContent');
+                
+                modal.classList.remove('opacity-100');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                
+                setTimeout(() => {
+                        modal.classList.add('hidden');
+                }, 300);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+                const modal = document.getElementById('appointmentModal');
+                if (e.target === modal) {
+                        closeAppointmentModal();
+                }
         });
 
         (async function initOwnerTrackingPage() {
