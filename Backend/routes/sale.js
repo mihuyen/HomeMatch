@@ -162,7 +162,10 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
                 MAX(ap.scheduled_time) AS latest_appointment_time,
                 SUBSTRING_INDEX(GROUP_CONCAT(ap.status ORDER BY ap.scheduled_time DESC SEPARATOR ','), ',', 1) AS latest_appointment_status,
                 MAX(sr.completed_at) AS latest_survey_time,
-                SUBSTRING_INDEX(GROUP_CONCAT(sr.survey_status ORDER BY sr.completed_at DESC SEPARATOR ','), ',', 1) AS latest_survey_status
+                SUBSTRING_INDEX(GROUP_CONCAT(sr.survey_status ORDER BY sr.completed_at DESC SEPARATOR ','), ',', 1) AS latest_survey_status,
+                ce.extension_id,
+                ce.status AS extension_status,
+                ce.extension_months
              FROM property_submissions ps
              LEFT JOIN users u ON u.user_id = ps.owner_id
              LEFT JOIN submission_contracts sc
@@ -172,11 +175,14 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
                  FROM submission_contracts sc2
                  WHERE sc2.submission_id = ps.submission_id
              )
-                         LEFT JOIN contract_legal_approvals cla ON cla.submission_contract_id = sc.submission_contract_id
+             LEFT JOIN contract_legal_approvals cla ON cla.submission_contract_id = sc.submission_contract_id
              LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id AND ap.appointment_type = 'khảo sát'
              LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
+             LEFT JOIN contract_extensions ce 
+               ON ce.submission_contract_id = sc.submission_contract_id 
+              AND ce.status = 'pending'
              WHERE ${whereSql}
-                         GROUP BY ps.submission_id, u.user_id, sc.submission_contract_id, sc.contract_type, sc.status, cla.status, cla.review_comment, cla.reviewed_at
+             GROUP BY ps.submission_id, u.user_id, sc.submission_contract_id, sc.contract_type, sc.status, cla.status, cla.review_comment, cla.reviewed_at, ce.extension_id, ce.status, ce.extension_months
              ORDER BY ps.submitted_at DESC, ps.submission_id DESC
              LIMIT ? OFFSET ?`,
             [...params, Number(limit), Number(offset)]
@@ -203,6 +209,10 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
                 legal_status: row.legal_status,
                 legal_review_comment: row.legal_review_comment,
                 legal_reviewed_at: row.legal_reviewed_at,
+                extension_id: row.extension_id,
+                extension_status: row.extension_status,
+                extension_months: row.extension_months,
+                request_type: (row.extension_id && row.extension_status === 'pending') ? 'Gia hạn' : 'Đăng ký',
                 owner: {
                     user_id: row.owner_id,
                     full_name: row.owner_name,
@@ -1128,6 +1138,158 @@ router.post('/sepay-webhook', async (req, res) => {
     } catch (err) {
         console.error('sepay webhook error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/sale/extensions/:extensionId
+// Lấy chi tiết yêu cầu gia hạn
+router.get('/extensions/:extensionId', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
+    try {
+        const extensionId = Number(req.params.extensionId);
+        if (!Number.isInteger(extensionId)) {
+            return res.status(400).json({ message: 'extensionId không hợp lệ' });
+        }
+
+        const [rows] = await db.query(
+            `SELECT ce.*, sc.contract_code, sc.contract_type AS old_contract_type, ps.submission_id, ps.address
+             FROM contract_extensions ce
+             INNER JOIN submission_contracts sc ON sc.submission_contract_id = ce.submission_contract_id
+             INNER JOIN property_submissions ps ON ps.submission_id = sc.submission_id
+             WHERE ce.extension_id = ? LIMIT 1`,
+            [extensionId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy yêu cầu gia hạn' });
+        }
+
+        res.json(rows[0]);
+    } catch (err) {
+        console.error('get extension detail error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/sale/contracts/:submissionId/extend/:extensionId/complete
+// Tải lên scan hợp đồng gia hạn và hoàn tất quy trình gia hạn (không cần cọc)
+router.post('/contracts/:submissionId/extend/:extensionId/complete', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const connection = await db.getConnection();
+
+    try {
+        const saleId = req.user.user_id;
+        const submissionId = Number(req.params.submissionId);
+        const extensionId = Number(req.params.extensionId);
+        const { fileName, mimeType, fileDataBase64 } = req.body;
+
+        if (!Number.isInteger(submissionId) || !Number.isInteger(extensionId)) {
+            return res.status(400).json({ message: 'Tham số không hợp lệ' });
+        }
+
+        if (!fileDataBase64) {
+            return res.status(400).json({ message: 'Thiếu dữ liệu tệp tin scan hợp đồng' });
+        }
+
+        // Lấy chi tiết yêu cầu gia hạn
+        const [extensions] = await connection.query(
+            `SELECT ce.*, sc.submission_contract_id, sc.contract_duration_months, sc.contract_code
+             FROM contract_extensions ce
+             INNER JOIN submission_contracts sc ON sc.submission_contract_id = ce.submission_contract_id
+             INNER JOIN property_submissions ps ON ps.submission_id = sc.submission_id
+             WHERE ce.extension_id = ? AND ps.assigned_sales_id = ? AND ce.status = 'pending' LIMIT 1`,
+            [extensionId, saleId]
+        );
+
+        if (extensions.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy yêu cầu gia hạn đang chờ xử lý của sale này' });
+        }
+
+        const ext = extensions[0];
+
+        // Xử lý lưu file scan đính kèm tương tự upload scan gốc
+        let dataBase64 = fileDataBase64;
+        let resolvedMime = mimeType || null;
+
+        const dataUrlMatch = String(fileDataBase64).match(/^data:([^;]+);base64,(.*)$/);
+        if (dataUrlMatch) {
+            resolvedMime = resolvedMime || dataUrlMatch[1];
+            dataBase64 = dataUrlMatch[2];
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (resolvedMime && !allowedTypes.includes(resolvedMime)) {
+            return res.status(400).json({ message: 'Định dạng tệp tin không hợp lệ' });
+        }
+
+        const extMap = {
+            'image/jpeg': '.jpg',
+            'image/png': '.png',
+            'application/pdf': '.pdf'
+        };
+
+        const fallbackExt = fileName ? path.extname(fileName) : '';
+        const extension = resolvedMime ? extMap[resolvedMime] : fallbackExt || '.bin';
+        const safeExt = extension.startsWith('.') ? extension : `.${extension}`;
+        const uploadDir = path.join(__dirname, '..', 'uploads', 'contracts');
+
+        await fs.promises.mkdir(uploadDir, { recursive: true });
+
+        const fileId = `extend_${submissionId}-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const storedFileName = `contract_${fileId}${safeExt}`;
+        const storedPath = path.join(uploadDir, storedFileName);
+
+        await fs.promises.writeFile(storedPath, Buffer.from(dataBase64, 'base64'));
+
+        const publicUrl = `/uploads/contracts/${storedFileName}`;
+
+        // Bắt đầu transaction
+        await connection.beginTransaction();
+
+        // 1. Cập nhật bảng contract_extensions thành completed
+        await connection.query(
+            `UPDATE contract_extensions 
+             SET status = 'completed',
+                 processed_by = ?,
+                 notes = 'Đã tải lên scan hợp đồng gia hạn và hoàn tất.'
+             WHERE extension_id = ?`,
+            [saleId, extensionId]
+        );
+
+        // 2. Cập nhật hợp đồng gốc: cộng thêm thời hạn, cập nhật scan mới, giữ trạng thái active
+        const newDuration = ext.contract_duration_months + ext.extension_months;
+        await connection.query(
+            `UPDATE submission_contracts 
+             SET contract_duration_months = ?,
+                 signed_scan_url = ?,
+                 status = 'active',
+                 signed_at = NOW()
+             WHERE submission_contract_id = ?`,
+            [newDuration, publicUrl, ext.submission_contract_id]
+        );
+
+        // 3. Đảm bảo trạng thái hồ sơ ký gửi cũng là approved
+        await connection.query(
+            `UPDATE property_submissions 
+             SET status = 'approved'
+             WHERE submission_id = ?`,
+            [submissionId]
+        );
+
+        await connection.commit();
+
+        res.json({
+            message: 'Đã hoàn tất quy trình gia hạn hợp đồng thành công! Không cần đặt cọc.',
+            contract_scan_url: publicUrl,
+            new_duration_months: newDuration
+        });
+
+    } catch (err) {
+        await connection.rollback();
+        console.error('complete extension error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    } finally {
+        connection.release();
     }
 });
 

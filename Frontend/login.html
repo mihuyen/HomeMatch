@@ -250,8 +250,6 @@
             window.location.href = 'brokerHome.html';
         } else if (currentUser && currentUser.role === 'owner') {
             window.location.href = 'ownerSignmentTracking.html';
-        } else if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager')) {
-            window.location.href = 'adminDashboard.html';
         } else {
             window.location.href = 'home.html';
         }
@@ -272,10 +270,6 @@
         }
         if (user && user.role === 'owner') {
             window.location.href = 'ownerSignmentTracking.html';
-            return;
-        }
-        if (user && (user.role === 'admin' || user.role === 'manager')) {
-            window.location.href = 'adminDashboard.html';
             return;
         }
         window.location.href = 'home.html';

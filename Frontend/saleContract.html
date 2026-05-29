@@ -8,25 +8,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <style>
+    body { font-family: 'Inter', sans-serif; }
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .icon-filled {
+      font-variation-settings: 'FILL' 1;
     }
 
     .glass-card {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      border: 1px solid #e2e8f0;
     }
 
     .contract-card-radio:checked + div {
-      border-color: #00236f;
-      background-color: #f4f3fa;
-      box-shadow: 0 0 0 1px #00236f;
+      border-color: #1E3A8A;
+      background-color: #f0f4ff;
+      box-shadow: 0 0 0 1px #1E3A8A;
     }
 
     .contract-card-radio:checked + div .radio-circle {
-      border-color: #00236f;
-      background-color: #00236f;
+      border-color: #1E3A8A;
+      background-color: #1E3A8A;
     }
 
     .contract-card-radio:checked + div .radio-circle::after {
@@ -44,59 +52,19 @@
       theme: {
         extend: {
           "colors": {
-            "tertiary-container": "#6e2c00",
-            "on-tertiary-fixed-variant": "#773205",
-            "inverse-primary": "#b6c4ff",
-            "secondary-fixed-dim": "#b7c8e1",
-            "primary-fixed": "#dce1ff",
-            "tertiary-fixed-dim": "#ffb691",
-            "inverse-surface": "#2f3036",
-            "primary": "#00236f",
-            "error-container": "#ffdad6",
-            "on-tertiary": "#ffffff",
-            "on-secondary-fixed": "#0b1c30",
-            "on-surface": "#1a1b21",
-            "on-primary-fixed": "#00164e",
+            "primary": "#1E3A8A",
             "primary-container": "#1e3a8a",
-            "on-secondary": "#ffffff",
-            "surface-container-high": "#e9e7ef",
-            "secondary-fixed": "#d3e4fe",
-            "inverse-on-surface": "#f1f0f7",
-            "surface-dim": "#dad9e1",
-            "secondary-container": "#d0e1fb",
-            "on-tertiary-fixed": "#341100",
-            "on-error": "#ffffff",
-            "outline": "#757682",
-            "on-primary-container": "#90a8ff",
-            "surface-container-lowest": "#ffffff",
-            "surface": "#faf8ff",
-            "surface-container-highest": "#e3e1e9",
-            "surface-container": "#eeedf4",
-            "on-background": "#1a1b21",
-            "surface-tint": "#4059aa",
-            "outline-variant": "#c5c5d3",
-            "surface-container-low": "#f4f3fa",
-            "on-primary": "#ffffff",
-            "on-tertiary-container": "#f39461",
-            "error": "#ba1a1a",
-            "secondary": "#505f76",
-            "surface-variant": "#e3e1e9",
-            "primary-fixed-dim": "#b6c4ff",
-            "on-primary-fixed-variant": "#264191",
-            "surface-bright": "#faf8ff",
-            "background": "#faf8ff",
-            "on-secondary-container": "#54647a",
-            "on-error-container": "#93000a",
-            "tertiary-fixed": "#ffdbcb",
-            "tertiary": "#4b1c00",
-            "on-surface-variant": "#444651",
-            "on-secondary-fixed-variant": "#38485d"
+            "surface": "#ffffff",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#475569",
+            "outline-variant": "#e2e8f0",
+            "background": "#f8fafc"
           },
           "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
+            "DEFAULT": "12px",
+            "lg": "16px",
+            "xl": "24px",
+            "full": "9999px"
           },
           "spacing": {
             "xl": "32px",
@@ -108,201 +76,226 @@
             "md": "16px",
             "margin-desktop": "32px",
             "gutter": "24px"
-          },
-          "fontFamily": {
-            "headline-xl": ["Inter"],
-            "label-md": ["Inter"],
-            "body-lg": ["Inter"],
-            "body-md": ["Inter"],
-            "label-sm": ["Inter"],
-            "body-sm": ["Inter"],
-            "headline-md": ["Inter"],
-            "headline-lg": ["Inter"]
-          },
-          "fontSize": {
-            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
-            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
-            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-            "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
           }
         }
       }
     }
   </script>
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+<body class="bg-background text-on-surface min-h-screen flex flex-col antialiased">
+  <!-- Shared Sidebar Container -->
   <div id="sale-sidebar"></div>
   <script src="saleSidebar.js"></script>
   <script src="api.js"></script>
 
   <main class="flex-1 flex flex-col min-w-0">
-    <div class="flex-1 p-margin-mobile md:p-margin-desktop">
-      <div class="w-full max-w-[860px] mx-auto">
+    <div class="flex-1 p-6 md:p-10">
+      <div class="w-full max-w-[860px] mx-auto flex flex-col min-h-full">
 
         <!-- Header -->
+        <div class="mb-8">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="px-2.5 py-0.5 bg-blue-50 text-primary border border-blue-100 rounded-full text-[11px] font-bold uppercase tracking-wider">Khởi tạo giao dịch</span>
+            <span class="text-xs text-slate-400 font-semibold">•</span>
+            <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">HomeMatch Wizard</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-black tracking-tight text-on-surface">Tạo Hợp đồng - Bước 1: Thông tin</h1>
   <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
     <div class="flex-1">
       <div class="w-full">
         <div class="mb-xl">
           <h1 class="font-headline-xl text-headline-xl text-on-surface mb-sm">Tạo Hợp đồng - Bước 1: Thông tin</h1>
           <!-- Badge mã hợp đồng -->
-          <div class="flex items-center gap-sm flex-wrap">
-            <span class="inline-flex items-center gap-xs px-md py-xs rounded-full bg-primary/8 border border-primary/20 text-primary font-bold text-label-md tracking-wide select-all cursor-text transition-all hover:bg-primary/12" id="summary-contract-code" title="Mã hợp đồng (preview - sẽ xác nhận khi tạo)">
-              <span class="material-symbols-outlined text-[15px] opacity-70">tag</span>
+          <div class="flex items-center gap-2 flex-wrap mt-2">
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary font-bold text-xs tracking-wider select-all cursor-pointer hover:bg-primary/10 transition-colors" id="summary-contract-code" title="Mã hợp đồng (Mẫu xem trước)">
+              <span class="material-symbols-outlined text-[14px] opacity-75">tag</span>
               ---
             </span>
-            <span class="text-label-sm text-on-surface-variant opacity-70">Mã hợp đồng (sinh ngẫu nhiên, xác nhận khi tạo)</span>
+            <span class="text-xs text-slate-400 font-medium">Mã hợp đồng (xác nhận chính thức khi gửi yêu cầu)</span>
           </div>
         </div>
 
-        <!-- Bước điều hướng -->
-        <div class="grid grid-cols-2 gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant mb-xl">
-          <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-md border-2 border-primary ring-4 ring-primary-container/10">
-            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
-              <span class="font-bold">1</span>
+        <!-- Wizard Steps Stepper -->
+        <div class="grid grid-cols-2 gap-4 p-3 bg-white rounded-lg border border-outline-variant shadow-sm mb-8">
+          <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100/30 rounded border border-blue-200 shadow-sm">
+            <div class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white font-bold text-sm">
+              <span>1</span>
             </div>
             <div>
-              <p class="font-label-sm text-label-sm text-primary font-bold">Đang thực hiện</p>
-              <p class="font-headline-md text-headline-md text-on-surface">1. Thông tin</p>
+              <p class="text-[10px] text-primary uppercase font-bold tracking-wider">Đang thực hiện</p>
+              <p class="font-bold text-slate-800 text-[14px]" id="step-1-title">1. Thông tin</p>
             </div>
           </div>
-          <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-sm border border-outline-variant opacity-60">
-            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-highest text-on-surface-variant">
-              <span class="font-bold">2</span>
+          <div class="flex items-center gap-3 p-3 bg-slate-50 rounded border border-slate-100 opacity-60">
+            <div class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 font-bold text-sm">
+              <span>2</span>
             </div>
             <div>
-              <p class="font-label-sm text-label-sm text-on-surface-variant">Chờ thực hiện</p>
-              <p class="font-headline-md text-headline-md text-on-surface">2. Hồ sơ đính kèm</p>
+              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Chờ thực hiện</p>
+              <p class="font-bold text-slate-500 text-[14px]" id="step-2-title">2. Hồ sơ đính kèm</p>
             </div>
           </div>
         </div>
 
-        <div class="space-y-lg">
+        <div class="space-y-6 flex-1">
           <!-- Thông tin chủ sở hữu -->
-          <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
-            <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Thông tin Chủ sở hữu</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-              <div class="space-y-xs">
-                <label class="font-label-md text-on-surface-variant">Họ và tên</label>
-                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-name" placeholder="Nhập họ tên chủ nhà" readonly type="text" value="">
+          <div class="bg-white p-6 rounded-lg border border-outline-variant shadow-sm space-y-4">
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <span class="material-symbols-outlined text-primary text-[20px] icon-filled">account_circle</span>
+              <h3 class="font-extrabold text-on-surface text-[16px]">Thông tin Chủ sở hữu</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Họ và tên</label>
+                <input class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg text-slate-600 focus:outline-none font-semibold text-[14px]" id="owner-name" placeholder="Họ tên chủ nhà" readonly type="text" value="">
               </div>
-              <div class="space-y-xs">
-                <label class="font-label-md text-on-surface-variant">Số điện thoại</label>
-                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-phone" placeholder="Nhập số điện thoại" readonly type="tel" value="">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Số điện thoại</label>
+                <input class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg text-slate-600 focus:outline-none font-semibold text-[14px]" id="owner-phone" placeholder="Số điện thoại" readonly type="tel" value="">
               </div>
-              <div class="space-y-xs">
-                <label class="font-label-md text-on-surface-variant">Số ID / CCCD</label>
-                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-id-card" placeholder="Nhập số căn cước" readonly type="text" value="">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">CCCD / ID Card</label>
+                <input class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg text-slate-600 focus:outline-none font-mono font-semibold text-[14px]" id="owner-id-card" placeholder="Số căn cước công dân" readonly type="text" value="">
               </div>
             </div>
           </div>
 
           <!-- Thông tin bất động sản -->
-          <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
-            <div class="flex items-center justify-between mb-md">
-              <h3 class="font-headline-md text-headline-md text-on-surface">Thông tin Bất động sản</h3>
-              <span class="px-sm py-xs bg-surface-container-low text-on-surface-variant text-label-sm rounded-lg flex items-center gap-xs">
-                <span class="material-symbols-outlined text-[16px]">link</span>
-                Đã liên kết từ hồ sơ ký gửi
+          <div class="bg-white p-6 rounded-lg border border-outline-variant shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px] icon-filled">home</span>
+                <h3 class="font-extrabold text-on-surface text-[16px]">Thông tin Bất động sản</h3>
+              </div>
+              <span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-full border border-slate-200 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">link</span>
+                <span>Đã liên kết từ hồ sơ ký gửi</span>
               </span>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg p-md bg-surface-container-low rounded-xl">
-              <div class="space-y-xs">
-                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Địa chỉ chi tiết</p>
-                <p class="font-body-md font-medium text-on-surface" id="property-address">---</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 border border-slate-100 rounded-lg text-[13px]">
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Địa chỉ chi tiết</p>
+                <p class="font-semibold text-slate-800 leading-snug" id="property-address">---</p>
               </div>
-              <div class="space-y-xs">
-                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Hướng</p>
-                <p class="font-body-md font-medium text-on-surface" id="property-area">---</p>
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Diện tích / Hướng</p>
+                <p class="font-semibold text-slate-800" id="property-area">---</p>
               </div>
-              <div class="space-y-xs">
-                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Giá đề xuất</p>
-                <p class="font-body-md font-bold text-primary" id="property-price">---</p>
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Giá đề xuất</p>
+                <p class="font-extrabold text-primary text-[14px]" id="property-price">---</p>
               </div>
             </div>
           </div>
 
           <!-- Lựa chọn loại hợp đồng -->
-          <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
-            <div class="flex items-center justify-between mb-lg flex-wrap gap-sm">
-              <h3 class="font-headline-md text-headline-md text-on-surface mb-0">Lựa chọn loại hợp đồng</h3>
+          <div class="bg-white p-6 rounded-lg border border-outline-variant shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
+              <h3 class="font-extrabold text-on-surface text-[16px]">Lựa chọn loại hợp đồng</h3>
               <div id="legal-status-badge" class="hidden"></div>
             </div>
 
-            <div class="mb-lg space-y-xs">
-              <label class="font-label-md text-on-surface-variant">Thời hạn hợp đồng (Tháng)</label>
-              <div class="relative max-w-[300px]">
-                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pr-16 font-bold text-primary" id="contract-duration" placeholder="12" type="number" value="12">
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-body-sm text-on-surface-variant">tháng</span>
+            <div class="space-y-1">
+              <label for="contract-duration" class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Thời hạn hợp đồng hiệu lực (Tháng)</label>
+              <div class="relative max-w-[240px]">
+                <input class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pr-16 font-extrabold text-primary text-[14px]" id="contract-duration" placeholder="12" type="number" value="12">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">tháng</span>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="contract-selection-cards">
               <label class="relative cursor-pointer group">
                 <input checked class="contract-card-radio sr-only" id="radio-standard" name="contract_type" type="radio" value="standard">
-                <div class="flex flex-col h-full p-lg border border-outline-variant rounded-xl transition-all hover:border-primary/50 hover:bg-surface-container-low">
-                  <div class="flex justify-between items-start mb-md">
-                    <span class="font-body-md font-bold text-on-surface">Hợp đồng mẫu chuẩn</span>
-                    <div class="radio-circle w-6 h-6 border-2 border-outline-variant rounded-full flex items-center justify-center transition-all"></div>
+                <div class="flex flex-col h-full p-5 border border-outline-variant rounded-lg transition-all hover:border-primary/50 hover:bg-slate-50/50">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-slate-800 text-[14px]">Hợp đồng mẫu chuẩn</span>
+                    <div class="radio-circle w-5 h-5 border-2 border-slate-300 rounded-full flex items-center justify-center transition-all bg-white"></div>
                   </div>
-                  <p class="font-body-sm text-on-surface-variant leading-relaxed">Sử dụng các điều khoản mẫu quy định sẵn của hệ thống, tối ưu cho các giao dịch nhanh chóng và thông thường.</p>
+                  <p class="text-xs text-slate-500 leading-relaxed font-medium">Sử dụng các điều khoản mẫu được quy định sẵn của hệ thống, tối ưu cho các giao dịch nhanh chóng và thông thường.</p>
                 </div>
               </label>
 
               <label class="relative cursor-pointer group">
                 <input class="contract-card-radio sr-only" id="radio-custom" name="contract_type" type="radio" value="custom">
-                <div class="flex flex-col h-full p-lg border border-outline-variant rounded-xl transition-all hover:border-primary/50 hover:bg-surface-container-low">
-                  <div class="flex justify-between items-start mb-md">
-                    <span class="font-body-md font-bold text-on-surface">Bổ sung điều khoản riêng</span>
-                    <div class="radio-circle w-6 h-6 border-2 border-outline-variant rounded-full flex items-center justify-center transition-all"></div>
+                <div class="flex flex-col h-full p-5 border border-outline-variant rounded-lg transition-all hover:border-primary/50 hover:bg-slate-50/50">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-slate-800 text-[14px]">Bổ sung điều khoản riêng</span>
+                    <div class="radio-circle w-5 h-5 border-2 border-slate-300 rounded-full flex items-center justify-center transition-all bg-white"></div>
                   </div>
-                  <p class="font-body-sm text-on-surface-variant leading-relaxed">Tùy chỉnh các thỏa thuận đặc thù. Lưu ý: Nội dung này sẽ cần bộ phận Pháp lý thẩm định.</p>
+                  <p class="text-xs text-slate-500 leading-relaxed font-medium">Tùy chỉnh các thỏa thuận đặc thù của chủ nhà. <span class="text-amber-600 font-bold">Lưu ý: Nội dung này sẽ cần phòng Pháp lý phê duyệt.</span></p>
                 </div>
               </label>
             </div>
 
-            <div class="mt-xl pt-lg border-t border-outline-variant hidden" id="custom-terms-container">
-              <div class="space-y-md">
-                <div class="flex justify-between items-center">
-                  <label class="font-label-md text-on-surface font-bold">Nội dung điều khoản bổ sung</label>
-                  <span class="text-label-sm text-primary font-medium flex items-center gap-xs">
-                    <span class="material-symbols-outlined text-[16px]">verified_user</span>
-                    Pháp lý sẽ kiểm duyệt
-                  </span>
-                </div>
-                <textarea class="w-full px-lg py-md border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all min-h-[160px] font-body-sm" id="custom-terms" placeholder="Nhập chi tiết các thỏa thuận hoặc điều khoản cần bổ sung vào hợp đồng..."></textarea>
-                <div class="flex items-start gap-sm p-md bg-secondary-container/20 rounded-lg border border-secondary-container/40">
-                  <span class="material-symbols-outlined text-secondary-container text-[20px]">info</span>
-                  <p class="text-label-sm text-on-secondary-container italic">Các điều khoản này sẽ được tự động tích hợp vào phụ lục hợp đồng sau khi được phê duyệt.</p>
-                </div>
+            <div class="pt-4 border-t border-slate-100 hidden space-y-3" id="custom-terms-container">
+              <div class="flex justify-between items-center">
+                <label for="custom-terms" class="text-xs font-bold text-on-surface uppercase tracking-wider block">Nội dung các điều khoản bổ sung</label>
+                <span class="text-xs text-primary font-bold flex items-center gap-0.5">
+                  <span class="material-symbols-outlined text-[15px]">verified_user</span>
+                  <span>Pháp lý sẽ kiểm duyệt</span>
+                </span>
+              </div>
+              <textarea class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all min-h-[140px] text-xs font-semibold text-slate-700 bg-slate-50 focus:bg-white" id="custom-terms" placeholder="Nhập chi tiết các thỏa thuận, cam kết hoặc điều khoản cần bổ sung vào hợp đồng ký gửi..."></textarea>
+              <div class="flex items-start gap-2 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs font-medium text-primary">
+                <span class="material-symbols-outlined text-[18px]">info</span>
+                <p class="italic leading-normal">Các điều khoản này sẽ được tự động tích hợp vào phụ lục hợp đồng sau khi phòng Pháp lý thẩm định thành công.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Thanh hành động -->
-        <div class="mt-xl py-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md bg-background/80 backdrop-blur-md sticky bottom-0 z-30 px-sm">
-          <button class="w-full md:w-auto px-xl py-md border border-outline font-bold text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-all flex items-center justify-center gap-sm order-2 md:order-1" type="button">
+        <!-- Sticky Footer Buttons -->
+        <div class="mt-8 py-5 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4 bg-background/90 backdrop-blur-md sticky bottom-0 z-30 px-1">
+          <button class="w-full md:w-auto px-6 py-2.5 border border-outline-variant text-slate-500 hover:text-slate-800 rounded-lg font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-1.5 order-2 md:order-1 text-[13px] active:scale-95" type="button" onclick="window.history.back()">
             Hủy bỏ
           </button>
-          <div class="flex flex-col md:flex-row gap-md w-full md:w-auto order-1 md:order-2">
-            <button class="w-full md:w-auto px-xl py-md bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-sm" id="nextBtn" type="button">
-              Tạo hợp đồng
-              <span class="material-symbols-outlined">arrow_forward</span>
+          <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto order-1 md:order-2">
+            <button class="w-full md:w-auto px-8 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-blue-900 shadow-md shadow-primary/10 hover:shadow-lg transition-all flex items-center justify-center gap-1.5 text-[13px] active:scale-95" id="nextBtn" type="button">
+              <span>Tạo hợp đồng</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           </div>
         </div>
 
       </div>
     </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER (FOR PREMIUM NOTIFICATIONS) -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3"></div>
+
+    <!-- Elegant Footer -->
+    <footer class="mt-12 py-6 text-center text-slate-400 font-medium text-xs border-t border-outline-variant/60">
+      © 2026 HomeMatch - Hệ thống Quản lý Ký gửi và Giao dịch Bất động sản Premium.
+    </footer>
   </main>
 
-
   <script>
+    // Premium Toast Helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+      const icon = type === 'success' ? 'check_circle' : 'error';
+      
+      toast.className = `flex items-center gap-3 text-white px-5 py-3.5 rounded-lg shadow-xl ${bgColor} transition-all duration-300 translate-x-12 opacity-0 font-medium text-[13px]`;
+      toast.innerHTML = `
+        <span class="material-symbols-outlined icon-filled text-[18px]">${icon}</span>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-x-12', 'opacity-0');
+      }, 50);
+      
+      setTimeout(() => {
+        toast.classList.add('translate-x-12', 'opacity-0');
+        setTimeout(() => { toast.remove(); }, 300);
+      }, 3500);
+    }
+
     // Sinh mã hợp đồng ngẫu nhiên theo format: HD-XXXXX-XXXX
     function generatePreviewContractCode(sid) {
       const rand = Math.floor(1000 + Math.random() * 9000);
@@ -313,6 +306,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const submissionId = urlParams.get('submissionId');
+      const extensionId = urlParams.get('extensionId');
       const nextBtn = document.getElementById('nextBtn');
       const radioStandard = document.getElementById('radio-standard');
       const radioCustom = document.getElementById('radio-custom');
@@ -378,12 +372,13 @@
       }
 
       if (!submissionId) {
-        alert('Thiếu submissionId để tạo hợp đồng.');
+        showToast('Thiếu mã hồ sơ ký gửi (submissionId) để tạo hợp đồng.', 'error');
+        return;
       }
 
       try {
         if (!submissionId) {
-          throw new Error('Thiếu submissionId để tải dữ liệu hợp đồng.');
+          throw new Error('Thiếu mã hồ sơ ký gửi để tải dữ liệu hợp đồng.');
         }
         if (typeof getSaleContractDraft === 'function') {
           const data = await getSaleContractDraft(submissionId);
@@ -394,57 +389,92 @@
           if (ownerPhone) ownerPhone.value = owner.phone || '';
           if (ownerIdCard) ownerIdCard.value = owner.id_card || '';
 
-          // Lưu các thuộc tính hợp đồng đã có
-          dbContractId = data.submission_contract_id || null;
-          dbContractType = data.contract_type || null;
-          dbLegalStatus = data.legal_status || null;
+          if (extensionId) {
+            // GIA HẠN MODE: Override UI and values
+            const h1El = document.querySelector('h1');
+            if (h1El) h1El.textContent = 'Gia hạn Hợp đồng - Bước 1: Xác nhận Thông tin';
+            
+            const step1TitleEl = document.getElementById('step-1-title');
+            if (step1TitleEl) step1TitleEl.textContent = '1. Xác nhận';
+            
+            const step2TitleEl = document.getElementById('step-2-title');
+            if (step2TitleEl) step2TitleEl.textContent = '2. Tải scan gia hạn';
 
-          if (dbContractId) {
-            if (data.contract_duration_months) {
-              contractDuration.value = data.contract_duration_months;
+            const radioLabel = document.querySelector('#contract-selection-cards');
+            if (radioLabel) {
+              // Hide selection panel and only show duration input
+              radioLabel.parentElement.classList.add('hidden');
             }
 
-            if (dbContractType === 'custom') {
-              if (radioCustom) {
-                radioCustom.checked = true;
-                radioCustom.dispatchEvent(new Event('change'));
+            try {
+              const extDetail = await getExtensionDetail(extensionId);
+              if (contractDuration) {
+                contractDuration.value = extDetail.extension_months || 12;
+                contractDuration.disabled = true; // Lock requested months
               }
-              if (customTerms) {
-                customTerms.value = data.special_terms || '';
+              if (summaryContractCode) {
+                summaryContractCode.textContent = extDetail.contract_code || '---';
+              }
+            } catch (err) {
+              console.error('Lỗi tải chi tiết gia hạn:', err);
+            }
+
+            if (nextBtn) {
+              nextBtn.innerHTML = '<span>Tiếp tục Bước 2</span> <span class="material-symbols-outlined">arrow_forward</span>';
+            }
+          } else {
+            // Standard flow original logic
+            dbContractId = data.submission_contract_id || null;
+            dbContractType = data.contract_type || null;
+            dbLegalStatus = data.legal_status || null;
+
+            if (dbContractId) {
+              if (data.contract_duration_months) {
+                contractDuration.value = data.contract_duration_months;
               }
 
-              // Hiển thị badge Legal phê duyệt
-              const badge = document.getElementById('legal-status-badge');
-              if (badge) {
-                badge.classList.remove('hidden');
-                const normStatus = String(dbLegalStatus || '').toLowerCase();
-                if (normStatus === 'approved') {
-                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-emerald-100 text-emerald-800 font-bold text-label-sm border border-emerald-200';
-                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">verified</span> Legal Đã Phê Duyệt`;
-                } else if (normStatus === 'pending') {
-                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-yellow-100 text-yellow-800 font-bold text-label-sm border border-yellow-200';
-                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">schedule</span> Chờ Legal Phê Duyệt`;
-                } else if (normStatus === 'changes requested') {
-                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-orange-100 text-on-tertiary-fixed-variant font-bold text-label-sm border border-orange-200';
-                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">edit_note</span> Yêu Cầu Sửa Đổi`;
-                } else if (normStatus === 'rejected') {
-                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-red-100 text-red-800 font-bold text-label-sm border border-red-200';
-                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">cancel</span> Bị Từ Chối`;
+              if (dbContractType === 'custom') {
+                if (radioCustom) {
+                  radioCustom.checked = true;
+                  radioCustom.dispatchEvent(new Event('change'));
+                }
+                if (customTerms) {
+                  customTerms.value = data.special_terms || '';
+                }
+
+                // Hiển thị badge Legal phê duyệt
+                const badge = document.getElementById('legal-status-badge');
+                if (badge) {
+                  badge.classList.remove('hidden');
+                  const normStatus = String(dbLegalStatus || '').toLowerCase();
+                  if (normStatus === 'approved') {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[12px] border border-emerald-200';
+                    badge.innerHTML = `<span class="material-symbols-outlined text-[15px]">verified</span> Legal Đã Phê Duyệt`;
+                  } else if (normStatus === 'pending') {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-extrabold text-[12px] border border-yellow-200';
+                    badge.innerHTML = `<span class="material-symbols-outlined text-[15px]">schedule</span> Chờ Legal Phê Duyệt`;
+                  } else if (normStatus === 'changes requested') {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 font-extrabold text-[12px] border border-orange-200';
+                    badge.innerHTML = `<span class="material-symbols-outlined text-[15px]">edit_note</span> Yêu Cầu Sửa Đổi`;
+                  } else if (normStatus === 'rejected') {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-red-800 font-extrabold text-[12px] border border-red-200';
+                    badge.innerHTML = `<span class="material-symbols-outlined text-[15px]">cancel</span> Bị Từ Chối`;
+                  }
+                }
+              } else if (dbContractType === 'standard') {
+                if (radioStandard) {
+                  radioStandard.checked = true;
+                  radioStandard.dispatchEvent(new Event('change'));
                 }
               }
-            } else if (dbContractType === 'standard') {
-              if (radioStandard) {
-                radioStandard.checked = true;
-                radioStandard.dispatchEvent(new Event('change'));
-              }
-            }
 
-            // Đổi nhãn nút Tạo hợp đồng sang Tiếp tục nếu hợp đồng đã hoàn thiện bước 1
-            if (nextBtn) {
-              const isStandard = dbContractType === 'standard';
-              const isCustomApproved = dbContractType === 'custom' && String(dbLegalStatus || '').toLowerCase() === 'approved';
-              if (isStandard || isCustomApproved) {
-                nextBtn.innerHTML = 'Tiếp tục Bước 2 <span class="material-symbols-outlined">arrow_forward</span>';
+              // Đổi nhãn nút Tạo hợp đồng sang Tiếp tục nếu hợp đồng đã hoàn thiện bước 1
+              if (nextBtn) {
+                const isStandard = dbContractType === 'standard';
+                const isCustomApproved = dbContractType === 'custom' && String(dbLegalStatus || '').toLowerCase() === 'approved';
+                if (isStandard || isCustomApproved) {
+                  nextBtn.innerHTML = '<span>Tiếp tục Bước 2</span> <span class="material-symbols-outlined">arrow_forward</span>';
+                }
               }
             }
           }
@@ -463,14 +493,19 @@
             : '---';
         }
       } catch (error) {
-        alert(error.message || 'Không thể tải dữ liệu hợp đồng.');
+        showToast(error.message || 'Không thể tải dữ liệu hợp đồng.', 'error');
       }
 
       // Nút tạo hợp đồng
       if (nextBtn) {
         nextBtn.addEventListener('click', async () => {
           if (!submissionId) {
-            alert('Thiếu submissionId để tạo hợp đồng.');
+            showToast('Thiếu submissionId để tạo hợp đồng.', 'error');
+            return;
+          }
+
+          if (extensionId) {
+            window.location.href = `saleContractStep2.html?submissionId=${submissionId}&extensionId=${extensionId}`;
             return;
           }
 
@@ -479,12 +514,12 @@
           const specialTerms = customTerms ? customTerms.value.trim() : '';
 
           if (!durationValue || durationValue <= 0) {
-            alert('Vui lòng nhập thời hạn hợp đồng hợp lệ.');
+            showToast('Vui lòng nhập thời hạn hợp đồng hợp lệ.', 'error');
             return;
           }
 
           if (isCustom && !specialTerms) {
-            alert('Vui lòng nhập điều khoản bổ sung.');
+            showToast('Vui lòng nhập các nội dung thỏa thuận bổ sung.', 'error');
             return;
           }
 
@@ -499,13 +534,13 @@
             } else {
               const normStatus = String(dbLegalStatus || '').toLowerCase();
               if (normStatus === 'pending') {
-                alert('Hợp đồng với điều khoản riêng đang chờ bộ phận Legal phê duyệt. Bạn không thể tiếp tục bước tiếp theo cho đến khi được duyệt.');
+                showToast('Điều khoản bổ sung đang được Pháp lý phê duyệt. Xin vui lòng chờ thêm.', 'error');
               } else if (normStatus === 'changes requested') {
-                alert('Bộ phận Legal yêu cầu chỉnh sửa điều khoản riêng. Vui lòng kiểm tra phản hồi hoặc tạo mới điều khoản khác.');
+                showToast('Pháp lý yêu cầu thay đổi điều khoản bổ sung. Vui lòng liên hệ hỗ trợ hoặc sửa đổi.', 'error');
               } else if (normStatus === 'rejected') {
-                alert('Điều khoản riêng đã bị từ chối bởi bộ phận Legal.');
+                showToast('Các điều khoản bổ sung đã bị từ chối bởi phòng Pháp lý.', 'error');
               } else {
-                alert('Hợp đồng chưa sẵn sàng để tiếp tục.');
+                showToast('Hợp đồng chưa sẵn sàng để tiếp tục.', 'error');
               }
               return;
             }
@@ -518,7 +553,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Đang xử lý...
+            <span>Đang xử lý...</span>
           `;
           nextBtn.classList.add('opacity-80', 'cursor-not-allowed');
 
@@ -538,18 +573,20 @@
                 summaryContractCode.textContent = response.contract_code;
               }
 
-              alert(response.message || 'Tạo hợp đồng thành công');
+              showToast(response.message || 'Khởi tạo thông tin hợp đồng thành công!');
               
-              if (isCustom) {
-                // Hợp đồng custom thì phải chờ Legal phê duyệt, quay lại danh sách
-                window.location.href = 'saleContracts.html';
-              } else {
-                // Hợp đồng standard thì chuyển thẳng sang B2
-                window.location.href = `saleContractStep2.html?submissionId=${submissionId}`;
-              }
+              setTimeout(() => {
+                if (isCustom) {
+                  // Hợp đồng custom thì phải chờ Legal phê duyệt, quay lại danh sách
+                  window.location.href = 'saleContracts.html';
+                } else {
+                  // Hợp đồng standard thì chuyển thẳng sang B2
+                  window.location.href = `saleContractStep2.html?submissionId=${submissionId}`;
+                }
+              }, 1500);
             }
           } catch (error) {
-            alert(error.message || 'Không thể tạo hợp đồng.');
+            showToast(error.message || 'Không thể khởi tạo hợp đồng.', 'error');
           } finally {
             nextBtn.innerHTML = originalContent;
             nextBtn.classList.remove('opacity-80', 'cursor-not-allowed');

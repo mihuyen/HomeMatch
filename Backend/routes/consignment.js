@@ -377,6 +377,15 @@ async function getOwnerTrackingDetail(ownerId, submissionId) {
         [submissionId]
     );
 
+    const [extensionRows] = await db.query(
+        `SELECT ce.extension_id, ce.status, ce.extension_months, ce.requested_at
+         FROM contract_extensions ce
+         INNER JOIN submission_contracts sc ON sc.submission_contract_id = ce.submission_contract_id
+         WHERE sc.submission_id = ? AND ce.status = 'pending'
+         LIMIT 1`,
+        [submissionId]
+    );
+
     let images = [];
     if (base.images_uploaded) {
         try {
@@ -439,6 +448,7 @@ async function getOwnerTrackingDetail(ownerId, submissionId) {
 
     return {
         request_code: toRequestCode(base.submission_id),
+        has_pending_extension: extensionRows.length > 0,
         submission: {
             submission_id: base.submission_id,
             owner_id: base.owner_id,
@@ -857,6 +867,85 @@ router.patch('/:submissionId/status', requireAuth, async (req, res) => {
         });
     } catch (err) {
         console.error('consignment status error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/consignments/:submissionId/extend
+// Tạo yêu cầu gia hạn hợp đồng ký gửi (Owner)
+router.post('/:submissionId/extend', requireAuth, requireRole('owner'), async (req, res) => {
+    try {
+        const submissionId = Number(req.params.submissionId);
+        const { extensionMonths = 12, notes } = req.body;
+        const ownerId = req.user.user_id;
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        const submission = await getSubmissionOr404(submissionId);
+        if (!submission) {
+            return res.status(404).json({ message: 'Không tìm thấy hồ sơ ký gửi' });
+        }
+
+        if (Number(submission.owner_id) !== Number(ownerId)) {
+            return res.status(403).json({ message: 'Bạn không có quyền thực hiện yêu cầu này' });
+        }
+
+        // Lấy hợp đồng active mới nhất
+        const [contracts] = await db.query(
+            'SELECT * FROM submission_contracts WHERE submission_id = ? AND status = ? ORDER BY submission_contract_id DESC LIMIT 1',
+            [submissionId, 'active']
+        );
+
+        if (contracts.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng đang hoạt động nào để thực hiện gia hạn' });
+        }
+
+        const activeContract = contracts[0];
+
+        // Kiểm tra xem đã có yêu cầu pending nào chưa
+        const [existingExtensions] = await db.query(
+            'SELECT * FROM contract_extensions WHERE submission_contract_id = ? AND status = ? LIMIT 1',
+            [activeContract.submission_contract_id, 'pending']
+        );
+
+        if (existingExtensions.length > 0) {
+            return res.status(400).json({ message: 'Đã có yêu cầu gia hạn đang chờ xử lý cho hợp đồng này' });
+        }
+
+        // Tính ngày hết hạn cũ: signed_at + duration_months
+        const signedDate = new Date(activeContract.signed_at);
+        const oldExpiredAt = new Date(signedDate.setMonth(signedDate.getMonth() + activeContract.contract_duration_months));
+
+        // Tính ngày hết hạn mới: oldExpiredAt + extensionMonths
+        const tempDate = new Date(oldExpiredAt);
+        const newExpiredAt = new Date(tempDate.setMonth(tempDate.getMonth() + Number(extensionMonths)));
+
+        const processedBy = submission.assigned_sales_id || null;
+
+        await db.query(
+            `INSERT INTO contract_extensions 
+                (submission_contract_id, old_expired_at, extension_months, new_expired_at, extension_fee, status, processed_by, notes)
+             VALUES (?, ?, ?, ?, 0.00, 'pending', ?, ?)`,
+            [
+                activeContract.submission_contract_id,
+                oldExpiredAt,
+                Number(extensionMonths),
+                newExpiredAt,
+                processedBy,
+                notes || 'Chủ sở hữu yêu cầu gia hạn hợp đồng.'
+            ]
+        );
+
+        res.status(201).json({
+            message: 'Đã gửi yêu cầu gia hạn thành công và phân công cho Sales phụ trách',
+            extension_months: extensionMonths,
+            new_expired_at: newExpiredAt
+        });
+
+    } catch (err) {
+        console.error('create extension error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
