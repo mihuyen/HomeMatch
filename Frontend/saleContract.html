@@ -141,189 +141,172 @@
 
   <main class="flex-1 flex flex-col min-w-0">
     <div class="flex-1 p-margin-mobile md:p-margin-desktop">
-      <div class="w-full max-w-[1200px] mx-auto">
+      <div class="w-full max-w-[860px] mx-auto">
+
+        <!-- Header -->
         <div class="mb-xl">
-          <div class="flex items-center gap-sm text-primary mb-sm"></div>
-          <h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 1: Thông tin</h1>
+          <h1 class="font-headline-xl text-headline-xl text-on-surface mb-sm">Tạo Hợp đồng - Bước 1: Thông tin</h1>
+          <!-- Badge mã hợp đồng -->
+          <div class="flex items-center gap-sm flex-wrap">
+            <span class="inline-flex items-center gap-xs px-md py-xs rounded-full bg-primary/8 border border-primary/20 text-primary font-bold text-label-md tracking-wide select-all cursor-text transition-all hover:bg-primary/12" id="summary-contract-code" title="Mã hợp đồng (preview - sẽ xác nhận khi tạo)">
+              <span class="material-symbols-outlined text-[15px] opacity-70">tag</span>
+              ---
+            </span>
+            <span class="text-label-sm text-on-surface-variant opacity-70">Mã hợp đồng (sinh ngẫu nhiên, xác nhận khi tạo)</span>
+          </div>
         </div>
 
-        <div class="grid grid-cols-12 gap-gutter">
-          <div class="col-span-12 lg:col-span-8 space-y-xl">
-            <div class="grid grid-cols-2 gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant">
-              <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-md border-2 border-primary ring-4 ring-primary-container/10">
-                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
-                  <span class="font-bold">1</span>
-                </div>
-                <div>
-                  <p class="font-label-sm text-label-sm text-primary font-bold">Đang thực hiện</p>
-                  <p class="font-headline-md text-headline-md text-on-surface">1. Thông tin</p>
-                </div>
+        <!-- Bước điều hướng -->
+        <div class="grid grid-cols-2 gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant mb-xl">
+          <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-md border-2 border-primary ring-4 ring-primary-container/10">
+            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
+              <span class="font-bold">1</span>
+            </div>
+            <div>
+              <p class="font-label-sm text-label-sm text-primary font-bold">Đang thực hiện</p>
+              <p class="font-headline-md text-headline-md text-on-surface">1. Thông tin</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-sm border border-outline-variant opacity-60">
+            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-highest text-on-surface-variant">
+              <span class="font-bold">2</span>
+            </div>
+            <div>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">Chờ thực hiện</p>
+              <p class="font-headline-md text-headline-md text-on-surface">2. Hồ sơ đính kèm</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-lg">
+          <!-- Thông tin chủ sở hữu -->
+          <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Thông tin Chủ sở hữu</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+              <div class="space-y-xs">
+                <label class="font-label-md text-on-surface-variant">Họ và tên</label>
+                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-name" placeholder="Nhập họ tên chủ nhà" readonly type="text" value="">
               </div>
-              <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-sm border border-outline-variant opacity-60">
-                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-highest text-on-surface-variant">
-                  <span class="font-bold">2</span>
-                </div>
-                <div>
-                  <p class="font-label-sm text-label-sm text-on-surface-variant">Chờ thực hiện</p>
-                  <p class="font-headline-md text-headline-md text-on-surface">2. Hồ sơ đính kèm</p>
-                </div>
+              <div class="space-y-xs">
+                <label class="font-label-md text-on-surface-variant">Số điện thoại</label>
+                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-phone" placeholder="Nhập số điện thoại" readonly type="tel" value="">
+              </div>
+              <div class="space-y-xs">
+                <label class="font-label-md text-on-surface-variant">Số ID / CCCD</label>
+                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-id-card" placeholder="Nhập số căn cước" readonly type="text" value="">
+              </div>
+            </div>
+          </div>
+
+          <!-- Thông tin bất động sản -->
+          <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
+            <div class="flex items-center justify-between mb-md">
+              <h3 class="font-headline-md text-headline-md text-on-surface">Thông tin Bất động sản</h3>
+              <span class="px-sm py-xs bg-surface-container-low text-on-surface-variant text-label-sm rounded-lg flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[16px]">link</span>
+                Đã liên kết từ hồ sơ ký gửi
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg p-md bg-surface-container-low rounded-xl">
+              <div class="space-y-xs">
+                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Địa chỉ chi tiết</p>
+                <p class="font-body-md font-medium text-on-surface" id="property-address">---</p>
+              </div>
+              <div class="space-y-xs">
+                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Hướng</p>
+                <p class="font-body-md font-medium text-on-surface" id="property-area">---</p>
+              </div>
+              <div class="space-y-xs">
+                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Giá đề xuất</p>
+                <p class="font-body-md font-bold text-primary" id="property-price">---</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lựa chọn loại hợp đồng -->
+          <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
+            <div class="flex items-center justify-between mb-lg flex-wrap gap-sm">
+              <h3 class="font-headline-md text-headline-md text-on-surface mb-0">Lựa chọn loại hợp đồng</h3>
+              <div id="legal-status-badge" class="hidden"></div>
+            </div>
+
+            <div class="mb-lg space-y-xs">
+              <label class="font-label-md text-on-surface-variant">Thời hạn hợp đồng (Tháng)</label>
+              <div class="relative max-w-[300px]">
+                <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pr-16 font-bold text-primary" id="contract-duration" placeholder="12" type="number" value="12">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-body-sm text-on-surface-variant">tháng</span>
               </div>
             </div>
 
-            <div class="space-y-lg">
-              <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
-                <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Thông tin Chủ sở hữu</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-lg space-y-4">
-                  <div class="space-y-xs">
-                    <label class="font-label-md text-on-surface-variant">Họ và tên</label>
-                    <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-name" placeholder="Nhập họ tên chủ nhà" readonly type="text" value="">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+              <label class="relative cursor-pointer group">
+                <input checked class="contract-card-radio sr-only" id="radio-standard" name="contract_type" type="radio" value="standard">
+                <div class="flex flex-col h-full p-lg border border-outline-variant rounded-xl transition-all hover:border-primary/50 hover:bg-surface-container-low">
+                  <div class="flex justify-between items-start mb-md">
+                    <span class="font-body-md font-bold text-on-surface">Hợp đồng mẫu chuẩn</span>
+                    <div class="radio-circle w-6 h-6 border-2 border-outline-variant rounded-full flex items-center justify-center transition-all"></div>
                   </div>
-                  <div class="space-y-xs">
-                    <label class="font-label-md text-on-surface-variant">Số điện thoại</label>
-                    <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-phone" placeholder="Nhập số điện thoại" readonly type="tel" value="">
-                  </div>
-                  <div class="space-y-xs">
-                    <label class="font-label-md text-on-surface-variant">Số ID / CCCD</label>
-                    <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="owner-id-card" placeholder="Nhập số căn cước" readonly type="text" value="">
-                  </div>
+                  <p class="font-body-sm text-on-surface-variant leading-relaxed">Sử dụng các điều khoản mẫu quy định sẵn của hệ thống, tối ưu cho các giao dịch nhanh chóng và thông thường.</p>
                 </div>
-              </div>
+              </label>
 
-              <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
-                <div class="flex items-center justify-between mb-md">
-                  <h3 class="font-headline-md text-headline-md text-on-surface">Thông tin Bất động sản</h3>
-                  <span class="px-sm py-xs bg-surface-container-low text-on-surface-variant text-label-sm rounded-lg flex items-center gap-xs">
-                    <span class="material-symbols-outlined text-[16px]">link</span>
-                    Đã liên kết từ hồ sơ ký gửi
+              <label class="relative cursor-pointer group">
+                <input class="contract-card-radio sr-only" id="radio-custom" name="contract_type" type="radio" value="custom">
+                <div class="flex flex-col h-full p-lg border border-outline-variant rounded-xl transition-all hover:border-primary/50 hover:bg-surface-container-low">
+                  <div class="flex justify-between items-start mb-md">
+                    <span class="font-body-md font-bold text-on-surface">Bổ sung điều khoản riêng</span>
+                    <div class="radio-circle w-6 h-6 border-2 border-outline-variant rounded-full flex items-center justify-center transition-all"></div>
+                  </div>
+                  <p class="font-body-sm text-on-surface-variant leading-relaxed">Tùy chỉnh các thỏa thuận đặc thù. Lưu ý: Nội dung này sẽ cần bộ phận Pháp lý thẩm định.</p>
+                </div>
+              </label>
+            </div>
+
+            <div class="mt-xl pt-lg border-t border-outline-variant hidden" id="custom-terms-container">
+              <div class="space-y-md">
+                <div class="flex justify-between items-center">
+                  <label class="font-label-md text-on-surface font-bold">Nội dung điều khoản bổ sung</label>
+                  <span class="text-label-sm text-primary font-medium flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                    Pháp lý sẽ kiểm duyệt
                   </span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg p-md bg-surface-container-low rounded-xl">
-                  <div class="space-y-xs">
-                    <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Địa chỉ chi tiết</p>
-                    <p class="font-body-md font-medium text-on-surface" id="property-address">---</p>
-                  </div>
-                  <div class="space-y-xs">
-                    <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Diện tích</p>
-                    <p class="font-body-md font-medium text-on-surface" id="property-area">---</p>
-                  </div>
-                  <div class="space-y-xs">
-                    <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Giá đề xuất</p>
-                    <p class="font-body-md font-bold text-primary" id="property-price">---</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
-                <h3 class="font-headline-md text-headline-md text-on-surface mb-lg">Lựa chọn loại hợp đồng</h3>
-                <div class="mb-lg space-y-xs">
-                  <label class="font-label-md text-on-surface-variant">Thời hạn hợp đồng (Tháng)</label>
-                  <div class="relative max-w-[300px]">
-                    <input class="w-full px-md py-base border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pr-16 font-bold text-primary" id="contract-duration" placeholder="12" type="number" value="12">
-                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-body-sm text-on-surface-variant">tháng</span>
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                  <label class="relative cursor-pointer group">
-                    <input checked class="contract-card-radio sr-only" id="radio-standard" name="contract_type" type="radio" value="standard">
-                    <div class="flex flex-col h-full p-lg border border-outline-variant rounded-xl transition-all hover:border-primary/50 hover:bg-surface-container-low">
-                      <div class="flex justify-between items-start mb-md">
-                        <span class="font-body-md font-bold text-on-surface">Hợp đồng mẫu chuẩn</span>
-                        <div class="radio-circle w-6 h-6 border-2 border-outline-variant rounded-full flex items-center justify-center transition-all"></div>
-                      </div>
-                      <p class="font-body-sm text-on-surface-variant leading-relaxed">Sử dụng các điều khoản mẫu quy định sẵn của hệ thống, tối ưu cho các giao dịch nhanh chóng và thông thường.</p>
-                    </div>
-                  </label>
-
-                  <label class="relative cursor-pointer group">
-                    <input class="contract-card-radio sr-only" id="radio-custom" name="contract_type" type="radio" value="custom">
-                    <div class="flex flex-col h-full p-lg border border-outline-variant rounded-xl transition-all hover:border-primary/50 hover:bg-surface-container-low">
-                      <div class="flex justify-between items-start mb-md">
-                        <span class="font-body-md font-bold text-on-surface">Bổ sung điều khoản riêng</span>
-                        <div class="radio-circle w-6 h-6 border-2 border-outline-variant rounded-full flex items-center justify-center transition-all"></div>
-                      </div>
-                      <p class="font-body-sm text-on-surface-variant leading-relaxed">Tùy chỉnh các thỏa thuận đặc thù. Lưu ý: Nội dung này sẽ cần bộ phận Pháp lý thẩm định.</p>
-                    </div>
-                  </label>
-                </div>
-
-                <div class="mt-xl pt-lg border-t border-outline-variant hidden" id="custom-terms-container">
-                  <div class="space-y-md">
-                    <div class="flex justify-between items-center">
-                      <label class="font-label-md text-on-surface font-bold">Nội dung điều khoản bổ sung</label>
-                      <span class="text-label-sm text-primary font-medium flex items-center gap-xs">
-                        <span class="material-symbols-outlined text-[16px]">verified_user</span>
-                        Pháp lý sẽ kiểm duyệt
-                      </span>
-                    </div>
-                    <textarea class="w-full px-lg py-md border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all min-h-[160px] font-body-sm" id="custom-terms" placeholder="Nhập chi tiết các thỏa thuận hoặc điều khoản cần bổ sung vào hợp đồng..."></textarea>
-                    <div class="flex items-start gap-sm p-md bg-secondary-container/20 rounded-lg border border-secondary-container/40">
-                      <span class="material-symbols-outlined text-secondary-container text-[20px]">info</span>
-                      <p class="text-label-sm text-on-secondary-container italic">Các điều khoản này sẽ được tự động tích hợp vào phụ lục hợp đồng sau khi được phê duyệt.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-xl py-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md bg-background/80 backdrop-blur-md sticky bottom-0 z-30 px-sm">
-              <button class="w-full md:w-auto px-xl py-md border border-outline font-bold text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-all flex items-center justify-center gap-sm order-2 md:order-1" type="button">
-                Hủy bỏ
-              </button>
-              <div class="flex flex-col md:flex-row gap-md w-full md:w-auto order-1 md:order-2">
-                <button class="w-full md:w-auto px-xl py-md bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-sm" id="nextBtn" type="button">
-                  Tạo hợp đồng
-                  <span class="material-symbols-outlined">arrow_forward</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="col-span-12 lg:col-span-4 space-y-lg">
-            <div class="sticky top-24 space-y-lg">
-              <div class="bg-primary text-white p-lg rounded-xl shadow-lg overflow-hidden relative mb-md">
-                <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="relative z-10">
-                  <p class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed mb-md opacity-80">Thông tin tóm tắt</p>
-                  <div class="space-y-md">
-                    <div class="border-b border-white/20 pb-md mb-md">
-                      <p class="text-body-sm opacity-80 mb-sm">Loại hợp đồng</p>
-                      <div class="grid grid-cols-2 gap-xs bg-white/10 p-1 rounded-lg" id="contract-type-toggle">
-                        <label class="cursor-pointer">
-                          <input class="hidden peer" name="contract_type" type="radio" value="consignment">
-                          <div class="text-center py-1.5 rounded-md text-label-sm transition-all peer-checked:bg-white peer-checked:text-primary">
-                            Ký gửi
-                          </div>
-                        </label>
-                        <label class="cursor-pointer">
-                          <input class="hidden peer" name="contract_type" type="radio" value="renewal">
-                          <div class="text-center py-1.5 rounded-md text-label-sm transition-all peer-checked:bg-white peer-checked:text-primary">
-                            Gia hạn
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-white/20 pb-sm">
-                      <span class="text-body-sm opacity-80">Mã hợp đồng</span>
-                      <span class="font-headline-md" id="summary-contract-code">---</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-white/20 pb-sm">
-                      <span class="text-body-sm opacity-80">Chủ sở hữu</span>
-                      <span class="font-body-md font-bold" id="summary-owner">---</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-body-sm opacity-80">Ngày tạo</span>
-                      <span class="text-body-sm" id="summary-date">---</span>
-                    </div>
-                  </div>
+                <textarea class="w-full px-lg py-md border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all min-h-[160px] font-body-sm" id="custom-terms" placeholder="Nhập chi tiết các thỏa thuận hoặc điều khoản cần bổ sung vào hợp đồng..."></textarea>
+                <div class="flex items-start gap-sm p-md bg-secondary-container/20 rounded-lg border border-secondary-container/40">
+                  <span class="material-symbols-outlined text-secondary-container text-[20px]">info</span>
+                  <p class="text-label-sm text-on-secondary-container italic">Các điều khoản này sẽ được tự động tích hợp vào phụ lục hợp đồng sau khi được phê duyệt.</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Thanh hành động -->
+        <div class="mt-xl py-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md bg-background/80 backdrop-blur-md sticky bottom-0 z-30 px-sm">
+          <button class="w-full md:w-auto px-xl py-md border border-outline font-bold text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-all flex items-center justify-center gap-sm order-2 md:order-1" type="button">
+            Hủy bỏ
+          </button>
+          <div class="flex flex-col md:flex-row gap-md w-full md:w-auto order-1 md:order-2">
+            <button class="w-full md:w-auto px-xl py-md bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-sm" id="nextBtn" type="button">
+              Tạo hợp đồng
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   </main>
 
+
   <script>
+    // Sinh mã hợp đồng ngẫu nhiên theo format: HD-XXXXX-XXXX
+    function generatePreviewContractCode(sid) {
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      const padded = String(sid || '').padStart(5, '0');
+      return `HD-${padded}-${rand}`;
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const submissionId = urlParams.get('submissionId');
@@ -332,19 +315,23 @@
       const radioCustom = document.getElementById('radio-custom');
       const customTermsContainer = document.getElementById('custom-terms-container');
       const ownerName = document.getElementById('owner-name');
-      const ownerNameSummary = document.getElementById('owner-name-summary');
       const ownerPhone = document.getElementById('owner-phone');
       const ownerIdCard = document.getElementById('owner-id-card');
-      const contractCode = document.getElementById('contract-code');
       const summaryContractCode = document.getElementById('summary-contract-code');
-      const summaryOwner = document.getElementById('summary-owner');
-      const summaryDate = document.getElementById('summary-date');
-      const contractTypeToggle = document.getElementById('contract-type-toggle');
       const propertyAddress = document.getElementById('property-address');
       const propertyArea = document.getElementById('property-area');
       const propertyPrice = document.getElementById('property-price');
       const contractDuration = document.getElementById('contract-duration');
       const customTerms = document.getElementById('custom-terms');
+
+      let dbContractId = null;
+      let dbContractType = null;
+      let dbLegalStatus = null;
+
+      // Hiển thị mã ngẫu nhiên ngay khi tải trang
+      if (summaryContractCode && submissionId) {
+        summaryContractCode.textContent = generatePreviewContractCode(submissionId);
+      }
 
       const paramsAddress = urlParams.get('address');
       const paramsDirection = urlParams.get('direction');
@@ -378,7 +365,6 @@
             customTermsContainer.classList.add('hidden');
           }
         };
-
         radioStandard.addEventListener('change', toggleTextarea);
         radioCustom.addEventListener('change', toggleTextarea);
         toggleTextarea();
@@ -402,49 +388,89 @@
           const property = data.property || {};
 
           if (ownerName) ownerName.value = owner.full_name || '';
-          if (ownerNameSummary) ownerNameSummary.textContent = owner.full_name || '---';
           if (ownerPhone) ownerPhone.value = owner.phone || '';
           if (ownerIdCard) ownerIdCard.value = owner.id_card || '';
-          if (contractCode && data.contract_code) {
-            contractCode.textContent = data.contract_code;
+
+          // Lưu các thuộc tính hợp đồng đã có
+          dbContractId = data.submission_contract_id || null;
+          dbContractType = data.contract_type || null;
+          dbLegalStatus = data.legal_status || null;
+
+          if (dbContractId) {
+            if (data.contract_duration_months) {
+              contractDuration.value = data.contract_duration_months;
+            }
+
+            if (dbContractType === 'custom') {
+              if (radioCustom) {
+                radioCustom.checked = true;
+                radioCustom.dispatchEvent(new Event('change'));
+              }
+              if (customTerms) {
+                customTerms.value = data.special_terms || '';
+              }
+
+              // Hiển thị badge Legal phê duyệt
+              const badge = document.getElementById('legal-status-badge');
+              if (badge) {
+                badge.classList.remove('hidden');
+                const normStatus = String(dbLegalStatus || '').toLowerCase();
+                if (normStatus === 'approved') {
+                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-emerald-100 text-emerald-800 font-bold text-label-sm border border-emerald-200';
+                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">verified</span> Legal Đã Phê Duyệt`;
+                } else if (normStatus === 'pending') {
+                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-yellow-100 text-yellow-800 font-bold text-label-sm border border-yellow-200';
+                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">schedule</span> Chờ Legal Phê Duyệt`;
+                } else if (normStatus === 'changes requested') {
+                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-orange-100 text-on-tertiary-fixed-variant font-bold text-label-sm border border-orange-200';
+                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">edit_note</span> Yêu Cầu Sửa Đổi`;
+                } else if (normStatus === 'rejected') {
+                  badge.className = 'inline-flex items-center gap-xs px-md py-xs rounded-full bg-red-100 text-red-800 font-bold text-label-sm border border-red-200';
+                  badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">cancel</span> Bị Từ Chối`;
+                }
+              }
+            } else if (dbContractType === 'standard') {
+              if (radioStandard) {
+                radioStandard.checked = true;
+                radioStandard.dispatchEvent(new Event('change'));
+              }
+            }
+
+            // Đổi nhãn nút Tạo hợp đồng sang Tiếp tục nếu hợp đồng đã hoàn thiện bước 1
+            if (nextBtn) {
+              const isStandard = dbContractType === 'standard';
+              const isCustomApproved = dbContractType === 'custom' && String(dbLegalStatus || '').toLowerCase() === 'approved';
+              if (isStandard || isCustomApproved) {
+                nextBtn.innerHTML = 'Tiếp tục Bước 2 <span class="material-symbols-outlined">arrow_forward</span>';
+              }
+            }
           }
 
+          // Mã hợp đồng: nếu đã có trong DB thì hiển thị mã thật, giữ preview nếu chưa có
           if (summaryContractCode) {
-            summaryContractCode.textContent = data.contract_code || '---';
-          }
-
-          if (summaryOwner) {
-            summaryOwner.textContent = owner.full_name || '---';
-          }
-
-          if (contractTypeToggle) {
-            const selectedType = data.contract_type || 'consignment';
-            const target = contractTypeToggle.querySelector(`input[value="${selectedType}"]`);
-            if (target) target.checked = true;
-          }
-
-          if (summaryDate) {
-            const dateValue = data.signed_at || data.created_at || data.updated_at;
-            summaryDate.textContent = dateValue
-              ? new Date(dateValue).toLocaleDateString('vi-VN')
-              : '---';
+            if (data.contract_code) {
+              summaryContractCode.textContent = data.contract_code;
+            }
           }
 
           if (propertyAddress) propertyAddress.textContent = property.address || '---';
           if (propertyArea) propertyArea.textContent = property.direction || '---';
-          if (propertyPrice) propertyPrice.textContent = property.proposed_price ? `${Number(property.proposed_price).toLocaleString('vi-VN')} VNĐ` : '---';
+          if (propertyPrice) propertyPrice.textContent = property.proposed_price
+            ? `${Number(property.proposed_price).toLocaleString('vi-VN')} VNĐ`
+            : '---';
         }
       } catch (error) {
         alert(error.message || 'Không thể tải dữ liệu hợp đồng.');
       }
 
+      // Nút tạo hợp đồng
       if (nextBtn) {
         nextBtn.addEventListener('click', async () => {
           if (!submissionId) {
             alert('Thiếu submissionId để tạo hợp đồng.');
             return;
           }
-          const originalContent = nextBtn.innerHTML;
+
           const durationValue = Number(contractDuration ? contractDuration.value : 0);
           const isCustom = radioCustom && radioCustom.checked;
           const specialTerms = customTerms ? customTerms.value.trim() : '';
@@ -459,6 +485,31 @@
             return;
           }
 
+          // NẾU HỢP ĐỒNG ĐÃ ĐƯỢC TẠO TRONG DB
+          if (dbContractId) {
+            const isStandard = dbContractType === 'standard';
+            const isCustomApproved = dbContractType === 'custom' && String(dbLegalStatus || '').toLowerCase() === 'approved';
+
+            if (isStandard || isCustomApproved) {
+              window.location.href = `saleContractStep2.html?submissionId=${submissionId}`;
+              return;
+            } else {
+              const normStatus = String(dbLegalStatus || '').toLowerCase();
+              if (normStatus === 'pending') {
+                alert('Hợp đồng với điều khoản riêng đang chờ bộ phận Legal phê duyệt. Bạn không thể tiếp tục bước tiếp theo cho đến khi được duyệt.');
+              } else if (normStatus === 'changes requested') {
+                alert('Bộ phận Legal yêu cầu chỉnh sửa điều khoản riêng. Vui lòng kiểm tra phản hồi hoặc tạo mới điều khoản khác.');
+              } else if (normStatus === 'rejected') {
+                alert('Điều khoản riêng đã bị từ chối bởi bộ phận Legal.');
+              } else {
+                alert('Hợp đồng chưa sẵn sàng để tiếp tục.');
+              }
+              return;
+            }
+          }
+
+          // NẾU CHƯA TẠO HỢP ĐỒNG TRONG DB
+          const originalContent = nextBtn.innerHTML;
           nextBtn.innerHTML = `
             <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -479,12 +530,20 @@
 
               const response = await createSaleContract(payload);
 
-              if (contractCode && response.contract_code) {
-                contractCode.textContent = response.contract_code;
+              // Cập nhật badge mã hợp đồng với mã thật từ backend
+              if (response.contract_code && summaryContractCode) {
+                summaryContractCode.textContent = response.contract_code;
               }
 
               alert(response.message || 'Tạo hợp đồng thành công');
-              window.location.href = `saleContractStep2.html?submissionId=${submissionId}`;
+              
+              if (isCustom) {
+                // Hợp đồng custom thì phải chờ Legal phê duyệt, quay lại danh sách
+                window.location.href = 'saleContracts.html';
+              } else {
+                // Hợp đồng standard thì chuyển thẳng sang B2
+                window.location.href = `saleContractStep2.html?submissionId=${submissionId}`;
+              }
             }
           } catch (error) {
             alert(error.message || 'Không thể tạo hợp đồng.');
@@ -492,19 +551,6 @@
             nextBtn.innerHTML = originalContent;
             nextBtn.classList.remove('opacity-80', 'cursor-not-allowed');
           }
-        });
-      }
-
-      if (contractTypeToggle) {
-        contractTypeToggle.querySelectorAll('input[name="contract_type"]').forEach((input) => {
-          input.addEventListener('change', async () => {
-            if (!input.checked) return;
-            try {
-              await updateSaleContractType(submissionId, input.value);
-            } catch (error) {
-              alert(error.message || 'Không thể cập nhật loại hợp đồng.');
-            }
-          });
         });
       }
 

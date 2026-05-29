@@ -112,8 +112,12 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
         const params = [saleId];
 
         if (status) {
-            conditions.push('ps.status = ?');
-            params.push(status);
+            if (status === 'surveyed') {
+                conditions.push("ps.status IN ('surveyed', 'approved')");
+            } else {
+                conditions.push('ps.status = ?');
+                params.push(status);
+            }
         }
 
         if (search) {
@@ -150,6 +154,7 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
                 u.full_name AS owner_name,
                 u.phone AS owner_phone,
                 sc.submission_contract_id,
+                sc.contract_type,
                 sc.status AS contract_status,
                 cla.status AS legal_status,
                 cla.review_comment AS legal_review_comment,
@@ -171,7 +176,7 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
              LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id AND ap.appointment_type = 'khảo sát'
              LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
              WHERE ${whereSql}
-                         GROUP BY ps.submission_id, u.user_id, sc.submission_contract_id, sc.status, cla.status, cla.review_comment, cla.reviewed_at
+                         GROUP BY ps.submission_id, u.user_id, sc.submission_contract_id, sc.contract_type, sc.status, cla.status, cla.review_comment, cla.reviewed_at
              ORDER BY ps.submitted_at DESC, ps.submission_id DESC
              LIMIT ? OFFSET ?`,
             [...params, Number(limit), Number(offset)]
@@ -193,6 +198,7 @@ router.get('/assignments', requireAuth, requireRole('sale', 'agent', 'manager'),
                 proposed_price: row.proposed_price,
                 submitted_at: row.submitted_at,
                 submission_contract_id: row.submission_contract_id,
+                contract_type: row.contract_type,
                 contract_status: row.contract_status,
                 legal_status: row.legal_status,
                 legal_review_comment: row.legal_review_comment,
@@ -402,6 +408,54 @@ router.get('/contracts/:submissionId', requireAuth, requireRole('sale', 'agent',
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
         }
 
+        // Truy vấn hợp đồng mới nhất từ SUBMISSION_CONTRACTS
+        const [contracts] = await db.query(
+            `SELECT sc.submission_contract_id, sc.contract_code, sc.contract_type, sc.signed_at,
+                    sc.contract_duration_months,
+                    ps.submission_id,
+                    ps.address AS property_address,
+                    ps.direction AS property_direction,
+                    ps.proposed_price AS property_proposed_price,
+                    u.full_name AS owner_full_name,
+                    u.phone AS owner_phone,
+                    u.id_card AS owner_id_card,
+                    cla.status AS legal_status,
+                    cla.special_terms_requested
+             FROM submission_contracts sc
+             INNER JOIN property_submissions ps ON ps.submission_id = sc.submission_id
+             LEFT JOIN users u ON u.user_id = ps.owner_id
+             LEFT JOIN contract_legal_approvals cla ON cla.submission_contract_id = sc.submission_contract_id
+             WHERE sc.submission_id = ? AND ps.assigned_sales_id = ?
+             ORDER BY sc.submission_contract_id DESC
+             LIMIT 1`,
+            [submissionId, saleId]
+        );
+
+        if (contracts.length > 0) {
+            const contract = contracts[0];
+            return res.json({
+                submission_id: contract.submission_id,
+                submission_contract_id: contract.submission_contract_id,
+                contract_code: contract.contract_code,
+                contract_type: contract.contract_type,
+                contract_duration_months: contract.contract_duration_months,
+                special_terms: contract.special_terms_requested,
+                legal_status: contract.legal_status,
+                owner: {
+                    full_name: contract.owner_full_name,
+                    phone: contract.owner_phone,
+                    id_card: contract.owner_id_card,
+                    address: null
+                },
+                property: {
+                    address: contract.property_address,
+                    direction: contract.property_direction,
+                    proposed_price: contract.property_proposed_price
+                }
+            });
+        }
+
+        // Dự phòng: nếu chưa tạo hợp đồng, lấy thông tin nháp từ property_submissions & users
         const draft = await getAssignedSubmissionContractDraft(submissionId, saleId);
         if (!draft) {
             return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
@@ -409,6 +463,8 @@ router.get('/contracts/:submissionId', requireAuth, requireRole('sale', 'agent',
 
         res.json({
             submission_id: draft.submission_id,
+            contract_code: null,
+            contract_type: null,
             owner: {
                 full_name: draft.owner_full_name,
                 phone: draft.owner_phone,
@@ -559,11 +615,14 @@ router.patch('/contracts/:submissionId', requireAuth, requireRole('sale', 'agent
     try {
         const saleId = req.user.user_id;
         const submissionId = Number(req.params.submissionId);
-        const { contractType } = req.body;
+        let { contractType } = req.body;
 
         if (!Number.isInteger(submissionId)) {
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
         }
+
+        if (contractType === 'Ký gửi') contractType = 'consignment';
+        if (contractType === 'Gia hạn') contractType = 'renewal';
 
         if (!['consignment', 'renewal'].includes(contractType)) {
             return res.status(400).json({ message: 'Loại hợp đồng không hợp lệ' });
@@ -706,6 +765,24 @@ router.patch('/contracts/:submissionId/deposit', requireAuth, requireRole('sale'
              WHERE transaction_id = ?`,
             [nextStatus, nextPaymentMethod, shouldStamp, transactionId]
         );
+
+        if (shouldStamp) {
+            // Đồng bộ trạng thái hợp đồng sang 'active'
+            await db.query(
+                `UPDATE submission_contracts
+                 SET status = 'active'
+                 WHERE submission_contract_id = ?`,
+                [contract.submission_contract_id]
+            );
+
+            // Đồng bộ trạng thái hồ sơ ký gửi sang 'approved'
+            await db.query(
+                `UPDATE property_submissions
+                 SET status = 'approved'
+                 WHERE submission_id = ?`,
+                [submissionId]
+            );
+        }
 
         const [updatedRows] = await db.query(
             `SELECT transaction_id, status, payment_method, verified_at
@@ -944,6 +1021,112 @@ router.get('/surveys/:submissionId', requireAuth, requireRole('sale', 'agent', '
         });
     } catch (err) {
         console.error('sale survey history error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/sale/sepay-webhook
+// Nhận webhook từ SePay khi có biến động số dư chuyển khoản đặt cọc
+router.post('/sepay-webhook', async (req, res) => {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        const logMsg = `[${new Date().toLocaleString()}] Payload: ${JSON.stringify(req.body)}\n`;
+        fs.appendFileSync(path.join(__dirname, '..', 'sepay_webhook.log'), logMsg);
+
+        const desc = req.body.transferDesc || req.body.content || req.body.code || '';
+        
+        // Loại bỏ khoảng trắng và dấu gạch ngang để tương thích với cả nội dung viết liền
+        const cleanDesc = String(desc).replace(/[\s-]/g, '').toUpperCase();
+        
+        // Hỗ trợ cả định dạng HD-XXXXX-XXXX (khi bỏ dấu là HDXXXXXXXXX)
+        const match = cleanDesc.match(/HD\d{5}\d{4}/);
+        
+        if (!match) {
+            return res.status(400).json({ message: 'Không tìm thấy mã hợp đồng hợp lệ trong nội dung chuyển khoản' });
+        }
+
+        const rawCode = match[0];
+        // Khôi phục lại định dạng ban đầu có dấu gạch ngang: HD-XXXXX-XXXX
+        const contractCode = `HD-${rawCode.substring(2, 7)}-${rawCode.substring(7, 11)}`;
+        
+        // 1. Kiểm tra hợp đồng tồn tại
+        const [contracts] = await db.query(
+            'SELECT submission_contract_id, submission_id FROM submission_contracts WHERE contract_code = ? LIMIT 1',
+            [contractCode]
+        );
+
+        if (contracts.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng khớp với mã này' });
+        }
+
+        const contractId = contracts[0].submission_contract_id;
+        const submissionId = contracts[0].submission_id;
+
+        // 2. Đối chiếu số tiền (Cố định phí cọc là 10.000đ, SePay gửi số tiền qua trường transferAmount)
+        const amountReceived = Number(req.body.transferAmount || req.body.amount || 0);
+        if (Number.isNaN(amountReceived) || amountReceived < 10000) {
+            return res.status(400).json({ message: 'Số tiền thanh toán không đủ 10.000đ' });
+        }
+
+        // 3. Tìm giao dịch cọc Pending mới nhất
+        const [depositRows] = await db.query(
+            'SELECT transaction_id, status FROM deposit_transactions WHERE submission_contract_id = ? ORDER BY transaction_id DESC LIMIT 1',
+            [contractId]
+        );
+
+        if (depositRows.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy giao dịch đặt cọc' });
+        }
+
+        const transactionId = depositRows[0].transaction_id;
+
+        // 4. Cập nhật trạng thái sang Completed và lưu mã giao dịch thực tế từ SePay
+        // Ưu tiên referenceCode (mã giao dịch ngân hàng của SePay) hoặc id (mã giao dịch SePay)
+        const sepayCode = req.body.referenceCode || req.body.id || req.body.code || `PAY-SEPAY-${Date.now()}`;
+        await db.query(
+            `UPDATE deposit_transactions
+             SET status = 'Completed', 
+                 verified_at = NOW(), 
+                 payment_method = ?,
+                 transaction_code = ?
+             WHERE transaction_id = ?`,
+            ['Chuyển khoản / VietQR', String(sepayCode), transactionId]
+        );
+
+        // 5. Cập nhật trạng thái hợp đồng ký gửi sang 'active'
+        await db.query(
+            `UPDATE submission_contracts
+             SET status = 'active'
+             WHERE submission_contract_id = ?`,
+            [contractId]
+        );
+
+        // 6. Cập nhật trạng thái hồ sơ ký gửi sang 'approved'
+        await db.query(
+            `UPDATE property_submissions
+             SET status = 'approved'
+             WHERE submission_id = ?`,
+            [submissionId]
+        );
+
+        // 5. Phát tín hiệu real-time qua Socket.io
+        if (global.io) {
+            global.io.to(contractCode).emit('paymentCompleted', {
+                contractCode,
+                status: 'Completed',
+                amount: amountReceived,
+                verifiedAt: new Date()
+            });
+            console.log(`[Socket.io] Real-time completed notification sent to room: ${contractCode}`);
+        }
+
+        res.json({
+            status: 'success',
+            message: 'Giao dịch đặt cọc đã được đối soát & xác thực thành công'
+        });
+    } catch (err) {
+        console.error('sepay webhook error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
