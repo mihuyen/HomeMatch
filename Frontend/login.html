@@ -246,6 +246,8 @@
             window.location.href = 'saleAssign.html';
         } else if (currentUser && currentUser.role === 'legal') {
             window.location.href = 'legalReviewList.html';
+        } else if (currentUser && currentUser.role === 'broker') {
+            window.location.href = 'brokerHome.html';
         } else {
             window.location.href = 'home.html';
         }
@@ -258,6 +260,10 @@
         }
         if (user && user.role === 'legal') {
             window.location.href = 'legalReviewList.html';
+            return;
+        }
+        if (user && user.role === 'broker') {
+            window.location.href = 'brokerHome.html';
             return;
         }
         window.location.href = 'home.html';
