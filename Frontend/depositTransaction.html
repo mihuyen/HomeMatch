@@ -4,6 +4,7 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Tạo Hợp đồng - Bước 3: Thanh toán &amp; Xác thực</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -113,9 +114,12 @@
     }
   </script>
 </head>
-<body class="bg-background text-on-background font-body-md overflow-x-hidden">
-  <div class="flex min-h-screen">
-    <main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-desktop py-xl">
+<body class="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen flex flex-col antialiased">
+  <div id="sale-sidebar"></div>
+  <script src="saleSidebar.js"></script>
+  <script src="api.js"></script>
+
+  <main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-desktop py-xl min-w-0">
       <div class="mb-xl">
         <h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 3: Thanh toán &amp; Xác thực</h1>
         <p class="font-body-lg text-body-lg text-on-surface-variant">Vui lòng hoàn tất việc thanh toán phí cọc để tiếp tục quy trình ký gửi bất động sản.</p>
@@ -181,19 +185,19 @@
                     </div>
                     <span class="text-[10px] font-bold text-primary">Quét mã</span>
                   </div>
-                  <div class="h-px w-8 bg-outline-variant"></div>
-                  <div class="flex flex-col items-center gap-1">
-                    <div class="w-8 h-8 rounded-full border-2 border-primary text-primary flex items-center justify-center animate-pulse">
+                  <div class="h-px w-8 bg-outline-variant" id="line-1"></div>
+                  <div class="flex flex-col items-center gap-1" id="step-processing">
+                    <div class="w-8 h-8 rounded-full border-2 border-primary text-primary flex items-center justify-center animate-pulse" id="circle-processing">
                       <span class="material-symbols-outlined text-[18px]">hourglass_empty</span>
                     </div>
-                    <span class="text-[10px] font-bold text-primary">Chờ xử lý</span>
+                    <span class="text-[10px] font-bold text-primary" id="text-processing">Chờ xử lý</span>
                   </div>
-                  <div class="h-px w-8 bg-outline-variant"></div>
-                  <div class="flex flex-col items-center gap-1 opacity-40">
-                    <div class="w-8 h-8 rounded-full border-2 border-outline flex items-center justify-center">
+                  <div class="h-px w-8 bg-outline-variant" id="line-2"></div>
+                  <div class="flex flex-col items-center gap-1 opacity-40" id="step-completed">
+                    <div class="w-8 h-8 rounded-full border-2 border-outline flex items-center justify-center" id="circle-completed">
                       <span class="material-symbols-outlined text-[18px]">verified</span>
                     </div>
-                    <span class="text-[10px]">Hoàn tất</span>
+                    <span class="text-[10px]" id="text-completed">Hoàn tất</span>
                   </div>
                 </div>
               </div>
@@ -201,14 +205,14 @@
 
             <div class="flex flex-col items-center py-lg bg-surface-container-low rounded-xl border border-dashed border-outline-variant">
               <div class="bg-white p-lg rounded-2xl shadow-lg border border-outline-variant relative group mb-md">
-                <img alt="VietQR Payment" class="w-56 h-56 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCieBAhbgpgv2n4r-rVPQ4OHqxm3Al8NWnqE2AeBxBJeRbz6nT8XboLITgqQFxzkTulAIhzxElgPnkkTGNyciJrtihcySUlYRkkQmMzEPZIhRJyQTO5Dqhm31Xxj2qmoSG8kgqO1thciKvC4pDU4LoxsnvGBV8B2ycWa_dsj0osQcMdgPRskZ0WE4XEDDzvjvSywylOAHbXfpjLquwlWLbZxs34QVodqy5j7V2OWLrBKZ-qazBMvvlOiQKEnhGy9lvnUZM1qS9I0GrK"/>
+                <img alt="VietQR Payment" class="w-56 h-56 object-contain" src="https://img.vietqr.io/image/BIDV-96247VUONGTHUYLINH-compact.png?amount=10000"/>
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-xs rounded-lg shadow-md border border-outline-variant">
                   <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings: 'FILL' 1;">payments</span>
                 </div>
               </div>
               <div class="text-center space-y-1">
                 <p class="font-headline-md text-primary font-bold" id="qr-amount">1.500.000 VND</p>
-                <p class="text-on-surface-variant font-label-md">NH: Techcombank | STK: 1902 3344 5566</p>
+                <p class="text-on-surface-variant font-label-md">NH: BIDV | STK: 96247VUONGTHUYLINH</p>
               </div>
             </div>
 
@@ -290,9 +294,7 @@
         © 2023 EstateSync Pro - Hệ thống quản lý bất động sản tích hợp.
       </footer>
     </main>
-  </div>
 
-  <script src="api.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -358,13 +360,93 @@
           : [];
         const latestDeposit = depositRows.find(item => item && item.transaction_id) || null;
         const displayCode = latestDeposit?.transaction_code || '---';
-        const displayAmount = latestDeposit?.amount;
         const displayMethod = latestDeposit?.payment_method || 'Chuyển khoản / VietQR';
 
+        const fixedAmount = 10000;
         if (transactionCode) transactionCode.textContent = displayCode;
-        if (transactionAmount) transactionAmount.textContent = formatVnd(displayAmount);
-        if (qrAmount) qrAmount.textContent = formatVnd(displayAmount);
+        if (transactionAmount) transactionAmount.textContent = formatVnd(fixedAmount);
+        if (qrAmount) qrAmount.textContent = formatVnd(fixedAmount);
         if (paymentMethod) paymentMethod.textContent = displayMethod;
+
+        // Sinh mã QR VietQR động qua cổng Napas chính thức (img.vietqr.io) theo thông tin tài khoản BIDV của User
+        const qrImg = document.querySelector('img[alt="VietQR Payment"]');
+        if (qrImg && summary.contract_code) {
+          const cleanCode = summary.contract_code.replace(/-/g, '');
+          qrImg.src = `https://img.vietqr.io/image/BIDV-96247VUONGTHUYLINH-compact.png?amount=10000&addInfo=HMHD${cleanCode}`;
+        }
+
+        // Tích hợp Socket.io real-time lắng nghe thanh toán
+        if (summary.contract_code) {
+          const socketUrl = window.location.origin;
+          console.log('[Socket.io] Connecting to server:', socketUrl);
+          const socket = io(socketUrl);
+
+          socket.on('connect', () => {
+            console.log('[Socket.io] Connected successfully. Joining room:', summary.contract_code);
+            socket.emit('joinRoom', summary.contract_code);
+          });
+
+          socket.on('paymentCompleted', (data) => {
+            console.log('[Socket.io] Received paymentCompleted event:', data);
+            
+            // Dừng đếm ngược
+            if (window.timerInterval) {
+              clearInterval(window.timerInterval);
+            }
+            
+            // Cập nhật giao diện lập tức
+            const timerEl = document.getElementById('timer');
+            if (timerEl) timerEl.textContent = 'Hoàn tất';
+
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+              progressBar.style.width = '100%';
+              progressBar.className = 'h-full bg-emerald-500 transition-all duration-500';
+            }
+
+            const syncText = document.querySelector('.italic');
+            if (syncText) {
+              syncText.textContent = 'Giao dịch đã được đối soát & xác thực real-time!';
+              syncText.className = 'text-body-sm text-emerald-600 font-bold';
+            }
+
+            // Cập nhật các vòng tròn quy trình (Steps) sang trạng thái Hoàn tất rực rỡ
+            const circleProcessing = document.getElementById('circle-processing');
+            const textProcessing = document.getElementById('text-processing');
+            const stepCompleted = document.getElementById('step-completed');
+            const circleCompleted = document.getElementById('circle-completed');
+            const textCompleted = document.getElementById('text-completed');
+            const line1 = document.getElementById('line-1');
+            const line2 = document.getElementById('line-2');
+
+            if (circleProcessing) {
+              circleProcessing.className = 'w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center';
+              circleProcessing.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
+            }
+            if (textProcessing) {
+              textProcessing.textContent = 'Đã xử lý';
+            }
+            if (line1) {
+              line1.className = 'h-0.5 w-8 bg-primary';
+            }
+            if (line2) {
+              line2.className = 'h-0.5 w-8 bg-emerald-500';
+            }
+            if (stepCompleted) {
+              stepCompleted.className = 'flex flex-col items-center gap-1'; // loại bỏ opacity-40
+            }
+            if (circleCompleted) {
+              circleCompleted.className = 'w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-none';
+              circleCompleted.innerHTML = '<span class="material-symbols-outlined text-[18px]">verified</span>';
+            }
+            if (textCompleted) {
+              textCompleted.className = 'text-[10px] font-bold text-emerald-600';
+            }
+
+            alert('Tuyệt vời! Hệ thống đã nhận được thanh toán 10.000đ từ ngân hàng real-time. Hợp đồng ký gửi đã được kích hoạt thành công!');
+            window.location.href = 'saleContracts.html';
+          });
+        }
 
         if (completeBtn) {
           completeBtn.addEventListener('click', async () => {
@@ -373,7 +455,8 @@
                 status: 'Completed',
                 paymentMethod: 'Chuyển khoản / VietQR'
               });
-              alert(result.message || 'Đã xác thực thanh toán.');
+              alert(result.message || 'Đã xác thực thanh toán thành công!');
+              window.location.href = 'saleContracts.html';
             } catch (error) {
               alert(error.message || 'Không thể xác thực thanh toán.');
             }
@@ -395,7 +478,7 @@
     const timer = document.getElementById('timer');
     let seconds = 222;
 
-    const interval = setInterval(() => {
+    window.timerInterval = setInterval(() => {
       if (width < 98) {
         width += 0.05;
         bar.style.width = width + '%';
@@ -407,7 +490,7 @@
         const s = seconds % 60;
         timer.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
       } else {
-        clearInterval(interval);
+        clearInterval(window.timerInterval);
       }
     }, 1000);
   </script>

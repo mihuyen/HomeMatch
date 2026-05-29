@@ -778,6 +778,25 @@ router.get('/:submissionId', async (req, res) => {
             [submissionId]
         );
 
+        // Tự động kiểm tra và khởi tạo deposit_transactions 10.000đ nếu đã có hợp đồng nhưng chưa có giao dịch cọc
+        if (contractRows.length > 0) {
+            const latestContract = contractRows[0];
+            const [existingDeposits] = await db.query(
+                'SELECT transaction_id FROM deposit_transactions WHERE submission_contract_id = ? LIMIT 1',
+                [latestContract.submission_contract_id]
+            );
+            if (existingDeposits.length === 0) {
+                const randCode = Math.floor(100000 + Math.random() * 900000);
+                const txCode = `PAY-2026-${randCode}`;
+                await db.query(
+                    `INSERT INTO deposit_transactions 
+                        (submission_contract_id, amount, payment_method, status, transaction_code) 
+                     VALUES (?, 10000.00, ?, ?, ?)`,
+                    [latestContract.submission_contract_id, 'Chuyển khoản / VietQR', 'Pending', txCode]
+                );
+            }
+        }
+
         const [depositRows] = await db.query(
             `SELECT dt.*, dr.return_id, dr.return_amount, dr.reason, dr.returned_at, dr.processed_by
              FROM submission_contracts sc

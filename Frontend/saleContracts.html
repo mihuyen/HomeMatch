@@ -233,10 +233,10 @@
             className: 'bg-orange-100 text-orange-800'
           };
         }
-        if (normalized.includes('done') || normalized.includes('complete') || normalized.includes('hoan')) {
+        if (normalized.includes('active') || normalized.includes('done') || normalized.includes('complete') || normalized.includes('hoan')) {
           return {
-            label: 'Hoàn tất',
-            className: 'bg-emerald-100 text-emerald-800'
+            label: 'Đã hoàn thành',
+            className: 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-200'
           };
         }
         return {
@@ -256,6 +256,19 @@
           direction: item.direction || '',
           propertyType: item.property_type || ''
         });
+
+        const contractStatus = String(item.contract_status || '').toLowerCase();
+        if (contractStatus === 'active' || contractStatus === 'completed') {
+          return `saleContractDetail.html?${params.toString()}`;
+        }
+
+        const isCreated = Boolean(item.submission_contract_id);
+        const isStandard = item.contract_type === 'standard';
+        const isCustomApproved = item.contract_type === 'custom' && String(item.legal_status || '').toLowerCase() === 'approved';
+
+        if (isCreated && (isStandard || isCustomApproved)) {
+          return `saleContractStep2.html?${params.toString()}`;
+        }
         return `saleContract.html?${params.toString()}`;
       }
 
@@ -288,7 +301,8 @@
           const statusBadge = formatStatusBadge(item.contract_status);
           const contractUrl = buildContractUrl(item);
           const responseUrl = buildResponseUrl(item);
-          const hasLegalResponse = Boolean(item.legal_status || item.legal_review_comment || item.legal_reviewed_at);
+          const isCompleted = String(item.contract_status || '').toLowerCase() === 'active' || String(item.contract_status || '').toLowerCase() === 'completed';
+          const hasLegalResponse = Boolean(item.legal_status || item.legal_review_comment || item.legal_reviewed_at) && !isCompleted;
           return `
             <tr class="hover:bg-primary-fixed/5 transition-colors group">
               <td class="p-md">
@@ -317,8 +331,8 @@
                       Xem phản hồi
                     </a>
                   ` : ''}
-                  <a class="bg-primary text-white px-md py-sm rounded-lg font-label-md shadow-sm hover:bg-primary-container hover:shadow-md hover:scale-[1.02] transition-all inline-flex items-center justify-center" href="${contractUrl}">
-                    Tạo hợp đồng
+                  <a class="${(String(item.contract_status || '').toLowerCase() === 'active' || String(item.contract_status || '').toLowerCase() === 'completed') ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-100' : 'bg-primary hover:bg-primary-container'} text-white px-md py-sm rounded-lg font-label-md shadow-sm hover:shadow-md hover:scale-[1.02] transition-all inline-flex items-center justify-center" href="${contractUrl}">
+                    ${(String(item.contract_status || '').toLowerCase() === 'active' || String(item.contract_status || '').toLowerCase() === 'completed') ? 'Xem chi tiết' : ((Boolean(item.submission_contract_id) && (item.contract_type === 'standard' || String(item.legal_status || '').toLowerCase() === 'approved')) ? 'Tiếp tục (B2)' : 'Tạo hợp đồng')}
                   </a>
                 </div>
               </td>

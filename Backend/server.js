@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const consignmentRoutes = require('./routes/consignment');
@@ -14,7 +16,6 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = 5050;
-
 
 // Middleware
 app.use(cors());
@@ -49,7 +50,36 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+// Tạo server http và socket.io
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: (origin, callback) => {
+            // Cho phép mọi origin kết nối động
+            callback(null, true);
+        },
+        methods: ["GET", "POST", "PATCH"],
+        credentials: true
+    }
+});
+
+// Lưu trữ instance socket.io toàn cục để các route có thể truy cập
+global.io = io;
+
+io.on('connection', (socket) => {
+    console.log(`Socket connected: ${socket.id}`);
+    
+    socket.on('joinRoom', (roomName) => {
+        socket.join(roomName);
+        console.log(`Socket ${socket.id} joined room: ${roomName}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`Socket disconnected: ${socket.id}`);
+    });
+});
+
+server.listen(PORT, () => {
     console.log(`Server dang chay tai http://localhost:${PORT}`);
     console.log(`Mo http://localhost:${PORT}/landingpage.html de bat dau`);
 });
