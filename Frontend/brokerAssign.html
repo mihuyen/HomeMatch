@@ -169,9 +169,9 @@
         const doneAssignments = document.getElementById('doneAssignments');
 
         const statusMap = {
-            pending: ['đang xử lý', 'cho xu ly', 'cho xu ly', 'pending'],
+            pending: ['đang xử lý', 'cho xu ly', 'cho xu ly', 'pending', 'đã phân công lại', 'da phan cong lai'],
             active: ['đang chăm sóc', 'đang thực hiện', 'dang cham soc', 'dang thuc hien', 'active'],
-            done: ['hoàn tất', 'hoàn thành', 'done', 'completed']
+            done: ['hoàn tất', 'hoàn thành', 'done', 'completed', 'đã hoàn thành', 'da hoan thanh']
         };
 
         const tabs = document.querySelectorAll('.bg-slate-100 button');
@@ -192,12 +192,12 @@
         function badgeForStatus(status) {
             const normalized = normalizeStatus(status);
             if (statusMap.done.some(val => normalized.includes(val))) {
-                return { label: 'Hoàn tất', cls: 'bg-emerald-100 text-emerald-700' };
+                return { label: 'Đã hoàn thành', cls: 'bg-emerald-100 text-emerald-700' };
             }
-            if (statusMap.active.some(val => normalized.includes(val))) {
-                return { label: 'Đang thực hiện', cls: 'bg-blue-100 text-blue-700' };
+            if (normalized.includes('phân công lại')) {
+                return { label: 'Đã phân công lại', cls: 'bg-indigo-100 text-indigo-700 border border-indigo-200/50' };
             }
-            return { label: 'Chờ xử lý', cls: 'bg-amber-100 text-amber-700' };
+            return { label: 'Hệ thống đã phân công', cls: 'bg-blue-100 text-blue-700' };
         }
 
         function buildAvatar(name) {

@@ -11,7 +11,7 @@ async function pickBrokerId() {
          FROM users u
          LEFT JOIN staff_assignments sa
            ON sa.sale_broker_id = u.user_id
-          AND sa.status IN ('đang xử lý', 'đang chăm sóc', 'dang xu ly', 'dang cham soc')
+          AND sa.status IN ('đang xử lý', 'đang chăm sóc', 'dang xu ly', 'dang cham soc', 'đã phân công lại')
          WHERE u.role = 'broker'
          GROUP BY u.user_id
          ORDER BY active_count ASC, u.user_id ASC

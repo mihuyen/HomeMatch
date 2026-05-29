@@ -145,7 +145,7 @@
 <!-- Page Header & Quick Actions -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-md">
 <div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Xin chào, Nguyễn Văn A</h2>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs" id="brokerWelcomeName">Xin chào, Nguyễn Văn A</h2>
 
 </div>
 <div class="flex flex-wrap gap-sm">
@@ -158,15 +158,15 @@
 <div class="flex justify-between items-start mb-lg">
 <div>
 <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-xs">Tổng doanh thu (Tháng)</p>
-<h3 class="font-headline-xl text-headline-xl text-on-surface">4.2B <span class="text-body-md text-secondary font-normal">VND</span></h3>
+<h3 class="font-headline-xl text-headline-xl text-on-surface" id="statRevenueValue">0 <span class="text-body-md text-secondary font-normal">VND</span></h3>
 </div>
 <div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-primary">
 <span class="material-symbols-outlined">payments</span>
 </div>
 </div>
-<div class="flex items-center gap-xs text-[#16a34a] font-label-sm">
+<div class="flex items-center gap-xs font-label-sm" id="statRevenueSub">
 <span class="material-symbols-outlined text-[16px]">trending_up</span>
-<span class="">+15% so với tháng trước</span>
+<span class="">0% so với tháng trước</span>
 </div>
 <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-secondary-container/20 rounded-full blur-2xl pointer-events-none"></div>
 </div>
@@ -175,7 +175,7 @@
 <div class="flex justify-between items-start mb-lg">
 <div>
 <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-xs">Giao dịch thành công</p>
-<h3 class="font-headline-xl text-headline-xl text-on-surface">08</h3>
+<h3 class="font-headline-xl text-headline-xl text-on-surface" id="statDealsValue">00</h3>
 </div>
 <div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-primary">
 <span class="material-symbols-outlined">key</span>
@@ -183,7 +183,7 @@
 </div>
 
 <div class="w-full bg-surface-container h-1.5 rounded-full mt-2 overflow-hidden">
-<div class="bg-primary h-full rounded-full w-[80%]"></div>
+<div class="bg-primary h-full rounded-full w-[0%]" id="statDealsProgress"></div>
 </div>
 </div>
 <!-- Conversion Rate -->
@@ -191,15 +191,15 @@
 <div class="flex justify-between items-start mb-lg">
 <div>
 <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-xs">Tỷ lệ chốt</p>
-<h3 class="font-headline-xl text-headline-xl text-on-surface">24.5%</h3>
+<h3 class="font-headline-xl text-headline-xl text-on-surface" id="statRateValue">0%</h3>
 </div>
 <div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-primary">
 <span class="material-symbols-outlined">pie_chart</span>
 </div>
 </div>
-<div class="flex items-center gap-xs text-[#ea580c] font-label-sm">
+<div class="flex items-center gap-xs font-label-sm" id="statRateSub">
 <span class="material-symbols-outlined text-[16px]">trending_down</span>
-<span class="">-2% so với trung bình sàn</span>
+<span class="">0% so với trung bình sàn</span>
 </div>
 </div>
 </div>
@@ -213,17 +213,17 @@
 <button class="text-secondary hover:text-primary transition-colors">
 <span class="material-symbols-outlined text-[20px]">filter_list</span>
 </button>
-<a class="font-label-sm text-primary hover:underline flex items-center" href="#">Xem tất cả</a>
+<a class="font-label-sm text-primary hover:underline flex items-center" href="brokerAssign.html">Xem tất cả</a>
 </div>
 </div>
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-[#F8FAFC] border-b border-surface-variant font-label-sm text-secondary"><th class="py-sm px-md font-medium">Khách hàng</th><th class="py-sm px-md font-medium">Quan tâm</th></tr>
+<tr class="bg-[#F8FAFC] border-b border-surface-variant font-label-sm text-secondary"><th class="py-sm px-md font-medium">Khách hàng</th><th class="py-sm px-md font-medium">Quan tâm</th><th class="py-sm px-md font-medium">Trạng thái</th></tr>
 </thead>
 <tbody class="font-body-sm text-on-surface" id="brokerCustomerTable">
 <tr class="border-b border-surface-variant/50">
-<td class="py-sm px-md text-secondary" colspan="2">Đang tải dữ liệu...</td>
+<td class="py-sm px-md text-secondary" colspan="3">Đang tải dữ liệu...</td>
 </tr>
 </tbody>
 </table>
@@ -260,7 +260,7 @@
         if (!items || items.length === 0) {
             brokerCustomerTable.innerHTML = `
                 <tr class="border-b border-surface-variant/50">
-                    <td class="py-sm px-md text-secondary" colspan="2">Chưa có khách hàng được phân công.</td>
+                    <td class="py-sm px-md text-secondary" colspan="3">Chưa có khách hàng được phân công.</td>
                 </tr>
             `;
             return;
@@ -269,6 +269,20 @@
         brokerCustomerTable.innerHTML = items.map(item => {
             const customerName = item.tenant_name || `Khách hàng #${item.tenant_id}`;
             const interest = item.notes || 'Đang cập nhật nhu cầu';
+            
+            // Tạo badge trạng thái đẹp mắt
+            const statusText = item.status || 'Đang xử lý';
+            let badgeHtml = '';
+            if (statusText === 'hoàn tất' || statusText === 'done' || statusText === 'completed') {
+                badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Đã hoàn thành</span>`;
+            } else if (statusText === 'đang xử lý' || statusText === 'pending_assignment') {
+                badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Hệ thống đã phân công</span>`;
+            } else if (statusText === 'đã phân công lại') {
+                badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 border border-indigo-200">Đã phân công lại</span>`;
+            } else {
+                badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">${statusText}</span>`;
+            }
+
             return `
                 <tr class="border-b border-surface-variant/50 hover:bg-[#F1F5F9] transition-colors">
                     <td class="py-sm px-md">
@@ -276,6 +290,7 @@
                         <div class="text-xs text-secondary">${item.tenant_phone || ''}</div>
                     </td>
                     <td class="py-sm px-md text-secondary">${interest}</td>
+                    <td class="py-sm px-md">${badgeHtml}</td>
                 </tr>
             `;
         }).join('');
@@ -283,7 +298,7 @@
 
     function renderUpcomingAppointments(items) {
         if (!upcomingContainer) return;
-        const upcoming = items.filter(a => !['hoàn thành', 'done', 'completed', 'finished'].includes((a.status || '').toLowerCase()));
+        const upcoming = items.filter(a => !['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes((a.status || '').toLowerCase()));
         
         if (upcoming.length === 0) {
             upcomingContainer.innerHTML = '<div class="p-sm text-secondary text-sm">Không có lịch hẹn sắp tới.</div>';
@@ -313,20 +328,69 @@
         const user = await requireLogin();
         if (!user) return;
 
+        // Hiển thị tên môi giới đăng nhập
+        const welcomeNameEl = document.getElementById('brokerWelcomeName');
+        if (welcomeNameEl && user.full_name) {
+            welcomeNameEl.innerText = `Xin chào, ${user.full_name}`;
+        }
+
         try {
-            const [assignData, aptData] = await Promise.all([
+            const [assignData, aptData, stats] = await Promise.all([
                 listBrokerAssignments().catch(() => ({ items: [] })),
-                listBrokerAppointments().catch(() => ({ items: [] }))
+                listBrokerAppointments().catch(() => ({ items: [] })),
+                getBrokerDashboardStats().catch(() => null)
             ]);
             
             renderBrokerCustomers(assignData.items || []);
             renderUpcomingAppointments(aptData.items || []);
             
-            // Dashboard stats basic calculation
-            if(assignData.items) {
-                const total = assignData.items.length;
-                document.querySelector('h3.font-headline-xl').innerText = total + ' Khách hàng'; // Reusing revenue stat space for customer count
-                document.querySelector('.text-[#16a34a]').innerHTML = ''; // Clear change
+            // Render dashboard stats
+            if (stats) {
+                // 1. Tổng doanh thu (Tháng)
+                const statRevenueValue = document.getElementById('statRevenueValue');
+                const statRevenueSub = document.getElementById('statRevenueSub');
+                if (statRevenueValue) {
+                    statRevenueValue.innerHTML = `${stats.currMonthRevenue.toLocaleString('vi-VN')} <span class="text-body-md text-secondary font-normal">VND</span>`;
+                }
+                if (statRevenueSub) {
+                    const isPositive = stats.revenueChangePercent >= 0;
+                    const icon = isPositive ? 'trending_up' : 'trending_down';
+                    const colorClass = isPositive ? 'text-[#16a34a]' : 'text-[#ea580c]';
+                    const prefix = isPositive ? '+' : '';
+                    statRevenueSub.className = `flex items-center gap-xs font-label-sm ${colorClass}`;
+                    statRevenueSub.innerHTML = `
+                        <span class="material-symbols-outlined text-[16px]">${icon}</span>
+                        <span>${prefix}${stats.revenueChangePercent.toFixed(1)}% so với tháng trước</span>
+                    `;
+                }
+
+                // 2. Giao dịch thành công
+                const statDealsValue = document.getElementById('statDealsValue');
+                const statDealsProgress = document.getElementById('statDealsProgress');
+                if (statDealsValue) {
+                    statDealsValue.innerText = stats.closedDeals.toString().padStart(2, '0');
+                }
+                if (statDealsProgress) {
+                    statDealsProgress.style.width = `${Math.min(Math.max(stats.brokerConversionRate, 0), 100)}%`;
+                }
+
+                // 3. Tỷ lệ chốt
+                const statRateValue = document.getElementById('statRateValue');
+                const statRateSub = document.getElementById('statRateSub');
+                if (statRateValue) {
+                    statRateValue.innerText = `${stats.brokerConversionRate.toFixed(1)}%`;
+                }
+                if (statRateSub) {
+                    const isPositive = stats.rateDiff >= 0;
+                    const icon = isPositive ? 'trending_up' : 'trending_down';
+                    const colorClass = isPositive ? 'text-[#16a34a]' : 'text-[#ea580c]';
+                    const prefix = isPositive ? '+' : '';
+                    statRateSub.className = `flex items-center gap-xs font-label-sm ${colorClass}`;
+                    statRateSub.innerHTML = `
+                        <span class="material-symbols-outlined text-[16px]">${icon}</span>
+                        <span>${prefix}${stats.rateDiff.toFixed(1)}% so với trung bình sàn</span>
+                    `;
+                }
             }
         } catch (err) {
             console.error(err);
