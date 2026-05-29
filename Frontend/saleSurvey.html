@@ -117,15 +117,15 @@
         
         /* Segmented Control Styles */
         .segmented-control input:checked + div {
-            background-color: theme('colors.primary-container');
-            color: theme('colors.on-primary');
-            border-color: theme('colors.primary-container');
+            background-color: #1e3a8a !important;
+            color: #ffffff !important;
+            border-color: #1e3a8a !important;
         }
         
         /* Modern Input Focus Focus */
         .modern-input:focus {
-            border-color: theme('colors.primary-container');
-            box-shadow: 0 0 0 1px theme('colors.primary-container');
+            border-color: #1e3a8a !important;
+            box-shadow: 0 0 0 1px #1e3a8a !important;
             outline: none;
         }
         
@@ -138,11 +138,11 @@
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: theme('colors.surface-variant');
+            background: #e3e1e9 !important;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: theme('colors.outline');
+            background: #757682 !important;
         }
     </style>
 </head>
@@ -151,20 +151,20 @@
 <script src="saleSidebar.js"></script>
 <script src="api.js"></script>
 <!-- Main Content Area -->
-<main class="flex-1 w-full pb-24 md:pb-lg flex flex-col bg-background">
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0 bg-background">
 <!-- Header & Breadcrumb -->
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-6">
 <div class="mt-1 md:mt-2">
 <h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Ghi nhận Kết quả Khảo sát</h1>
 <p class="font-body-sm text-body-sm text-secondary mt-1">Hoàn thành biểu mẫu dưới đây sau khi khảo sát thực tế bất động sản.</p>
 </div>
-<div class="flex items-center gap-sm bg-surface-container px-md py-sm rounded-lg">
+<div id="draft-status-container" class="flex items-center gap-sm bg-surface-container px-md py-sm rounded-lg">
 <span class="material-symbols-outlined text-primary" data-icon="assignment_turned_in">assignment_turned_in</span>
-<span class="font-label-md text-label-md text-on-surface-variant">Bản nháp tự động lưu lúc 14:32</span>
+<span id="draft-status-text" class="font-label-md text-label-md text-on-surface-variant">Đang kiểm tra bản nháp...</span>
 </div>
 </div>
 <!-- Form Content Container -->
-<div class="p-margin-mobile md:p-margin-desktop flex-1">
+<div class="py-lg flex-1">
 <form class="w-full max-w-none flex flex-col grid-24">
 <!-- Phần 1: Thông tin chung (Read-only Card) -->
 <section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
@@ -178,18 +178,18 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
 <div class="flex flex-col gap-xs">
 <label class="font-label-sm text-label-sm text-secondary">Mã yêu cầu</label>
-<p class="font-body-md text-body-md font-medium text-on-surface">#KG-29042</p>
+<p id="request-code" class="font-body-md text-body-md font-medium text-on-surface">---</p>
 </div>
 <div class="flex flex-col gap-xs">
 <label class="font-label-sm text-label-sm text-secondary">Chủ nhà</label>
 <div class="flex items-center gap-sm">
-<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-sm text-label-sm">SJ</div>
-<p class="font-body-md text-body-md font-medium text-on-surface">Sarah Jenkins</p>
+<div id="owner-initials" class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-sm text-label-sm">--</div>
+<p id="owner-name" class="font-body-md text-body-md font-medium text-on-surface">---</p>
 </div>
 </div>
 <div class="flex flex-col gap-xs">
 <label class="font-label-sm text-label-sm text-secondary">Địa chỉ</label>
-<p class="font-body-md text-body-md font-medium text-on-surface truncate" title="142 Kensington High St, W8 7SA">142 Kensington High St, W8 7SA</p>
+<p id="property-address" class="font-body-md text-body-md font-medium text-on-surface truncate" title="">---</p>
 </div>
 </div>
 </section>
@@ -434,7 +434,7 @@
 <span class="font-label-sm text-label-sm text-secondary">Yêu cầu tối thiểu 3 ảnh</span>
 </div>
 <!-- Upload Dropzone -->
-<div class="border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group min-h-[160px]">
+<div id="survey-dropzone" class="border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group min-h-[160px]">
 <div class="w-16 h-16 rounded-full bg-primary-container/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
 <span class="material-symbols-outlined text-[32px]" data-icon="add_a_photo">add_a_photo</span>
 </div>
@@ -442,9 +442,10 @@
 <p class="font-label-md text-label-md text-on-surface">Nhấn để tải ảnh lên hoặc kéo thả vào đây</p>
 <p class="font-body-sm text-body-sm text-secondary mt-1">Hỗ trợ JPG, PNG (Max 5MB/ảnh)</p>
 </div>
+<input type="file" id="survey-images-input" class="hidden" multiple accept="image/png,image/jpeg">
 </div>
-<!-- Preview Area (Empty state simulation) -->
-<!-- <div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-sm">...</div> -->
+<!-- Preview Area -->
+<div id="survey-preview-grid" class="grid grid-cols-2 md:grid-cols-4 gap-md mt-sm hidden"></div>
 </section>
 <!-- Phần 6: Ghi chú -->
 <section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
@@ -488,6 +489,186 @@
     const params = new URLSearchParams(window.location.search);
     const submissionId = params.get('submissionId');
     const appointmentId = params.get('appointmentId') || null;
+
+    // Fetch and bind real database properties and owner info
+    try {
+        if (submissionId) {
+            const prop = await getConsignment(submissionId);
+            if (prop) {
+                const ownerName = (prop.owner && prop.owner.full_name) || 'Chủ nhà';
+                
+                // Compute initials
+                const names = ownerName.trim().split(/\s+/);
+                const initials = names.length > 1 
+                    ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
+                    : ownerName.substring(0, 2).toUpperCase();
+
+                document.getElementById('request-code').textContent = prop.request_code || `#KG-${submissionId}`;
+                document.getElementById('owner-initials').textContent = initials;
+                document.getElementById('owner-name').textContent = ownerName;
+                document.getElementById('property-address').textContent = prop.address || '---';
+                document.getElementById('property-address').title = prop.address || '';
+            }
+        }
+    } catch (e) {
+        console.error('Không thể tải thông tin bất động sản:', e);
+    }
+
+    // Fetch and bind existing survey draft
+    try {
+        if (submissionId) {
+            const surveyData = await listSaleSurveys(submissionId);
+            const items = (surveyData && surveyData.items) ? surveyData.items : (Array.isArray(surveyData) ? surveyData : []);
+            
+            if (items && items.length > 0) {
+                const latestSurvey = items[0];
+                const timeStr = new Date(latestSurvey.completed_at || latestSurvey.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                const dateStr = new Date(latestSurvey.completed_at || latestSurvey.created_at).toLocaleDateString('vi-VN');
+                document.getElementById('draft-status-text').textContent = `Bản nháp đã lưu lúc ${timeStr} ngày ${dateStr}`;
+
+                // Populate form fields from latest survey record
+                populateChecklist(latestSurvey.infrastructure_checklist);
+                populateChecklist(latestSurvey.area_checklist);
+                populateChecklist(latestSurvey.legal_checklist);
+                
+                // Populate images
+                populateImages(latestSurvey.image_checklist);
+
+                // Populate notes
+                const notesArea = document.querySelector('[name="survey_notes"]');
+                if (notesArea && latestSurvey.survey_notes) {
+                    notesArea.value = latestSurvey.survey_notes;
+                }
+            } else {
+                document.getElementById('draft-status-text').textContent = 'Sẵn sàng lưu bản nháp';
+            }
+        }
+    } catch (e) {
+        console.error('Không thể tải lịch sử bản nháp:', e);
+        document.getElementById('draft-status-text').textContent = 'Chưa lưu bản nháp';
+    }
+
+    function populateChecklist(data) {
+        if (!data) return;
+        let parsed = data;
+        if (typeof data === 'string') {
+            try { parsed = JSON.parse(data); } catch(e) { return; }
+        }
+        Object.keys(parsed).forEach(key => {
+            const val = parsed[key];
+            const inputs = document.querySelectorAll(`[name="${key}"]`);
+            inputs.forEach(inp => {
+                if (inp.type === 'radio') {
+                    const labelText = inp.nextElementSibling ? inp.nextElementSibling.textContent.trim() : '';
+                    if (inp.value === val || labelText === val) {
+                        inp.checked = true;
+                    }
+                } else if (inp.tagName.toLowerCase() === 'textarea' || inp.type === 'text' || inp.type === 'number') {
+                    inp.value = val;
+                }
+            });
+        });
+    }
+
+    function populateImages(images) {
+        if (!images) return;
+        let parsed = images;
+        if (typeof images === 'string') {
+            try { parsed = JSON.parse(images); } catch(e) { return; }
+        }
+        if (Array.isArray(parsed)) {
+            uploadedImages = parsed;
+            renderPreviews();
+        }
+    }
+
+    // Image upload logic
+    let uploadedImages = [];
+    const dropzone = document.getElementById('survey-dropzone');
+    const fileInput = document.getElementById('survey-images-input');
+    const previewGrid = document.getElementById('survey-preview-grid');
+
+    if (dropzone && fileInput) {
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop events
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('bg-primary-container/10', 'scale-[1.01]', 'border-primary');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('bg-primary-container/10', 'scale-[1.01]', 'border-primary');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('bg-primary-container/10', 'scale-[1.01]', 'border-primary');
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            if (files && files.length > 0) {
+                handleFiles(files);
+            }
+        });
+    }
+
+    function handleFiles(files) {
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        Array.from(files).forEach(file => {
+            if (!allowedTypes.includes(file.type)) {
+                alert(`Chỉ hỗ trợ ảnh định dạng JPG hoặc PNG: ${file.name}`);
+                return;
+            }
+            if (file.size > maxSize) {
+                alert(`Dung lượng ảnh tối đa là 5MB: ${file.name}`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                uploadedImages.push(reader.result);
+                renderPreviews();
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function renderPreviews() {
+        if (!previewGrid) return;
+        if (uploadedImages.length === 0) {
+            previewGrid.innerHTML = '';
+            previewGrid.classList.add('hidden');
+            return;
+        }
+
+        previewGrid.classList.remove('hidden');
+        previewGrid.innerHTML = '';
+
+        uploadedImages.forEach((imgBase64, index) => {
+            const col = document.createElement('div');
+            col.className = 'relative group rounded-lg overflow-hidden border border-outline-variant shadow-sm aspect-video bg-surface-container';
+            col.innerHTML = `
+                <img src="${imgBase64}" class="w-full h-full object-cover">
+                <button type="button" class="absolute top-2 right-2 bg-error/90 hover:bg-error text-white w-7 h-7 rounded-full flex items-center justify-center shadow transition-all active:scale-95 cursor-pointer opacity-90 hover:opacity-100" data-index="${index}">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            `;
+            col.querySelector('button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                uploadedImages.splice(index, 1);
+                renderPreviews();
+            });
+            previewGrid.appendChild(col);
+        });
+    }
 
     function collectByPrefix(prefix){
         const data = {};
@@ -557,12 +738,16 @@
                 infrastructureChecklist: collectChecklist(),
                 areaChecklist: collectArea(),
                 legalChecklist: collectLegal(),
-                imageChecklist: null,
+                imageChecklist: uploadedImages,
                 surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
                 surveyStatus: 'draft'
             };
             // save as draft by calling survey endpoint (surveyStatus = 'draft')
             await submitSaleSurvey(payload);
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('vi-VN');
+            document.getElementById('draft-status-text').textContent = `Bản nháp đã lưu lúc ${timeStr} ngày ${dateStr}`;
             alert('Lưu tạm thành công');
         }catch(err){
             console.error(err);
@@ -581,7 +766,7 @@
                 infrastructureChecklist: collectChecklist(),
                 areaChecklist: collectArea(),
                 legalChecklist: collectLegal(),
-                imageChecklist: null,
+                imageChecklist: uploadedImages,
                 surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
                 surveyStatus: 'đạt'
             };

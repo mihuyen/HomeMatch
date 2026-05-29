@@ -121,7 +121,7 @@
   <script src="saleSidebar.js"></script>
   <script src="api.js"></script>
 
-  <main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-desktop py-xl">
+  <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
     <div class="mb-xl">
       <div class="flex items-center gap-sm text-primary mb-sm"></div>
       <h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 2: Nộp hồ sơ đính kèm</h1>
@@ -201,19 +201,9 @@
               <div class="space-y-md">
                 <div class="border-b border-white/20 pb-md mb-md">
                   <p class="text-body-sm opacity-80 mb-sm">Loại hợp đồng</p>
-                  <div class="grid grid-cols-2 gap-xs bg-white/10 p-1 rounded-lg" id="contract-type-toggle">
-                    <label class="cursor-pointer">
-                      <input class="hidden peer" name="contract_type" type="radio" value="consignment">
-                      <div class="text-center py-1.5 rounded-md text-label-sm transition-all peer-checked:bg-white peer-checked:text-primary">
-                        Ký gửi
-                      </div>
-                    </label>
-                    <label class="cursor-pointer">
-                      <input class="hidden peer" name="contract_type" type="radio" value="renewal">
-                      <div class="text-center py-1.5 rounded-md text-label-sm transition-all peer-checked:bg-white peer-checked:text-primary">
-                        Gia hạn
-                      </div>
-                    </label>
+                  <div class="flex items-center justify-between rounded-lg bg-white/10 px-md py-sm">
+                    <span class="text-label-sm uppercase tracking-wide text-primary-fixed">contract_type</span>
+                    <span class="font-body-md font-semibold" id="summary-contract-type">---</span>
                   </div>
                 </div>
                 <div class="flex justify-between items-center border-b border-white/20 pb-sm">
@@ -262,7 +252,7 @@
       const summaryContractCode = document.getElementById('summary-contract-code');
       const summaryOwner = document.getElementById('summary-owner');
       const summaryDate = document.getElementById('summary-date');
-      const contractTypeToggle = document.getElementById('contract-type-toggle');
+      const summaryContractType = document.getElementById('summary-contract-type');
       const submitBtn = document.getElementById('submitBtn');
       const backBtn = document.getElementById('backBtn');
 
@@ -287,12 +277,14 @@
           summaryDate.textContent = '---';
         }
 
-        if (summary.contract_type) {
-          const target = contractTypeToggle.querySelector(`input[value="${summary.contract_type}"]`);
-          if (target) target.checked = true;
-        } else {
-          const fallback = contractTypeToggle.querySelector('input[value="consignment"]');
-          if (fallback) fallback.checked = true;
+        if (summaryContractType) {
+          if (summary.contract_type === 'consignment') {
+            summaryContractType.textContent = 'Ký gửi';
+          } else if (summary.contract_type === 'renewal') {
+            summaryContractType.textContent = 'Gia hạn';
+          } else {
+            summaryContractType.textContent = summary.contract_type || '---';
+          }
         }
 
         const hasScan = Boolean(summary.contract_scan_url);
@@ -380,22 +372,13 @@
         });
       }
 
-      if (contractTypeToggle) {
-        contractTypeToggle.querySelectorAll('input[name="contract_type"]').forEach((input) => {
-          input.addEventListener('change', async () => {
-            if (!input.checked) return;
-            try {
-              await updateSaleContractType(submissionId, input.value);
-            } catch (error) {
-              alert(error.message || 'Không thể cập nhật loại hợp đồng.');
-            }
-          });
-        });
-      }
-
       if (submitBtn) {
         submitBtn.addEventListener('click', () => {
-          alert('Hồ sơ đang được xử lý chuyển sang bước thanh toán.');
+          if (submissionId) {
+            window.location.href = `depositTransaction.html?submissionId=${encodeURIComponent(submissionId)}`;
+          } else {
+            window.location.href = 'depositTransaction.html';
+          }
         });
       }
 

@@ -41,7 +41,14 @@ async function apiCall(endpoint, options = {}) {
     }
 
     const res = await fetch(API_BASE + endpoint, config);
-    const data = await res.json();
+    const contentType = res.headers.get('content-type');
+    let data;
+    if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+    } else {
+        const text = await res.text();
+        throw new Error(`Lỗi từ máy chủ (${res.status}): ${text.substring(0, 100)}...`);
+    }
 
     if (!res.ok) {
         throw new Error(data.message || 'Lỗi không xác định');
@@ -208,6 +215,13 @@ async function uploadSaleContractScan(submissionId, payload) {
     });
 }
 
+async function updateSaleDepositTransaction(submissionId, payload) {
+    return apiCall(`/sale/contracts/${submissionId}/deposit`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
+
 async function getSaleLegalResponse(submissionId) {
     return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }
@@ -268,6 +282,34 @@ async function updateLegalApproval(submissionContractId, payload) {
     return apiCall(`/legal/approvals/${submissionContractId}`, {
         method: 'PATCH',
         body: JSON.stringify(payload)
+    });
+}
+
+// Admin API helpers
+async function getAdminDashboard() {
+    return apiCall('/admin/dashboard');
+}
+
+async function getAdminAssignments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.area) query.set('area', params.area);
+    if (params.property_type) query.set('property_type', params.property_type);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/admin/assignments${suffix}`);
+}
+
+async function getAdminSalesAgents() {
+    return apiCall('/admin/sales-agents');
+}
+
+async function assignSurveyor(submissionId, assignedSalesId) {
+    return apiCall(`/admin/assignments/${submissionId}`, {
+        method: 'POST',
+        body: JSON.stringify({ assignedSalesId })
     });
 }
 

@@ -117,11 +117,11 @@
 <div id="sale-sidebar"></div>
 <script src="saleSidebar.js"></script>
 <!-- Main Canvas -->
-<main class="flex-1 flex flex-col relative">
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0 bg-background">
 <!-- Scrollable Content Area -->
-<div class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-[#F8FAFC]">
+<div class="flex-1 overflow-y-auto bg-background">
 <!-- Max Width Container for Content -->
-<div class="w-full max-w-none">
+<div class="w-full">
 <!-- Header -->
 <div class="mb-lg">
 <h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Lập Lịch Khảo Sát</h2>
@@ -142,12 +142,12 @@
 <div>
 <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Chủ nhà</p>
 <div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container font-bold font-body-md">
+<div id="owner-initials" class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container font-bold font-body-md">
                                             SJ
                                         </div>
 <div>
-<p class="font-label-md text-label-md text-on-surface font-semibold">Sarah Jenkins</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">+44 7700 900077</p>
+<p id="owner-name" class="font-label-md text-label-md text-on-surface font-semibold">Sarah Jenkins</p>
+<p id="owner-phone" class="font-body-sm text-body-sm text-on-surface-variant">+44 7700 900077</p>
 </div>
 </div>
 </div>
@@ -155,7 +155,7 @@
 <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Tài sản</p>
 <div class="flex gap-2">
 <span class="material-symbols-outlined text-on-surface-variant text-[20px] mt-0.5">location_on</span>
-<p class="font-body-sm text-body-sm text-on-surface leading-tight">
+<p id="property-address" class="font-body-sm text-body-sm text-on-surface leading-tight">
                                             142 Kensington High St,<br>
                                             Kensington, London,<br>
                                             W8 7SA, UK
@@ -164,7 +164,7 @@
 </div>
 <div class="pt-2 border-t border-surface-variant">
 <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Trạng thái</p>
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#fef3c7] text-[#92400e] border border-[#fcd34d]">
+<span id="property-status" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#fef3c7] text-[#92400e] border border-[#fcd34d]">
                                         Chờ xếp lịch
                                     </span>
 </div>
@@ -219,7 +219,7 @@
 <div class="absolute inset-y-0 left-0 pl-3 pt-2.5 pointer-events-none">
 <span class="material-symbols-outlined text-on-surface-variant text-[20px]">pin_drop</span>
 </div>
-<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-bright text-on-surface font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow" id="appointment_location" name="appointment_location" required="" type="text" value="142 Kensington High St, W8 7SA">
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-bright text-on-surface font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow" id="appointment_location" name="appointment_location" required="" type="text" value="" placeholder="Đang tải địa chỉ bất động sản...">
 </div>
 <p class="mt-1 font-body-sm text-body-sm text-on-surface-variant">Mặc định là địa chỉ bất động sản, có thể thay đổi nếu hẹn gặp ở nơi khác trước.</p>
 </div>
@@ -231,7 +231,7 @@
 <!-- Notification Indicator -->
 <div class="bg-[#eff6ff] rounded-lg p-3 flex items-start gap-3 border border-[#bfdbfe] mb-xl">
 <span class="material-symbols-outlined text-[#1d4ed8] mt-0.5 text-[20px]">notifications_active</span>
-<p class="font-body-sm text-body-sm text-[#1e3a8a] leading-tight pt-0.5">
+<p id="notify-text" class="font-body-sm text-body-sm text-[#1e3a8a] leading-tight pt-0.5">
                                         Hệ thống sẽ tự động gửi email và tin nhắn thông báo (SMS) xác nhận lịch hẹn cho chủ nhà (Sarah Jenkins) ngay sau khi bạn lưu.
                                     </p>
 </div>
@@ -265,6 +265,55 @@
                 const submissionId = params.get('submissionId');
                 if(!submissionId) return;
                 try{ await requireLogin(); } catch(e){ console.error('auth required', e); return; }
+
+                // Fetch real property and owner details
+                try {
+                    const prop = await getConsignment(submissionId);
+                    if (prop) {
+                        const ownerName = (prop.owner && prop.owner.full_name) || 'Chủ nhà';
+                        const ownerPhone = (prop.owner && prop.owner.phone_number) || '---';
+                        
+                        // Compute initials
+                        const names = ownerName.trim().split(/\s+/);
+                        const initials = names.length > 1 
+                            ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
+                            : ownerName.substring(0, 2).toUpperCase();
+
+                        document.getElementById('owner-initials').textContent = initials;
+                        document.getElementById('owner-name').textContent = ownerName;
+                        document.getElementById('owner-phone').textContent = ownerPhone;
+                        document.getElementById('property-address').textContent = prop.address || '---';
+                        
+                        // Status badge style assignment
+                        const statusBadge = document.getElementById('property-status');
+                        let statusText = 'Chờ xếp lịch';
+                        if (prop.status === 'assigned') {
+                            statusText = 'Đang xử lý';
+                            statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#dbeafe] text-[#1e40af] border border-[#bfdbfe]';
+                        } else if (prop.status === 'surveyed') {
+                            statusText = 'Đã khảo sát';
+                            statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#d1fae5] text-[#065f46] border border-[#a7f3d0]';
+                        } else {
+                            statusText = prop.status || 'Chờ xếp lịch';
+                            statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#fef3c7] text-[#92400e] border border-[#fcd34d]';
+                        }
+                        statusBadge.textContent = statusText;
+
+                        // Prepopulate default location
+                        const locationInput = document.getElementById('appointment_location');
+                        if (locationInput) {
+                            locationInput.value = prop.address || '';
+                        }
+
+                        // Notification text
+                        const notifyText = document.getElementById('notify-text');
+                        if (notifyText) {
+                            notifyText.textContent = `Hệ thống sẽ tự động gửi email và tin nhắn thông báo (SMS) xác nhận lịch hẹn cho chủ nhà (${ownerName}) ngay sau khi bạn lưu.`;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Không thể tải thông tin bất động sản:', e);
+                }
                 const form = document.getElementById('appointment-form');
                 const cancelBtn = document.getElementById('btn-cancel');
                 if (cancelBtn) {

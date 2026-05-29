@@ -139,35 +139,16 @@
   <script src="saleSidebar.js"></script>
   <script src="api.js"></script>
 
-  <main class="flex-1 flex flex-col min-w-0">
-    <div class="flex-1 p-margin-mobile md:p-margin-desktop">
-      <div class="w-full max-w-[1200px] mx-auto">
+  <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
+    <div class="flex-1">
+      <div class="w-full">
         <div class="mb-xl">
           <div class="flex items-center gap-sm text-primary mb-sm"></div>
           <h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 1: Thông tin</h1>
         </div>
 
         <div class="grid grid-cols-12 gap-gutter">
-          <div class="col-span-12 space-y-xl">
-            <div class="bg-primary text-white p-lg rounded-xl shadow-lg overflow-hidden relative mb-md">
-              <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-              <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-md">
-                <div>
-                  <p class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed mb-xs opacity-80">Thông tin tóm tắt</p>
-                  <div class="flex items-center gap-md">
-                    <span class="text-body-sm opacity-80">Mã hợp đồng:</span>
-                    <span class="font-headline-md" id="contract-code">---</span>
-                  </div>
-                </div>
-                <div class="flex flex-col md:flex-row md:gap-xl">
-                  <div class="flex items-center gap-sm">
-                    <span class="text-body-sm opacity-80">Chủ sở hữu:</span>
-                    <span class="font-body-md font-bold" id="owner-name-summary">---</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div class="col-span-12 lg:col-span-8 space-y-xl">
             <div class="grid grid-cols-2 gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant">
               <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-md border-2 border-primary ring-4 ring-primary-container/10">
                 <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
@@ -296,6 +277,47 @@
               </div>
             </div>
           </div>
+          <div class="col-span-12 lg:col-span-4 space-y-lg">
+            <div class="sticky top-24 space-y-lg">
+              <div class="bg-primary text-white p-lg rounded-xl shadow-lg overflow-hidden relative mb-md">
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="relative z-10">
+                  <p class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed mb-md opacity-80">Thông tin tóm tắt</p>
+                  <div class="space-y-md">
+                    <div class="border-b border-white/20 pb-md mb-md">
+                      <p class="text-body-sm opacity-80 mb-sm">Loại hợp đồng</p>
+                      <div class="grid grid-cols-2 gap-xs bg-white/10 p-1 rounded-lg" id="contract-type-toggle">
+                        <label class="cursor-pointer">
+                          <input class="hidden peer" name="contract_type" type="radio" value="consignment">
+                          <div class="text-center py-1.5 rounded-md text-label-sm transition-all peer-checked:bg-white peer-checked:text-primary">
+                            Ký gửi
+                          </div>
+                        </label>
+                        <label class="cursor-pointer">
+                          <input class="hidden peer" name="contract_type" type="radio" value="renewal">
+                          <div class="text-center py-1.5 rounded-md text-label-sm transition-all peer-checked:bg-white peer-checked:text-primary">
+                            Gia hạn
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/20 pb-sm">
+                      <span class="text-body-sm opacity-80">Mã hợp đồng</span>
+                      <span class="font-headline-md" id="summary-contract-code">---</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/20 pb-sm">
+                      <span class="text-body-sm opacity-80">Chủ sở hữu</span>
+                      <span class="font-body-md font-bold" id="summary-owner">---</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-body-sm opacity-80">Ngày tạo</span>
+                      <span class="text-body-sm" id="summary-date">---</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -314,6 +336,10 @@
       const ownerPhone = document.getElementById('owner-phone');
       const ownerIdCard = document.getElementById('owner-id-card');
       const contractCode = document.getElementById('contract-code');
+      const summaryContractCode = document.getElementById('summary-contract-code');
+      const summaryOwner = document.getElementById('summary-owner');
+      const summaryDate = document.getElementById('summary-date');
+      const contractTypeToggle = document.getElementById('contract-type-toggle');
       const propertyAddress = document.getElementById('property-address');
       const propertyArea = document.getElementById('property-area');
       const propertyPrice = document.getElementById('property-price');
@@ -383,6 +409,27 @@
             contractCode.textContent = data.contract_code;
           }
 
+          if (summaryContractCode) {
+            summaryContractCode.textContent = data.contract_code || '---';
+          }
+
+          if (summaryOwner) {
+            summaryOwner.textContent = owner.full_name || '---';
+          }
+
+          if (contractTypeToggle) {
+            const selectedType = data.contract_type || 'consignment';
+            const target = contractTypeToggle.querySelector(`input[value="${selectedType}"]`);
+            if (target) target.checked = true;
+          }
+
+          if (summaryDate) {
+            const dateValue = data.signed_at || data.created_at || data.updated_at;
+            summaryDate.textContent = dateValue
+              ? new Date(dateValue).toLocaleDateString('vi-VN')
+              : '---';
+          }
+
           if (propertyAddress) propertyAddress.textContent = property.address || '---';
           if (propertyArea) propertyArea.textContent = property.direction || '---';
           if (propertyPrice) propertyPrice.textContent = property.proposed_price ? `${Number(property.proposed_price).toLocaleString('vi-VN')} VNĐ` : '---';
@@ -445,6 +492,19 @@
             nextBtn.innerHTML = originalContent;
             nextBtn.classList.remove('opacity-80', 'cursor-not-allowed');
           }
+        });
+      }
+
+      if (contractTypeToggle) {
+        contractTypeToggle.querySelectorAll('input[name="contract_type"]').forEach((input) => {
+          input.addEventListener('change', async () => {
+            if (!input.checked) return;
+            try {
+              await updateSaleContractType(submissionId, input.value);
+            } catch (error) {
+              alert(error.message || 'Không thể cập nhật loại hợp đồng.');
+            }
+          });
         });
       }
 

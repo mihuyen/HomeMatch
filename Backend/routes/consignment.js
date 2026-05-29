@@ -264,7 +264,7 @@ async function getOwnerTrackingList(ownerId, { status, search, limit = 20, offse
             COUNT(DISTINCT pl.listing_id) AS listing_count,
             MAX(pl.activated_at) AS latest_listing_activated_at,
             MAX(pl.status) AS listing_status,
-            MIN(CASE WHEN ap.status = 'scheduled' AND ap.appointment_type = 'khảo sát' THEN ap.scheduled_time END) AS next_survey_time
+            MIN(CASE WHEN ap.status IN ('scheduled', 'Đã đặt') AND ap.appointment_type = 'khảo sát' THEN ap.scheduled_time END) AS next_survey_time
          FROM property_submissions ps
          LEFT JOIN users s ON s.user_id = ps.assigned_sales_id
          LEFT JOIN survey_records sr ON sr.submission_id = ps.submission_id
@@ -398,6 +398,7 @@ async function getOwnerTrackingDetail(ownerId, submissionId) {
             note: `Hồ sơ #${toRequestCode(base.submission_id)}`
         },
         ...appointmentRows.map(ap => ({
+            id: ap.appointment_id,
             type: 'appointment',
             title: `Lịch ${ap.appointment_type || 'hẹn'}`,
             status: ap.status,
@@ -469,13 +470,35 @@ async function getOwnerTrackingDetail(ownerId, submissionId) {
 }
 
 // POST /api/consignments/step-1
-// Tạo/cập nhật chủ nhà và tạo hồ sơ ký gửi bản nháp
+// Tạo/cập nhật chủ nhà và tạo hồ sơ ký gửi đầy đủ thông tin ban đầu
 router.post('/step-1', async (req, res) => {
     try {
-        const { fullName, phone, email, idCard } = req.body;
+        const {
+            fullName,
+            phone,
+            email,
+            idCard,
+            propertyType,
+            area,
+            direction,
+            bedrooms,
+            bathrooms,
+            address,
+            proposedPrice,
+            imagesUploaded
+        } = req.body;
 
-        if (!fullName || !phone || !email || !idCard) {
-            return res.status(400).json({ message: 'Vui lòng nhập đầy đủ họ tên, số điện thoại, email và CCCD/CMND' });
+        if (
+            !fullName || !phone || !email || !idCard ||
+            !propertyType || area === undefined || area === null || area === '' ||
+            !direction || bedrooms === undefined || bedrooms === null || bedrooms === '' ||
+            bathrooms === undefined || bathrooms === null || bathrooms === '' ||
+            !address || proposedPrice === undefined || proposedPrice === null || proposedPrice === '' ||
+            imagesUploaded === undefined || imagesUploaded === null || imagesUploaded === ''
+        ) {
+            return res.status(400).json({
+                message: 'Vui lòng nhập đầy đủ thông tin chủ nhà và thông tin bất động sản ký gửi'
+            });
         }
 
         if (!isValidEmail(email)) {
@@ -488,17 +511,56 @@ router.post('/step-1', async (req, res) => {
 
         const ownerId = await findOrCreateOwner({ fullName, phone, email, idCard });
 
+        const normalizedArea = normalizeNumber(area);
+        const normalizedPrice = normalizeNumber(proposedPrice);
+        const normalizedBedrooms = Number(bedrooms);
+        const normalizedBathrooms = Number(bathrooms);
+        const normalizedImages = parseImages(imagesUploaded);
+
+        if (normalizedArea === null || normalizedArea <= 0) {
+            return res.status(400).json({ message: 'Diện tích không hợp lệ' });
+        }
+
+        if (normalizedPrice === null || normalizedPrice <= 0) {
+            return res.status(400).json({ message: 'Giá đề xuất không hợp lệ' });
+        }
+
+        if (!Number.isFinite(normalizedBedrooms) || normalizedBedrooms < 0) {
+            return res.status(400).json({ message: 'Số phòng ngủ không hợp lệ' });
+        }
+
+        if (!Number.isFinite(normalizedBathrooms) || normalizedBathrooms < 0) {
+            return res.status(400).json({ message: 'Số phòng tắm không hợp lệ' });
+        }
+
+        if (!normalizedImages) {
+            return res.status(400).json({ message: 'Vui lòng tải lên ít nhất 1 ảnh bất động sản' });
+        }
+
         const [result] = await db.query(
             `INSERT INTO property_submissions
-                (owner_id, status)
-             VALUES (?, 'draft')`,
-            [ownerId]
+                (owner_id, property_type, area, direction, num_bedrooms, num_bathrooms, address, proposed_price, images_uploaded, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+            [
+                ownerId,
+                propertyType,
+                normalizedArea,
+                direction,
+                normalizedBedrooms,
+                normalizedBathrooms,
+                address,
+                normalizedPrice,
+                normalizedImages
+            ]
         );
+
+        const assignedSalesId = await autoAssignSales(result.insertId);
 
         const submission = await buildSubmissionResponse(result.insertId);
 
         res.status(201).json({
-            message: 'Đã tạo hồ sơ ký gửi bản nháp',
+            message: 'Đã tạo hồ sơ ký gửi và tự động phân công khảo sát',
+            auto_assigned_sales_id: assignedSalesId,
             ...submission
         });
     } catch (err) {
