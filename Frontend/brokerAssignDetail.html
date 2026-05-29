@@ -156,12 +156,9 @@
         <h1 class="text-3xl font-headline font-extrabold text-on-primary-container tracking-tight">Chi tiết Phân công
         </h1>
       </div>
-      <button
-        class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-        <span class="material-symbols-outlined"
-          style="font-variation-settings: &quot;FILL&quot; 1;">calendar_add_on</span>
-        Tạo lịch hẹn
-      </button>
+      <div id="actionButtons" class="flex flex-wrap items-center gap-3">
+        <!-- Nút Tạo lịch hẹn và Chốt giao dịch sẽ tải động bằng JS -->
+      </div>
     </div>
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 gap-8">
@@ -191,11 +188,14 @@
         <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant shadow-sm">
           <div class="h-24 bg-gradient-to-r from-primary to-blue-900"></div>
           <div class="px-8 pb-8 -mt-12">
-            <div class="flex flex-col md:flex-row items-end gap-6 mb-8">
+            <div class="flex flex-col md:flex-row items-end gap-6 mb-8 w-full">
               <img alt="Customer Avatar"
                 class="w-32 h-32 rounded-3xl border-4 border-white shadow-xl object-cover bg-surface"
-                data-alt="A portrait of a middle-aged Vietnamese businessman looking approachable and professional, wearing a white oxford shirt. The style is clean and well-lit with a soft-focus urban balcony background in the late afternoon. High-end lifestyle photography aesthetic with natural skin tones."
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9rrV3EwolpmIA43JNIEQppjtChXpf2xfK0LFVyB7zDzAmBa3NegNiy_wuj2JVcw-UqWmnGrW_YVFQ3kM-Vo-5os0LvMWehMvHuhhEYd7oWWgBF-Wmk1uJJS4r11V6GuBit2-yMc5nGxjonMDNtfQnEhT3b8_22-Rn5Qd4HsT0vA6gZMxVv1_Zwrip8xYiRh890_TnJU0LHXrYgocKImdHaGIMl-4837q_YorQA-8aeyzJ35r3TvhTlIw86xVRtLcmIOfnNi2V6UGp">
+              <div class="flex-1 min-w-[200px] mb-2">
+                <h3 id="tenantName" class="text-2xl font-extrabold text-on-surface">Đang tải...</h3>
+                <p class="text-on-surface-variant text-sm font-medium">Khách hàng thuê</p>
+              </div>
               <div class="flex gap-2 pb-2">
                 <button
                   class="p-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
@@ -291,15 +291,15 @@
           const assignedDate = new Date(data.assigned_at);
           document.getElementById('assignDate').innerText = 'Ngày phân công: ' + (isNaN(assignedDate.getTime()) ? '-' : assignedDate.toLocaleDateString('vi-VN'));
 
-          let badgeClass = 'bg-amber-100 text-amber-700';
-          let badgeText = 'Chờ xử lý';
-          const status = String(data.status).toLowerCase();
-          if (status.includes('đang') || status.includes('active')) {
-            badgeClass = 'bg-blue-100 text-blue-700';
-            badgeText = 'Đang thực hiện';
+          let badgeClass = 'bg-blue-100 text-blue-700';
+          let badgeText = 'Hệ thống đã phân công';
+          const status = String(data.status).toLowerCase().trim();
+          if (status.includes('phân công lại')) {
+            badgeClass = 'bg-indigo-100 text-indigo-700 border border-indigo-200/50';
+            badgeText = 'Đã phân công lại';
           } else if (status.includes('hoàn') || status.includes('done')) {
             badgeClass = 'bg-emerald-100 text-emerald-700';
-            badgeText = 'Hoàn tất';
+            badgeText = 'Đã hoàn thành';
           }
 
           const statusBadge = document.getElementById('assignStatus');
@@ -312,11 +312,29 @@
           document.getElementById('tenantPhone').innerText = data.tenant_phone || 'Chưa cập nhật';
           document.getElementById('tenantEmail').innerText = data.tenant_email || 'Chưa cập nhật';
 
-          const btnAppointment = document.querySelector('button.flex.items-center.gap-2.bg-primary');
-          if (btnAppointment) {
-            btnAppointment.onclick = () => {
-              window.location.href = `brokerAppointmentDetail.html?assignmentId=${assignmentId}`;
-            };
+          const actionButtonsEl = document.getElementById('actionButtons');
+          if (actionButtonsEl) {
+            if (!status.includes('hoàn') && !status.includes('done')) {
+              actionButtonsEl.innerHTML = `
+                <button onclick="window.location.href='brokerAppointmentDetail.html?assignmentId=${assignmentId}'"
+                  class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                  <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_add_on</span>
+                  Tạo lịch hẹn
+                </button>
+                <button onclick="window.location.href='brokerContract.html?assignmentId=${assignmentId}'"
+                  class="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-emerald-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all hover:bg-emerald-700">
+                  <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">handshake</span>
+                  Chốt giao dịch
+                </button>
+              `;
+            } else {
+              actionButtonsEl.innerHTML = `
+                <div class="px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-semibold text-sm flex items-center gap-2 shadow-sm">
+                  <span class="material-symbols-outlined text-[18px]">verified</span>
+                  Phân công này đã hoàn tất chốt giao dịch
+                </div>
+              `;
+            }
           }
         } catch (err) {
           console.error(err);

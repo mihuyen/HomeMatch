@@ -417,5 +417,169 @@ router.post('/assignments/:submissionId', requireAuth, requireRole('admin', 'man
     }
 });
 
+// GET /api/admin/broker-assignments
+// Lay tat ca phan cong moi gioi kem suggested broker
+router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const { status, limit = 10, offset = 0 } = req.query;
+        
+        // 1. Tinh suggested broker (co active workload dang xu ly hoac phan cong lai it nhat)
+        const [brokerList] = await db.query(
+            `SELECT u.user_id, u.full_name, COUNT(sa.assignment_id) AS active_count
+             FROM users u
+             LEFT JOIN staff_assignments sa 
+               ON sa.sale_broker_id = u.user_id 
+              AND sa.status IN ('đang xử lý', 'đã phân công lại')
+             WHERE u.role = 'broker'
+             GROUP BY u.user_id
+             ORDER BY active_count ASC, u.user_id ASC`
+        );
+        const suggestedBroker = brokerList[0] || null;
+
+        const conditions = [];
+        const params = [];
+
+        if (status === 'pending' || status === 'đang xử lý') {
+            conditions.push("sa.status = 'đang xử lý'");
+        } else if (status === 'reassigned' || status === 'đã phân công lại') {
+            conditions.push("sa.status = 'đã phân công lại'");
+        } else if (status === 'completed' || status === 'hoàn tất') {
+            conditions.push("sa.status = 'hoàn tất'");
+        } else if (status && status !== 'Tất cả trạng thái' && status !== 'all' && status !== '') {
+            conditions.push('sa.status = ?');
+            params.push(status);
+        }
+
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+        // Dem tong so
+        const [countRows] = await db.query(
+            `SELECT COUNT(DISTINCT sa.assignment_id) AS total 
+             FROM staff_assignments sa
+             LEFT JOIN users u_broker ON u_broker.user_id = sa.sale_broker_id
+             ${whereClause}`,
+            params
+        );
+        const total = Number(countRows[0]?.total || 0);
+
+        // Dem so ho so dang o trang thai he thong da phan cong
+        const [pendingRows] = await db.query(
+            `SELECT COUNT(DISTINCT sa.assignment_id) AS total 
+             FROM staff_assignments sa
+             WHERE sa.status = 'đang xử lý'`
+        );
+        const totalPending = Number(pendingRows[0]?.total || 0);
+
+        // Query danh sach
+        const [rows] = await db.query(
+            `SELECT sa.assignment_id, sa.tenant_id, sa.sale_broker_id, sa.assigned_at, sa.notes, sa.status,
+                    u_tenant.full_name AS tenant_name,
+                    u_broker.full_name AS broker_name,
+                    u_broker.role AS broker_role
+             FROM staff_assignments sa
+             LEFT JOIN users u_tenant ON u_tenant.user_id = sa.tenant_id
+             LEFT JOIN users u_broker ON u_broker.user_id = sa.sale_broker_id
+             ${whereClause}
+             ORDER BY sa.assigned_at DESC, sa.assignment_id DESC
+             LIMIT ? OFFSET ?`,
+            [...params, Number(limit), Number(offset)]
+        );
+
+        res.json({
+            total,
+            totalPending,
+            suggestedBroker,
+            items: rows.map(row => {
+                const isBrokerValid = row.sale_broker_id && row.broker_role === 'broker';
+                let assignmentStatus = 'HỆ THỐNG ĐÃ PHÂN CÔNG';
+                if (row.status === 'đã phân công lại') {
+                    assignmentStatus = 'ĐÃ PHÂN CÔNG LẠI';
+                } else if (row.status === 'hoàn tất') {
+                    assignmentStatus = 'ĐÃ HOÀN THÀNH';
+                }
+
+                return {
+                    assignment_id: row.assignment_id,
+                    request_code: `ASN-${String(row.assignment_id).padStart(6, '0')}`,
+                    tenant_id: row.tenant_id,
+                    tenant_name: row.tenant_name || `Khách thuê #${row.tenant_id}`,
+                    assigned_at: row.assigned_at,
+                    status: row.status,
+                    notes: row.notes,
+                    sale_broker_id: isBrokerValid ? row.sale_broker_id : null,
+                    broker_name: isBrokerValid ? row.broker_name : null,
+                    assignment_status: assignmentStatus
+                };
+            })
+        });
+    } catch (err) {
+        console.error('Get broker assignments error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/admin/brokers
+// Lay danh sach moi gioi kem active workload
+router.get('/brokers', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT u.user_id, u.full_name, u.email, u.phone,
+                    COUNT(sa.assignment_id) AS active_count
+             FROM users u
+             LEFT JOIN staff_assignments sa 
+               ON sa.sale_broker_id = u.user_id 
+              AND sa.status IN ('đang xử lý', 'đã phân công lại')
+             WHERE u.role = 'broker'
+             GROUP BY u.user_id
+             ORDER BY active_count ASC, u.user_id ASC`
+        );
+        res.json({ brokers: rows });
+    } catch (err) {
+        console.error('Get brokers error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/admin/broker-assignments/:assignmentId
+// Thuc hien phan cong / ghi de moi gioi
+router.post('/broker-assignments/:assignmentId', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const assignmentId = Number(req.params.assignmentId);
+        const { assignedBrokerId } = req.body;
+
+        console.log(`[API POST /broker-assignments/:assignmentId] assignmentId = ${assignmentId}, assignedBrokerId = ${assignedBrokerId}`);
+
+        if (!Number.isInteger(assignmentId)) {
+            return res.status(400).json({ message: 'assignmentId không hợp lệ' });
+        }
+
+        if (!assignedBrokerId) {
+            return res.status(400).json({ message: 'Thiếu thông tin môi giới được phân công' });
+        }
+
+        const [userRows] = await db.query(
+            `SELECT user_id, role, full_name FROM users WHERE user_id = ? AND role = 'broker'`,
+            [assignedBrokerId]
+        );
+        if (userRows.length === 0) {
+            return res.status(400).json({ message: 'Môi giới được chọn không tồn tại hoặc không hợp lệ' });
+        }
+
+        await db.query(
+            `UPDATE staff_assignments 
+             SET sale_broker_id = ?, status = 'đã phân công lại'
+             WHERE assignment_id = ?`,
+            [assignedBrokerId, assignmentId]
+        );
+
+        res.json({
+            message: `Đã phân công thành công yêu cầu #${assignmentId} cho môi giới ${userRows[0].full_name}`
+        });
+    } catch (err) {
+        console.error('Assign broker error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
 module.exports = router;
 

@@ -21,6 +21,12 @@ const PORT = 5050;
 app.use(cors());
 app.use(express.json({ limit: '15mb' }));
 
+// Cache control to prevent browser/proxy caching of API responses
+app.use('/api', (req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+
 // Phục vụ frontend tĩnh từ thư mục ../frontend
 app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -40,7 +40,15 @@ async function apiCall(endpoint, options = {}) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(API_BASE + endpoint, config);
+    // Cache-busting for GET requests
+    let url = API_BASE + endpoint;
+    const method = (options.method || 'GET').toUpperCase();
+    if (method === 'GET') {
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}_t=${Date.now()}`;
+    }
+
+    const res = await fetch(url, config);
     const contentType = res.headers.get('content-type');
     let data;
     if (contentType && contentType.includes('application/json')) {
@@ -310,6 +318,27 @@ async function assignSurveyor(submissionId, assignedSalesId) {
     return apiCall(`/admin/assignments/${submissionId}`, {
         method: 'POST',
         body: JSON.stringify({ assignedSalesId })
+    });
+}
+
+async function getAdminBrokerAssignments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/admin/broker-assignments${suffix}`);
+}
+
+async function getAdminBrokers() {
+    return apiCall('/admin/brokers');
+}
+
+async function assignAdminBroker(assignmentId, assignedBrokerId) {
+    return apiCall(`/admin/broker-assignments/${assignmentId}`, {
+        method: 'POST',
+        body: JSON.stringify({ assignedBrokerId })
     });
 }
 
