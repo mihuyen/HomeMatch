@@ -208,6 +208,13 @@ async function uploadSaleContractScan(submissionId, payload) {
     });
 }
 
+async function updateSaleDepositTransaction(submissionId, payload) {
+    return apiCall(`/sale/contracts/${submissionId}/deposit`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
+
 async function getSaleLegalResponse(submissionId) {
     return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Tạo Hợp đồng - Bước 3: Thanh toán &amp; Xác thực</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-container": "#6e2c00",
+            "on-tertiary-fixed-variant": "#773205",
+            "inverse-primary": "#b6c4ff",
+            "secondary-fixed-dim": "#b7c8e1",
+            "primary-fixed": "#dce1ff",
+            "tertiary-fixed-dim": "#ffb691",
+            "inverse-surface": "#2f3036",
+            "primary": "#00236f",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed": "#0b1c30",
+            "on-surface": "#1a1b21",
+            "on-primary-fixed": "#00164e",
+            "primary-container": "#1e3a8a",
+            "on-secondary": "#ffffff",
+            "surface-container-high": "#e9e7ef",
+            "secondary-fixed": "#d3e4fe",
+            "inverse-on-surface": "#f1f0f7",
+            "surface-dim": "#dad9e1",
+            "secondary-container": "#d0e1fb",
+            "on-tertiary-fixed": "#341100",
+            "on-error": "#ffffff",
+            "outline": "#757682",
+            "on-primary-container": "#90a8ff",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#faf8ff",
+            "surface-container-highest": "#e3e1e9",
+            "surface-container": "#eeedf4",
+            "on-background": "#1a1b21",
+            "surface-tint": "#4059aa",
+            "outline-variant": "#c5c5d3",
+            "surface-container-low": "#f4f3fa",
+            "on-primary": "#ffffff",
+            "on-tertiary-container": "#f39461",
+            "error": "#ba1a1a",
+            "secondary": "#505f76",
+            "surface-variant": "#e3e1e9",
+            "primary-fixed-dim": "#b6c4ff",
+            "on-primary-fixed-variant": "#264191",
+            "surface-bright": "#faf8ff",
+            "background": "#faf8ff",
+            "on-secondary-container": "#54647a",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#ffdbcb",
+            "tertiary": "#4b1c00",
+            "on-surface-variant": "#444651",
+            "on-secondary-fixed-variant": "#38485d"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "xl": "32px",
+            "sm": "8px",
+            "xs": "4px",
+            "margin-mobile": "16px",
+            "lg": "24px",
+            "base": "8px",
+            "md": "16px",
+            "margin-desktop": "32px",
+            "gutter": "24px"
+          },
+          "fontFamily": {
+            "headline-xl": ["Inter"],
+            "label-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"]
+          },
+          "fontSize": {
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+  <div class="flex min-h-screen">
+    <main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-desktop py-xl">
+      <div class="mb-xl">
+        <h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 3: Thanh toán &amp; Xác thực</h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant">Vui lòng hoàn tất việc thanh toán phí cọc để tiếp tục quy trình ký gửi bất động sản.</p>
+      </div>
+
+      <div class="grid grid-cols-12 gap-gutter">
+        <div class="col-span-12 lg:col-span-8 space-y-xl">
+          <div class="grid grid-cols-3 gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant">
+            <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-sm border border-outline-variant opacity-60">
+              <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary-container text-white">
+                <span class="material-symbols-outlined">check</span>
+              </div>
+              <div class="hidden md:block">
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Bước 1</p>
+                <p class="font-headline-md text-headline-md text-on-surface">Thông tin</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-sm border border-outline-variant opacity-60">
+              <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary-container text-white">
+                <span class="material-symbols-outlined">check</span>
+              </div>
+              <div class="hidden md:block">
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Bước 2</p>
+                <p class="font-headline-md text-headline-md text-on-surface">Hồ sơ</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-md p-md bg-white rounded-lg shadow-md border-2 border-primary ring-4 ring-primary-container/10">
+              <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
+                <span class="font-bold">3</span>
+              </div>
+              <div class="hidden md:block">
+                <p class="font-label-sm text-label-sm text-primary font-bold">Đang thực hiện</p>
+                <p class="font-headline-md text-headline-md text-on-surface">Thanh toán</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-xl rounded-xl border border-outline-variant shadow-sm space-y-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+              <div class="space-y-md">
+                <h3 class="font-label-md text-label-md font-bold uppercase text-on-surface-variant border-b border-outline-variant pb-xs">Chi tiết giao dịch</h3>
+                <div class="space-y-xs">
+                  <div class="flex justify-between items-center">
+                    <span class="text-body-sm text-on-surface-variant">Mã giao dịch</span>
+                    <span class="font-bold text-primary" id="transaction-code">PAY-2023-0892</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-body-sm text-on-surface-variant">Tổng chi phí</span>
+                    <span class="font-semibold" id="transaction-amount">1.500.000 VND</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-body-sm text-on-surface-variant">Phương thức</span>
+                    <span class="text-body-sm font-medium" id="payment-method">Chuyển khoản / VietQR</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col justify-center items-center md:items-end">
+                <div class="flex items-center gap-md">
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                      <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-primary">Quét mã</span>
+                  </div>
+                  <div class="h-px w-8 bg-outline-variant"></div>
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="w-8 h-8 rounded-full border-2 border-primary text-primary flex items-center justify-center animate-pulse">
+                      <span class="material-symbols-outlined text-[18px]">hourglass_empty</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-primary">Chờ xử lý</span>
+                  </div>
+                  <div class="h-px w-8 bg-outline-variant"></div>
+                  <div class="flex flex-col items-center gap-1 opacity-40">
+                    <div class="w-8 h-8 rounded-full border-2 border-outline flex items-center justify-center">
+                      <span class="material-symbols-outlined text-[18px]">verified</span>
+                    </div>
+                    <span class="text-[10px]">Hoàn tất</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center py-lg bg-surface-container-low rounded-xl border border-dashed border-outline-variant">
+              <div class="bg-white p-lg rounded-2xl shadow-lg border border-outline-variant relative group mb-md">
+                <img alt="VietQR Payment" class="w-56 h-56 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCieBAhbgpgv2n4r-rVPQ4OHqxm3Al8NWnqE2AeBxBJeRbz6nT8XboLITgqQFxzkTulAIhzxElgPnkkTGNyciJrtihcySUlYRkkQmMzEPZIhRJyQTO5Dqhm31Xxj2qmoSG8kgqO1thciKvC4pDU4LoxsnvGBV8B2ycWa_dsj0osQcMdgPRskZ0WE4XEDDzvjvSywylOAHbXfpjLquwlWLbZxs34QVodqy5j7V2OWLrBKZ-qazBMvvlOiQKEnhGy9lvnUZM1qS9I0GrK"/>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-xs rounded-lg shadow-md border border-outline-variant">
+                  <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+                </div>
+              </div>
+              <div class="text-center space-y-1">
+                <p class="font-headline-md text-primary font-bold" id="qr-amount">1.500.000 VND</p>
+                <p class="text-on-surface-variant font-label-md">NH: Techcombank | STK: 1902 3344 5566</p>
+              </div>
+            </div>
+
+            <div class="bg-surface-container-highest/50 rounded-lg p-md">
+              <div class="flex items-center justify-between mb-sm">
+                <div class="flex items-center gap-xs">
+                  <span class="material-symbols-outlined text-[18px] text-on-surface-variant animate-spin">sync</span>
+                  <span class="text-body-sm text-on-surface-variant italic">Hệ thống đang kiểm tra giao dịch...</span>
+                </div>
+                <span class="font-label-md text-primary font-bold" id="timer">3:42</span>
+              </div>
+              <div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+                <div class="h-full bg-primary transition-all duration-1000 ease-linear" id="progress-bar" style="width: 55.5%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:flex-row justify-between items-center gap-md pt-lg border-t border-outline-variant">
+            <button class="w-full md:w-auto px-lg py-md border border-outline font-bold text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-all flex items-center justify-center gap-sm" id="backBtn">
+              <span class="material-symbols-outlined">arrow_back</span>
+              Quay lại
+            </button>
+            <div class="flex flex-col md:flex-row gap-md w-full md:w-auto">
+              <button class="w-full md:w-auto px-lg py-sm text-outline hover:text-primary transition-all font-label-md flex items-center justify-center gap-sm">
+                <span class="material-symbols-outlined text-[20px]">download</span>
+                Tải mã QR lưu trữ
+              </button>
+              <button class="w-full md:w-auto px-xl py-md bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-sm" id="completeBtn">
+                Hoàn tất quy trình
+                <span class="material-symbols-outlined">check_circle</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-4">
+          <div class="sticky top-24 space-y-lg">
+            <div class="bg-primary text-white p-lg rounded-xl shadow-xl overflow-hidden relative">
+              <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+              <div class="relative z-10">
+                <p class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed mb-md opacity-80">Thông tin tóm tắt</p>
+                <div class="space-y-md">
+                  <div class="border-b border-white/20 pb-md mb-md">
+                    <p class="text-body-sm opacity-80 mb-sm">Loại hợp đồng</p>
+                    <div class="flex items-center justify-between rounded-lg bg-white/10 px-md py-sm">
+                      <span class="text-label-sm uppercase tracking-wide text-primary-fixed">contract_type</span>
+                      <span class="font-body-md font-semibold" id="summary-contract-type">---</span>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center border-b border-white/20 pb-sm">
+                    <span class="text-body-sm opacity-80">Mã hợp đồng</span>
+                    <span class="font-headline-md" id="summary-contract-code">---</span>
+                  </div>
+                  <div class="flex justify-between items-center border-b border-white/20 pb-sm">
+                    <span class="text-body-sm opacity-80">Chủ sở hữu</span>
+                    <span class="font-body-md font-bold" id="summary-owner">---</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-body-sm opacity-80">Ngày tạo</span>
+                    <span class="text-body-sm" id="summary-date">---</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant">
+              <div class="flex items-center gap-sm text-primary mb-sm">
+                <span class="material-symbols-outlined">help</span>
+                <span class="font-bold">Hỗ trợ thanh toán</span>
+              </div>
+              <p class="text-body-sm text-on-surface-variant mb-md">Gặp sự cố khi quét mã? Liên hệ bộ phận kế toán để được xác thực thủ công.</p>
+              <button class="w-full py-sm bg-white border border-primary text-primary rounded-lg font-bold text-label-sm hover:bg-primary hover:text-white transition-all">Gọi hotline: 1900 88xx</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="mt-xl py-lg text-center text-outline font-body-sm border-t border-outline-variant">
+        © 2023 EstateSync Pro - Hệ thống quản lý bất động sản tích hợp.
+      </footer>
+    </main>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const submissionId = urlParams.get('submissionId');
+      const transactionCode = document.getElementById('transaction-code');
+      const transactionAmount = document.getElementById('transaction-amount');
+      const paymentMethod = document.getElementById('payment-method');
+      const qrAmount = document.getElementById('qr-amount');
+      const summaryContractCode = document.getElementById('summary-contract-code');
+      const summaryOwner = document.getElementById('summary-owner');
+      const summaryDate = document.getElementById('summary-date');
+      const summaryContractType = document.getElementById('summary-contract-type');
+      const completeBtn = document.getElementById('completeBtn');
+      const backBtn = document.getElementById('backBtn');
+
+      if (typeof requireLogin === 'function') {
+        await requireLogin();
+      }
+
+      if (!submissionId) {
+        alert('Thiếu submissionId để tải giao dịch.');
+        return;
+      }
+
+      const formatVnd = (value) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return '---';
+        return `${parsed.toLocaleString('vi-VN')} VND`;
+      };
+
+      try {
+        const [summary, consignment] = await Promise.all([
+          getSaleContractSummary(submissionId),
+          getConsignment(submissionId)
+        ]);
+
+        if (summaryContractCode) {
+          summaryContractCode.textContent = summary.contract_code || '---';
+        }
+
+        if (summaryOwner) {
+          summaryOwner.textContent = summary.owner?.full_name || '---';
+        }
+
+        if (summaryDate) {
+          summaryDate.textContent = summary.signed_at
+            ? new Date(summary.signed_at).toLocaleDateString('vi-VN')
+            : '---';
+        }
+
+        if (summaryContractType) {
+          if (summary.contract_type === 'consignment') {
+            summaryContractType.textContent = 'Ký gửi';
+          } else if (summary.contract_type === 'renewal') {
+            summaryContractType.textContent = 'Gia hạn';
+          } else {
+            summaryContractType.textContent = summary.contract_type || '---';
+          }
+        }
+
+        const depositRows = Array.isArray(consignment.deposit_transactions)
+          ? consignment.deposit_transactions
+          : [];
+        const latestDeposit = depositRows.find(item => item && item.transaction_id) || null;
+        const displayCode = latestDeposit?.transaction_code || '---';
+        const displayAmount = latestDeposit?.amount;
+        const displayMethod = latestDeposit?.payment_method || 'Chuyển khoản / VietQR';
+
+        if (transactionCode) transactionCode.textContent = displayCode;
+        if (transactionAmount) transactionAmount.textContent = formatVnd(displayAmount);
+        if (qrAmount) qrAmount.textContent = formatVnd(displayAmount);
+        if (paymentMethod) paymentMethod.textContent = displayMethod;
+
+        if (completeBtn) {
+          completeBtn.addEventListener('click', async () => {
+            try {
+              const result = await updateSaleDepositTransaction(submissionId, {
+                status: 'Completed',
+                paymentMethod: 'Chuyển khoản / VietQR'
+              });
+              alert(result.message || 'Đã xác thực thanh toán.');
+            } catch (error) {
+              alert(error.message || 'Không thể xác thực thanh toán.');
+            }
+          });
+        }
+      } catch (error) {
+        alert(error.message || 'Không thể tải dữ liệu giao dịch.');
+      }
+
+      if (backBtn) {
+        backBtn.addEventListener('click', () => {
+          window.history.back();
+        });
+      }
+    });
+
+    let width = 55.5;
+    const bar = document.getElementById('progress-bar');
+    const timer = document.getElementById('timer');
+    let seconds = 222;
+
+    const interval = setInterval(() => {
+      if (width < 98) {
+        width += 0.05;
+        bar.style.width = width + '%';
+      }
+
+      if (seconds > 0) {
+        seconds--;
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        timer.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
