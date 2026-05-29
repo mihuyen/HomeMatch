@@ -249,4 +249,173 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
     }
 });
 
+// GET /api/admin/assignments
+// Lay tat ca ho so de phan cong khao sat
+router.get('/assignments', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const { status, area, property_type, limit = 10, offset = 0 } = req.query;
+
+        // 1. Tinh toan goi y cua he thong
+        const [salesList] = await db.query(
+            `SELECT u.user_id, u.full_name, COUNT(ps.submission_id) AS active_count
+             FROM users u
+             LEFT JOIN property_submissions ps 
+               ON ps.assigned_sales_id = u.user_id 
+              AND ps.status IN ('pending', 'submitted', 'assigned')
+             WHERE u.role IN ('sale', 'agent')
+             GROUP BY u.user_id
+             ORDER BY active_count ASC, u.user_id ASC`
+        );
+        const suggestedAgent = salesList[0] || null;
+
+        // 2. Xay dung menh de WHERE - Chi lay cac ho so dang trong giai doan khao sat
+        const conditions = ["ps.status IN ('pending', 'submitted', 'assigned', 'surveyed')"];
+        const params = [];
+
+        if (status && status !== 'Tất cả trạng thái' && status !== 'all' && status !== '') {
+            if (status === 'pending') {
+                conditions.push("ps.status IN ('pending', 'submitted')");
+            } else if (status === 'assigned') {
+                conditions.push("ps.status = 'assigned'");
+            } else if (status === 'surveyed') {
+                conditions.push("ps.status = 'surveyed'");
+            } else {
+                conditions.push('ps.status = ?');
+                params.push(status);
+            }
+        }
+
+        if (area && area !== 'Tất cả khu vực' && area !== 'all' && area !== '') {
+            conditions.push('ps.address LIKE ?');
+            params.push(`%${area}%`);
+        }
+
+        if (property_type && property_type !== 'Tất cả loại BĐS' && property_type !== 'all' && property_type !== '') {
+            conditions.push('ps.property_type = ?');
+            params.push(property_type);
+        }
+
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+        // 3. Dem tong so
+        const [countRows] = await db.query(
+            `SELECT COUNT(*) AS total FROM property_submissions ps ${whereClause}`,
+            params
+        );
+        const total = Number(countRows[0]?.total || 0);
+
+        // 4. Dem so ho so dang cho phan cong (chua co sales hoac status pending/submitted)
+        const [pendingRows] = await db.query(
+            `SELECT COUNT(*) AS total FROM property_submissions WHERE status IN ('pending', 'submitted') OR assigned_sales_id IS NULL`
+        );
+        const totalPending = Number(pendingRows[0]?.total || 0);
+
+        // 5. Query danh sach
+        const [rows] = await db.query(
+            `SELECT ps.submission_id, ps.property_type, ps.address, ps.submitted_at, ps.status, ps.assigned_sales_id,
+                    u.full_name AS assigned_sales_name
+             FROM property_submissions ps
+             LEFT JOIN users u ON u.user_id = ps.assigned_sales_id
+             ${whereClause}
+             ORDER BY ps.submitted_at DESC, ps.submission_id DESC
+             LIMIT ? OFFSET ?`,
+            [...params, Number(limit), Number(offset)]
+        );
+
+        res.json({
+            total,
+            totalPending,
+            suggestedAgent,
+            items: rows.map(row => {
+                let assignmentStatus = 'HỆ THỐNG ĐÃ PHÂN CÔNG';
+                if (row.status === 'assigned') {
+                    assignmentStatus = 'ĐÃ PHÂN CÔNG LẠI';
+                } else if (row.status === 'surveyed') {
+                    assignmentStatus = 'ĐÃ KHẢO SÁT';
+                } else if (row.status === 'pending' || row.status === 'submitted') {
+                    assignmentStatus = 'HỆ THỐNG ĐÃ PHÂN CÔNG';
+                } else {
+                    assignmentStatus = row.status.toUpperCase();
+                }
+                return {
+                    submission_id: row.submission_id,
+                    request_code: `RQ-${row.submission_id}`,
+                    property_type: row.property_type,
+                    address: row.address,
+                    submitted_at: row.submitted_at,
+                    status: row.status,
+                    assigned_sales_id: row.assigned_sales_id,
+                    assigned_sales_name: row.assigned_sales_name || null,
+                    assignment_status: assignmentStatus
+                };
+            })
+        });
+    } catch (err) {
+        console.error('Get assignments error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/admin/sales-agents
+// Lay danh sach moi gioi / nhan vien khao sat kem active workload
+router.get('/sales-agents', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT u.user_id, u.full_name, u.email, u.phone,
+                    COUNT(ps.submission_id) AS active_count
+             FROM users u
+             LEFT JOIN property_submissions ps 
+               ON ps.assigned_sales_id = u.user_id 
+              AND ps.status IN ('pending', 'submitted', 'assigned')
+             WHERE u.role IN ('sale', 'agent')
+             GROUP BY u.user_id
+             ORDER BY active_count ASC, u.user_id ASC`
+        );
+        res.json({ salesAgents: rows });
+    } catch (err) {
+        console.error('Get sales agents error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/admin/assignments/:submissionId
+// Thuc hien phan cong / ghi de nhan vien khao sat
+router.post('/assignments/:submissionId', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const submissionId = Number(req.params.submissionId);
+        const { assignedSalesId } = req.body;
+
+        if (!Number.isInteger(submissionId)) {
+            return res.status(400).json({ message: 'submissionId không hợp lệ' });
+        }
+
+        if (!assignedSalesId) {
+            return res.status(400).json({ message: 'Thiếu thông tin nhân viên được phân công' });
+        }
+
+        const [userRows] = await db.query(
+            `SELECT user_id, role, full_name FROM users WHERE user_id = ? AND role IN ('sale', 'agent')`,
+            [assignedSalesId]
+        );
+        if (userRows.length === 0) {
+            return res.status(400).json({ message: 'Nhân viên được chọn không tồn tại hoặc không phải là môi giới' });
+        }
+
+        await db.query(
+            `UPDATE property_submissions 
+             SET assigned_sales_id = ?, status = 'assigned'
+             WHERE submission_id = ?`,
+            [assignedSalesId, submissionId]
+        );
+
+        res.json({
+            message: `Đã phân công thành công hồ sơ #${submissionId} cho ${userRows[0].full_name}`
+        });
+    } catch (err) {
+        console.error('Assign error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
 module.exports = router;
+

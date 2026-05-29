@@ -28,6 +28,7 @@
         <div class="hidden md:flex gap-10 h-full items-center">
             <a class="nav-link text-on-surface-variant hover:text-primary pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="landingpage.html">Trang chủ</a>
             <a class="nav-link text-on-surface-variant hover:text-primary pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="adminDashboard.html">Báo cáo thống kê</a>
+            <a class="nav-link text-on-surface-variant hover:text-primary pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="adminSurveyAssignment.html">Phân công khảo sát</a>
         </div>
         <div class="flex items-center gap-6">
             <button onclick="localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='login.html';" 
