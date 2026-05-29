@@ -3,7 +3,7 @@
 <html lang="vi"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Property Consignment Wizard - Step 1</title>
+<title>Property Consignment - Submit</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
@@ -128,14 +128,15 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row antialiased">
-<!-- SideNavBar -->
-<nav class="hidden lg:flex flex-col h-screen sticky top-0 p-md gap-base bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows w-72 flex-shrink-0 z-40">
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+<div id="owner-sidebar"></div>
+<!-- SideNavBar removed; shared owner sidebar is used instead -->
+<nav class="hidden">
 <div class="flex items-center gap-base mb-lg px-sm">
 <span class="material-symbols-outlined text-primary text-[32px] fill-icon">domain</span>
 <div>
-<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Consignment Wizard</h1>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Step 1 of 3</p>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Đăng ký ký gửi</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Đăng ký ký gửi</p>
 </div>
 </div>
 <div class="flex-1 flex flex-col gap-sm">
@@ -168,37 +169,20 @@
 <span class="material-symbols-outlined text-primary text-[28px] fill-icon">domain</span>
 <div>
 <h1 class="font-headline-md text-headline-md text-primary leading-tight">Consignment</h1>
-<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Step 1 of 3</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Đăng ký ký gửi</p>
 </div>
 </div>
 <button class="text-primary p-sm">
 <span class="material-symbols-outlined">menu</span>
 </button>
 </header>
-<!-- Mobile Stepper -->
-<div class="lg:hidden bg-surface px-md py-sm border-b border-outline-variant flex justify-between items-center overflow-x-auto gap-md no-scrollbar">
-<div class="flex items-center gap-sm flex-shrink-0">
-<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm font-bold">1</div>
-<span class="font-label-sm text-label-sm text-primary font-bold whitespace-nowrap">Cá nhân</span>
-</div>
-<div class="h-[1px] w-8 bg-outline-variant flex-shrink-0"></div>
-<div class="flex items-center gap-sm flex-shrink-0 opacity-50">
-<div class="w-6 h-6 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">2</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Tài sản</span>
-</div>
-<div class="h-[1px] w-8 bg-outline-variant flex-shrink-0"></div>
-<div class="flex items-center gap-sm flex-shrink-0 opacity-50">
-<div class="w-6 h-6 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">3</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Xác nhận</span>
-</div>
-</div>
 <!-- Main Canvas -->
-<main class="flex-1 flex flex-col xl:flex-row overflow-y-auto">
+<main class="flex-1 flex flex-col overflow-y-auto w-full bg-surface-container-lowest">
 <!-- Form Section -->
-<div class="flex-1 p-md md:p-xl max-w-4xl mx-auto w-full">
-<div class="mb-lg">
-<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">Thông tin cá nhân</h2>
-<p class="font-body-md text-body-md text-on-surface-variant">Trở thành đối tác tin cậy của EstateSurvey Pro trong 3 bước đơn giản.</p>
+<div class="w-full px-margin-mobile md:px-margin-desktop py-lg">
+<div class="mb-lg pb-lg border-b border-outline-variant/50">
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Đăng ký ký gửi</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Điền thông tin và nhấn xác nhận để lưu hồ sơ ngay lập tức.</p>
 </div>
 <form class="space-y-lg bg-surface-container-lowest rounded-xl border border-outline-variant p-md md:p-lg shadow-sm" id="consignmentForm">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
@@ -219,17 +203,73 @@
 <input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="idCard" placeholder="001201234567" required="" type="text"/>
 </div>
 </div>
+<div class="space-y-md pt-md border-t border-outline-variant">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Thông tin bất động sản ký gửi</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tất cả thông tin sẽ được lưu ngay trong một lần xác nhận.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Loại hình BĐS <span class="text-error">*</span></label>
+<select class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="propertyType" required="">
+<option value="">Chọn loại hình</option>
+<option value="nhapho">Nhà phố</option>
+<option value="canho">Căn hộ</option>
+<option value="datnen">Đất nền</option>
+<option value="bietthu">Biệt thự</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Diện tích (m²) <span class="text-error">*</span></label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="area" placeholder="VD: 100" required="" type="number" min="0"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Hướng nhà</label>
+<select class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="direction">
+<option value="">Chọn hướng</option>
+<option value="dong">Đông</option>
+<option value="tay">Tây</option>
+<option value="nam">Nam</option>
+<option value="bac">Bắc</option>
+<option value="dongbac">Đông Bắc</option>
+<option value="dongnam">Đông Nam</option>
+<option value="taybac">Tây Bắc</option>
+<option value="taynam">Tây Nam</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Số phòng ngủ</label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="bedrooms" placeholder="0" type="number" min="0"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Số phòng vệ sinh</label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="bathrooms" placeholder="0" type="number" min="0"/>
+</div>
+<div class="flex flex-col gap-xs md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface">Địa chỉ chi tiết <span class="text-error">*</span></label>
+<textarea class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors resize-none" name="address" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố" rows="3" required=""></textarea>
+</div>
+<div class="flex flex-col gap-xs md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface">Giá đề xuất (VNĐ) <span class="text-error">*</span></label>
+<input class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors" name="proposedPrice" placeholder="VD: 5,000,000,000" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-xs md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface">Ảnh bất động sản <span class="text-error">*</span></label>
+<textarea class="w-full bg-surface border border-outline-variant rounded px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-colors resize-none" name="imagesUploaded" placeholder="Dán URL ảnh, mỗi dòng một URL hoặc phân tách bằng dấu phẩy" rows="4" required=""></textarea>
+</div>
+</div>
+</div>
 <!-- Bottom Actions -->
 <div class="mt-xl flex items-center justify-end pt-md border-t border-outline-variant">
 <button class="px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-xs shadow-sm" type="button" id="nextStep1Button">
-                        Tiếp theo
-                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                        Xác nhận và lưu
+                        <span class="material-symbols-outlined text-[20px]">save</span>
 </button>
 </div>
 </form>
 </div>
-<!-- Right Panel: Info Context -->
-<aside class="w-full xl:w-80 p-md md:p-xl bg-surface-container-low border-l border-outline-variant flex flex-col gap-md">
+<!-- Right Panel removed to keep the registration area full-width like tracking -->
+<aside class="hidden">
 <div class="bg-primary-container text-white p-lg rounded-xl shadow-lg relative overflow-hidden group mb-md">
 <div class="absolute top-0 right-0 w-32 h-32 bg-on-tertiary-container/10 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform"></div>
 <h3 class="font-headline-md text-headline-md mb-md relative z-10 text-on-primary-container">Tại sao chọn chúng tôi?</h3>
@@ -271,6 +311,7 @@
 </div>
 </aside>
 </main>
+<script src="ownerSidebar.js"></script>
 <script src="api.js"></script>
 <script>
     const consignmentForm = document.getElementById('consignmentForm');
@@ -299,12 +340,36 @@
             const phone = consignmentForm.querySelector('input[name="phone"]').value.trim();
             const email = consignmentForm.querySelector('input[name="email"]').value.trim();
             const idCard = consignmentForm.querySelector('input[name="idCard"]').value.trim();
+            const propertyType = consignmentForm.querySelector('[name="propertyType"]').value.trim();
+            const area = consignmentForm.querySelector('[name="area"]').value.trim();
+            const direction = consignmentForm.querySelector('[name="direction"]').value.trim();
+            const bedrooms = consignmentForm.querySelector('[name="bedrooms"]').value.trim();
+            const bathrooms = consignmentForm.querySelector('[name="bathrooms"]').value.trim();
+            const address = consignmentForm.querySelector('[name="address"]').value.trim();
+            const proposedPrice = consignmentForm.querySelector('[name="proposedPrice"]').value.trim();
+            const imagesUploaded = consignmentForm.querySelector('[name="imagesUploaded"]').value
+                .split(/\n|,/)
+                .map(item => item.trim())
+                .filter(Boolean);
 
             try {
-                const result = await createConsignmentStep1({ fullName, phone, email, idCard });
+                const result = await createConsignmentStep1({
+                    fullName,
+                    phone,
+                    email,
+                    idCard,
+                    propertyType,
+                    area,
+                    direction,
+                    bedrooms,
+                    bathrooms,
+                    address,
+                    proposedPrice,
+                    imagesUploaded
+                });
                 localStorage.setItem('currentSubmissionId', String(result.submission.submission_id));
-                alert('Đã lưu bước 1. Chuyển sang bước 2.');
-                window.location.href = 'submission2.html';
+                alert('Đã lưu hồ sơ ký gửi thành công.');
+                window.location.href = 'ownerSignmentTracking.html';
             } catch (error) {
                 alert(error.message);
             }

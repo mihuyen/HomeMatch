@@ -253,7 +253,7 @@
 <td class="p-md text-right space-x-sm">
                     <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
                     <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
-                    <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
+                    <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
 </td>
                     `;
                     tbody.appendChild(tr);
@@ -274,7 +274,7 @@
                 document.querySelectorAll('.enter-result').forEach(btn=>{
                     btn.addEventListener('click', e=>{
                         const id = e.currentTarget.dataset.submission;
-                        window.location.href = `saleSurvey.html?submissionId=${id}`;
+                        window.location.href = `saleAppointments.html?submissionId=${id}`;
                     });
                 });
                 document.querySelectorAll('.create-appointment').forEach(btn=>{

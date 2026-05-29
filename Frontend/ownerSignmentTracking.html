@@ -181,76 +181,14 @@
         body { background-color: #F8FAFC; } /* Custom background override to match guidelines */
     </style>
 </head>
-<body class="font-sans text-on-surface flex min-h-screen flex-col md:flex-row">
-<!-- SideNavBar (Shared Component) -->
-<nav class="hidden md:flex flex-col bg-surface-container-low dark:bg-inverse-surface w-[240px] h-screen sticky top-0 left-0 border-r border-outline-variant dark:border-outline shrink-0">
-<div class="h-12 border-b border-outline-variant flex items-center px-4 mb-4">
-</div>
-<ul class="flex flex-col flex-1 px-3 space-y-1">
-<li class="">
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high rounded-lg font-label-md" href="#">
-<span class="material-symbols-outlined text-[20px]">dashboard</span>
-<span class="">Bảng điều khiển</span>
-</a>
-</li>
-<li class="">
-<a class="flex items-center gap-3 px-3 py-2 text-on-primary font-bold bg-primary rounded-lg font-label-md transition-opacity duration-150" href="#">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: &quot;FILL&quot; 1;">assignment</span>
-<span class="">Danh sách ký gửi</span>
-</a>
-</li>
-<li class="">
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high rounded-lg font-label-md" href="saleMeet.html">
-<span class="material-symbols-outlined text-[20px]">calendar_today</span>
-<span class="">Lịch hẹn</span>
-</a>
-</li>
- 
-<li class="">
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high rounded-lg font-label-md" href="settings.html">
-<span class="material-symbols-outlined text-[20px]">settings</span>
-<span class="">Cài đặt</span>
-</a>
-</li>
-</ul>
-<div class="mt-auto px-4 py-4">
-<div class="flex items-center gap-2 mb-6">
+<body class="font-sans text-on-surface flex min-h-screen flex-col">
 
-<div>
-<h1 class="font-headline-md text-[16px] font-bold text-primary dark:text-inverse-primary leading-tight">HomeMatch</h1>
-<p class="font-body-sm text-[11px] text-on-surface-variant leading-tight">Owner Portal</p>
-</div>
-</div>
-<div class="space-y-2 border-t border-outline-variant pt-4">
-<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">
-<span class="material-symbols-outlined text-[18px]">help_outline</span>
-<span class="">Hỗ trợ</span>
-</a>
-<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">
-<span class="material-symbols-outlined text-[18px]">logout</span>
-<span class="">Đăng xuất</span>
-</a>
-</div>
-</div>
-</nav>
+<!-- Top owner navigation (loaded from ownerSidebar.html) -->
+<div id="owner-sidebar"></div>
+<!-- Vertical side-bar removed; top horizontal ownerSidebar handles navigation -->
 <!-- Main Content Area -->
-<main class="flex-1 flex flex-col min-w-0 max-w-[1440px] mx-auto bg-surface-container-lowest">
-<!-- Top App Bar -->
-<header class="hidden md:flex bg-surface-container-lowest items-center justify-between px-6 h-12 border-b border-outline-variant">
-<div class="flex items-center gap-2 text-sm text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">laptop_mac</span>
-<span class="">Chủ nhà &gt; Theo dõi ký gửi</span>
-</div>
-<div class="flex items-center gap-4">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined">help_outline</span>
-</button>
-<img alt="Owner Profile Picture" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a mature male estate manager with neat grey hair and a subtle smile, wearing a tailored navy suit jacket and a crisp white shirt." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXiKHjEZCIfIajMYskyUxPj5Ec2pKECMh7Xwg3g397peC1nwwWZmgSRQQrYlhR5VQWZqHdY_0gOZHIl7EOryZIa4FshodNutXWYz-AKDtEipEfmpSC7GLeKm7uzN242Gl8T8rqVju6FV8xTHOmqgSey-aZksDBHw1BFYvyR2hEkwBfyg88LrJjDFje7Yh8rqr7FHS678VShKdH1EB1eic7D_DHXoX6GM1VciN7dcnjxBYBmSCAnr2f4FsmBXE4L9kae1HYc7osO5w">
-</div>
-</header>
+<main class="flex-1 flex flex-col min-w-0 w-full bg-surface-container-lowest">
+<!-- Top App Bar removed to free vertical space for tracking -->
 <!-- Mobile Header -->
 <header class="flex md:hidden bg-surface border-b border-outline-variant items-center justify-between px-4 h-16 sticky top-0 z-10">
 <h1 class="font-headline-md text-headline-md font-extrabold text-primary">Theo dõi ký gửi</h1>
@@ -273,8 +211,8 @@
 </button>
 </div>
 </div>
-<!-- Content Grid -->
-<div class="flex-1 p-margin-mobile md:p-margin-desktop overflow-hidden flex flex-col md:flex-row gap-gutter bg-surface-container-lowest">
+<!-- Content Grid: single-column so the tracking list uses full width -->
+<div class="flex-1 p-margin-mobile md:p-margin-desktop overflow-hidden flex flex-col gap-gutter bg-surface-container-lowest">
 <!-- Request List Table (Bento Card Style) -->
 <section class="flex-1 bg-surface border border-outline-variant rounded-xl overflow-hidden flex flex-col">
 <div class="px-md py-4 border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
@@ -370,7 +308,7 @@
 </div>
 </section>
 <!-- Details Pane -->
-<aside class="w-full md:w-[400px] bg-surface border border-outline-variant rounded-xl flex flex-col h-[calc(100vh-200px)] sticky top-[100px] overflow-hidden shadow-sm" id="trackingDetailPane">
+<aside class="w-full bg-surface border border-outline-variant rounded-xl flex flex-col overflow-hidden shadow-sm" id="trackingDetailPane">
 <!-- Details Header -->
 <div class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
 <div>
@@ -386,8 +324,8 @@
 </div>
 <!-- Scrollable Body -->
 <div class="flex-1 overflow-y-auto p-md space-y-6">
-<!-- Property Summary Bento -->
-<div class="grid grid-cols-2 gap-3">
+<!-- Property Summary Bento: responsive grid up to 7 columns -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
 <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
 <span class="font-body-md text-body-md font-medium text-on-surface">Nhà phố</span>
@@ -499,6 +437,7 @@
 </div>
 </main>
 
+<script src="ownerSidebar.js"></script>
 <script src="api.js"></script>
 <script>
         const trackingSearch = document.getElementById('trackingSearch');
@@ -536,6 +475,24 @@
                 const num = Number(value);
                 if (!Number.isFinite(num)) return 'Chưa có';
                 return num.toLocaleString('vi-VN') + ' VNĐ';
+        }
+
+        function getSurveyAppointment(appointments) {
+                if (!Array.isArray(appointments) || appointments.length === 0) return null;
+                return appointments.find(item => String(item.appointment_type || '').toLowerCase().includes('khảo sát')) || appointments[0];
+        }
+
+        function formatAppointmentSummary(value) {
+                if (!value) return 'Chưa có';
+                const d = new Date(value);
+                if (Number.isNaN(d.getTime())) return 'Chưa có';
+                return d.toLocaleString('vi-VN', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                });
         }
 
         function getStatusBadge(statusLabel) {
@@ -643,6 +600,7 @@
 
         function renderDetail(detail) {
                 const s = detail.submission;
+                const surveyAppointment = getSurveyAppointment(detail.appointments);
                 const timelineHtml = detail.timeline.length === 0
                         ? '<p class="text-on-surface-variant text-sm">Chưa có mốc tiến trình nào.</p>'
                         : detail.timeline.map(item => `
@@ -655,6 +613,49 @@
                                         </div>
                                 </div>
                         `).join('');
+
+                const appointmentHtml = surveyAppointment ? `
+                        <div class="border border-[#FEF3C7] bg-[#FFFBEB]/60 rounded-lg p-4">
+                                <div class="flex items-start justify-between gap-3 flex-wrap mb-3">
+                                        <div>
+                                                <h4 class="font-label-md text-label-md font-bold text-[#92400E] flex items-center gap-2">
+                                                        <span class="material-symbols-outlined text-[18px]">event</span>
+                                                        Lịch hẹn khảo sát
+                                                </h4>
+                                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Mỗi hồ sơ chỉ có một lịch hẹn khảo sát, do sale tạo và hiển thị thông tin tại đây.</p>
+                                        </div>
+                                        <button id="appointmentToggleBtn" class="px-3 py-1.5 rounded-full border border-[#FEF3C7] bg-white text-[#92400E] font-label-md text-label-sm hover:bg-[#FFF7D6] transition-colors" type="button">
+                                                Xem lịch hẹn
+                                        </button>
+                                </div>
+                                <div id="appointmentInfoPanel" class="space-y-2">
+                                        <div class="flex justify-between items-center gap-3 flex-wrap">
+                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Ngày &amp; giờ</span>
+                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml(formatAppointmentSummary(surveyAppointment.scheduled_time))}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-3 flex-wrap">
+                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Trạng thái</span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${getStatusBadge(surveyAppointment.status || 'scheduled')}">${escapeHtml(surveyAppointment.status || 'scheduled')}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-3 flex-wrap">
+                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Địa điểm</span>
+                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml(surveyAppointment.location || 'Chưa có')}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-3 flex-wrap">
+                                                <span class="font-body-sm text-body-sm text-on-surface-variant">Người tạo lịch</span>
+                                                <span class="font-label-md text-label-md text-on-surface">${escapeHtml((detail.assigned_sales && detail.assigned_sales.full_name) || 'Sale phụ trách')}</span>
+                                        </div>
+                                </div>
+                        </div>
+                ` : `
+                        <div class="border border-outline-variant bg-surface-container-low rounded-lg p-4">
+                                <h4 class="font-label-md text-label-md text-on-surface mb-2 flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px]">event_busy</span>
+                                        Lịch hẹn khảo sát
+                                </h4>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant">Chưa có lịch hẹn khảo sát cho hồ sơ này.</p>
+                        </div>
+                `;
 
                 const images = Array.isArray(s.images_uploaded) ? s.images_uploaded : [];
                 const imagesHtml = images.length === 0
@@ -678,7 +679,7 @@
                                 </div>
                         </div>
                         <div class="flex-1 overflow-y-auto p-md space-y-6">
-                                <div class="grid grid-cols-2 gap-3">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
                                         <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
                                                 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
                                                 <span class="font-body-md text-body-md font-medium text-on-surface">${escapeHtml(s.property_type || 'Chưa có')}</span>
@@ -702,6 +703,7 @@
                                                 ${timelineHtml}
                                         </div>
                                 </div>
+                                ${appointmentHtml}
                                 <div>
                                         <h4 class="font-label-md text-label-md text-on-surface mb-3">Ảnh đã gửi</h4>
                                         ${imagesHtml}
@@ -728,6 +730,15 @@
                                 } catch (error) {
                                         alert(error.message);
                                 }
+                        });
+                }
+
+                const appointmentToggleBtn = document.getElementById('appointmentToggleBtn');
+                const appointmentInfoPanel = document.getElementById('appointmentInfoPanel');
+                if (appointmentToggleBtn && appointmentInfoPanel) {
+                        appointmentToggleBtn.addEventListener('click', () => {
+                                appointmentInfoPanel.classList.toggle('hidden');
+                                appointmentToggleBtn.textContent = appointmentInfoPanel.classList.contains('hidden') ? 'Xem lịch hẹn' : 'Ẩn lịch hẹn';
                         });
                 }
         }
