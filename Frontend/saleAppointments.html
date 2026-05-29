@@ -110,6 +110,9 @@
             <p class="text-sm text-slate-600 mt-1">${a.result_note || a.notes || ''}</p>
           </div>
         </div>
+        <div class="mt-4 flex justify-end">
+          <a href="saleSurvey.html?submissionId=${submissionId}&appointmentId=${a.appointment_id}" class="px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800">Nhập kết quả</a>
+        </div>
       `;
       list.appendChild(item);
     });

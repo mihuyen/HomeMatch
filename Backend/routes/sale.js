@@ -20,12 +20,22 @@ function normalizeTextField(value) {
     }
 }
 
+function toSearchableText(value) {
+    const lower = String(value || '').toLowerCase();
+    return lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function mapSurveyToSubmissionStatus(surveyStatus) {
-    const text = String(surveyStatus || '').toLowerCase();
+    const text = toSearchableText(surveyStatus);
     if (text.includes('draft') || text.includes('nháp')) return null;
-    if (text.includes('không') || text.includes('fail') || text.includes('reject')) return 'cancelled';
-    if (text.includes('đạt') || text.includes('pass') || text.includes('complete') || text.includes('hoàn tất')) return 'surveyed';
+    if (text.includes('khong dat') || text.includes('fail') || text.includes('reject')) return 'rejected';
+    if (text.includes('dat') || text.includes('pass') || text.includes('complete') || text.includes('hoan tat')) return 'surveyed';
     return 'surveyed';
+}
+
+function isFailedSurveyStatus(surveyStatus) {
+    const text = toSearchableText(surveyStatus);
+    return text.includes('khong dat') || text.includes('fail') || text.includes('reject');
 }
 
 function generateContractCode(submissionId) {
@@ -448,6 +458,31 @@ router.post('/contracts', requireAuth, requireRole('sale', 'agent', 'manager'), 
             return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
+        if (['rejected', 'cancelled'].includes(String(assignedSubmission.status || '').toLowerCase())) {
+            return res.status(400).json({ message: 'Hồ sơ đã bị từ chối/hủy, không thể lập hợp đồng' });
+        }
+
+        const [latestSurveyRows] = await db.query(
+            `SELECT survey_status
+             FROM survey_records
+             WHERE submission_id = ?
+             ORDER BY completed_at DESC, survey_id DESC
+             LIMIT 1`,
+            [parsedSubmissionId]
+        );
+
+        if (latestSurveyRows.length === 0) {
+            return res.status(400).json({ message: 'Chưa có kết quả khảo sát, không thể lập hợp đồng' });
+        }
+
+        if (isFailedSurveyStatus(latestSurveyRows[0].survey_status)) {
+            return res.status(400).json({ message: 'Kết quả khảo sát không đạt, hồ sơ không được phép lập hợp đồng' });
+        }
+
+        if (String(assignedSubmission.status || '').toLowerCase() !== 'surveyed') {
+            return res.status(400).json({ message: 'Hồ sơ chưa ở trạng thái đã khảo sát đạt, không thể lập hợp đồng' });
+        }
+
         await connection.beginTransaction();
 
         const contractCode = await generateUniqueContractCode(connection, parsedSubmissionId);
@@ -651,7 +686,7 @@ router.post('/appointments', requireAuth, requireRole('sale', 'agent', 'manager'
 
         const [result] = await db.query(
             `INSERT INTO appointments (assignment_id, submission_id, appointment_type, scheduled_time, location, status, result_note)
-             VALUES (NULL, ?, 'khảo sát', ?, ?, 'scheduled', ?)`,
+             VALUES (NULL, ?, 'khảo sát', ?, ?, 'Đã đặt', ?)`,
             [parsedSubmissionId, scheduledTime, location, note || null]
         );
 
@@ -726,9 +761,7 @@ router.post('/surveys', requireAuth, requireRole('sale', 'agent', 'manager'), as
         } = req.body;
 
         const parsedSubmissionId = Number(submissionId);
-        const parsedAppointmentId = appointmentId === undefined || appointmentId === null || appointmentId === ''
-            ? null
-            : Number(appointmentId);
+        const parsedAppointmentId = Number(appointmentId);
         const submissionStatus = mapSurveyToSubmissionStatus(surveyStatus);
 
         if (!Number.isInteger(parsedSubmissionId)) {
@@ -744,25 +777,23 @@ router.post('/surveys', requireAuth, requireRole('sale', 'agent', 'manager'), as
             return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
-        if (parsedAppointmentId !== null && !Number.isInteger(parsedAppointmentId)) {
-            return res.status(400).json({ message: 'appointmentId không hợp lệ' });
+        if (!Number.isInteger(parsedAppointmentId)) {
+            return res.status(400).json({ message: 'appointmentId là bắt buộc và phải hợp lệ' });
         }
 
-        if (parsedAppointmentId !== null) {
-            const [appointmentRows] = await db.query(
-                `SELECT ap.appointment_id
-                 FROM appointments ap
-                 INNER JOIN property_submissions ps ON ps.submission_id = ap.submission_id
-                 WHERE ap.appointment_id = ?
-                   AND ap.submission_id = ?
-                   AND ps.assigned_sales_id = ?
-                   AND ap.appointment_type = 'khảo sát'`,
-                [parsedAppointmentId, parsedSubmissionId, saleId]
-            );
+        const [appointmentRows] = await db.query(
+            `SELECT ap.appointment_id
+             FROM appointments ap
+             INNER JOIN property_submissions ps ON ps.submission_id = ap.submission_id
+             WHERE ap.appointment_id = ?
+               AND ap.submission_id = ?
+               AND ps.assigned_sales_id = ?
+               AND ap.appointment_type = 'khảo sát'`,
+            [parsedAppointmentId, parsedSubmissionId, saleId]
+        );
 
-            if (appointmentRows.length === 0) {
-                return res.status(404).json({ message: 'Không tìm thấy lịch khảo sát phù hợp cho hồ sơ này' });
-            }
+        if (appointmentRows.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy lịch khảo sát phù hợp cho hồ sơ này' });
         }
 
         const [insertResult] = await db.query(
@@ -791,10 +822,10 @@ router.post('/surveys', requireAuth, requireRole('sale', 'agent', 'manager'), as
             ]
         );
 
-        if (parsedAppointmentId !== null && submissionStatus) {
+        if (submissionStatus) {
             await db.query(
                 `UPDATE appointments
-                 SET status = 'completed',
+                 SET status = 'hoàn tất',
                      result_note = COALESCE(?, result_note)
                  WHERE appointment_id = ?`,
                 [surveyNotes || null, parsedAppointmentId]
