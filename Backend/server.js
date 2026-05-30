@@ -10,6 +10,8 @@ const saleRoutes = require('./routes/sale');
 const legalRoutes = require('./routes/legal');
 const listingRoutes = require('./routes/listing');
 const savedRoutes = require('./routes/saved');
+const ITRoutes = require('./routes/IT');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = 5050;
@@ -39,6 +41,8 @@ app.use('/api/sale', saleRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/saved', savedRoutes);
+app.use('/api/IT', ITRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Test endpoints
 app.get('/api/health', async (req, res) => {
@@ -68,7 +72,7 @@ global.io = io;
 
 io.on('connection', (socket) => {
     console.log(`Socket connected: ${socket.id}`);
-    
+
     socket.on('joinRoom', (roomName) => {
         socket.join(roomName);
         console.log(`Socket ${socket.id} joined room: ${roomName}`);

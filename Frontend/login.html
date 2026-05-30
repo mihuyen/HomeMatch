@@ -238,7 +238,7 @@
     }
 
     // ========================================
-    // Nếu đã đăng nhập rồi thì chuyển về home
+    // Nếu đã đăng nhập rồi thì chuyển về đúng trang
     // ========================================
     if (getToken()) {
         const currentUser = getCurrentUser();
@@ -250,11 +250,18 @@
             window.location.href = 'brokerHome.html';
         } else if (currentUser && currentUser.role === 'owner') {
             window.location.href = 'ownerSignmentTracking.html';
+        } else if (currentUser && currentUser.role === 'IT') { // <-- ĐÃ THÊM ROLE IT
+            window.location.href = 'IT_dashboard.html';
+        } else if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager')) {
+            window.location.href = 'adminDashboard.html';
         } else {
             window.location.href = 'home.html';
         }
     }
 
+    // ========================================
+    // Điều hướng sau khi đăng nhập thành công
+    // ========================================
     function redirectAfterLogin(user) {
         if (user && user.role === 'sale') {
             window.location.href = 'saleAssign.html';
@@ -270,6 +277,14 @@
         }
         if (user && user.role === 'owner') {
             window.location.href = 'ownerSignmentTracking.html';
+            return;
+        }
+        if (user && user.role === 'IT') { // <-- ĐÃ THÊM ROLE IT
+            window.location.href = 'IT_dashboard.html';
+            return;
+        }
+        if (user && (user.role === 'admin' || user.role === 'manager')) {
+            window.location.href = 'adminDashboard.html';
             return;
         }
         window.location.href = 'home.html';

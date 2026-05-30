@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html class="light" lang="vi" style="width: 100%; height: 100%; position: relative;">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>IT Dashboard - HomeMatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#002366",
+                        "primary": "#00113a",
+                        "on-surface-variant": "#444650",
+                        "on-surface": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e8eb",
+                        "surface-container": "#eceef1",
+                        "outline-variant": "#c5c6d2",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9fc",
+                        "surface": "#f7f9fc"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        .icon-filled { font-variation-settings: 'FILL' 1; }
+
+        /* Custom scrollbar for table */
+        .table-scroll::-webkit-scrollbar { height: 8px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #c5c6d2; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-inter antialiased min-h-screen flex flex-col">
+
+<nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
+    <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
+        <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3">
+            <span class="material-symbols-outlined text-[28px] text-primary icon-filled">admin_panel_settings</span>
+            <span>HomeMatch IT Admin</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <button onclick="localStorage.removeItem('token'); window.location.href='login.html';" class="text-[14px] font-semibold text-primary border border-outline-variant rounded-full px-6 py-2 hover:bg-primary-container/5 transition-all">Đăng xuất</button>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-1 max-w-[1440px] w-full mx-auto px-8 md:px-12 py-8 flex flex-col">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-[32px] font-bold text-primary mb-2">Quản trị Hệ thống</h1>
+            <p class="text-[15px] text-on-surface-variant">Quản lý Tài khoản, Yêu cầu ký gửi và Tin đăng Bất động sản.</p>
+        </div>
+
+        <div class="flex bg-surface-container rounded-xl p-1 shadow-sm border border-outline-variant/50 overflow-x-auto w-full lg:w-auto">
+            <button id="tab-customers" onclick="switchTab('customers')" class="tab-btn px-4 py-2.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap bg-surface-container-lowest text-primary shadow-sm">Khách hàng / Chủ nhà</button>
+            <button id="tab-staff" onclick="switchTab('staff')" class="tab-btn px-4 py-2.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap text-on-surface-variant hover:text-primary">Nhân sự nội bộ</button>
+            <button id="tab-submissions" onclick="switchTab('submissions')" class="tab-btn px-4 py-2.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap text-on-surface-variant hover:text-primary">Yêu cầu Ký gửi</button>
+            <button id="tab-listings" onclick="switchTab('listings')" class="tab-btn px-4 py-2.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap text-on-surface-variant hover:text-primary">Quản lý Tin đăng</button>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <div class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input id="searchInput" type="text" placeholder="Tìm kiếm..." class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-[14px] focus:border-primary focus:ring-1 focus:ring-primary shadow-sm">
+            </div>
+
+            <select id="statusFilter" class="hidden w-full md:w-48 px-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-[14px] focus:border-primary focus:ring-1 focus:ring-primary shadow-sm cursor-pointer">
+                <option value="all">Tất cả trạng thái</option>
+            </select>
+        </div>
+
+        <button id="mainActionBtn" onclick="openUserModal(true)" class="w-full md:w-auto px-6 py-2.5 bg-primary text-white rounded-xl text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">person_add</span>
+            Thêm tài khoản
+        </button>
+    </div>
+
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm flex-1">
+        <div class="overflow-x-auto table-scroll">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead id="tableHead" class="bg-surface-container border-b border-outline-variant text-[13px] text-on-surface-variant font-bold uppercase tracking-wider">
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-outline-variant/50 text-[14px] text-on-surface">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20">
+            <span class="material-symbols-outlined text-[48px] text-outline-variant mb-4">folder_off</span>
+            <p class="text-[16px] text-on-surface-variant font-medium">Không có dữ liệu phù hợp.</p>
+        </div>
+    </div>
+</main>
+
+<div class="fixed inset-0 z-[100] hidden" id="postListingModal">
+    <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm" onclick="closePostModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl bg-surface-container-lowest rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div class="flex items-center justify-between p-5 border-b border-outline-variant bg-surface-container-lowest">
+            <h2 class="text-[20px] font-bold text-primary flex items-center gap-2">
+                <span class="material-symbols-outlined icon-filled text-emerald-600">post_add</span>
+                Đăng tin Bất động sản
+            </h2>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container" onclick="closePostModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <form id="postListingForm" class="p-6 overflow-y-auto max-h-[70vh] flex flex-col gap-5">
+            <input type="hidden" id="postSubmissionId">
+
+            <div class="bg-surface p-4 rounded-xl border border-outline-variant/50">
+                <p class="text-[13px] font-bold text-on-surface-variant mb-1">THÔNG TIN GỐC (KÝ GỬI #<span id="origSubId"></span>)</p>
+                <p class="text-[14px] text-on-surface font-semibold" id="origAddress"></p>
+                <p class="text-[13px] text-primary" id="origDetails"></p>
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-bold text-on-surface-variant mb-1">TIÊU ĐỀ TIN ĐĂNG (Sẽ hiển thị ra Trang chủ) *</label>
+                <input id="postTitle" type="text" required placeholder="VD: Căn hộ 2PN cao cấp view hồ, an ninh 24/7..." class="w-full px-4 py-3 border border-outline-variant rounded-xl text-[14px] font-semibold text-on-surface focus:ring-primary focus:border-primary">
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-bold text-on-surface-variant mb-1">MÔ TẢ CHI TIẾT (Description) *</label>
+                <textarea id="postDesc" required rows="5" placeholder="Mô tả các tiện ích, nội thất, vị trí..." class="w-full px-4 py-3 border border-outline-variant rounded-xl text-[14px] text-on-surface focus:ring-primary focus:border-primary resize-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-bold text-on-surface-variant mb-1">GIÁ CHO THUÊ (VNĐ/Tháng) *</label>
+                <input id="postPrice" type="number" required class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+            </div>
+
+            <div class="flex gap-3 pt-4 border-t border-outline-variant">
+                <button type="button" onclick="closePostModal()" class="flex-1 py-3 bg-surface-container border border-outline-variant rounded-xl text-[15px] font-bold">Hủy bỏ</button>
+                <button type="submit" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-[15px] font-bold hover:bg-emerald-700">Xác nhận Đăng tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="fixed inset-0 z-[120] hidden" id="userModal">
+    <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm" onclick="closeUserModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-[modalSlideUp_0.3s_ease-out]">
+        <div class="flex items-center justify-between p-5 border-b border-outline-variant bg-surface-container-lowest">
+            <h2 id="modalTitle" class="text-[20px] font-bold text-primary">Thêm Nhân sự mới</h2>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container" onclick="closeUserModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="userForm" class="p-6 overflow-y-auto max-h-[70vh]">
+            <input type="hidden" id="userIdInput">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div class="col-span-2">
+                    <label class="block text-[12px] font-bold text-on-surface-variant mb-1">HỌ VÀ TÊN *</label>
+                    <input id="nameInput" type="text" required class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-on-surface-variant mb-1">EMAIL *</label>
+                    <input id="emailInput" type="email" required class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-on-surface-variant mb-1">SỐ ĐIỆN THOẠI</label>
+                    <input id="phoneInput" type="text" class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-on-surface-variant mb-1">VAI TRÒ (ROLE) *</label>
+                    <select id="roleInput" required class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary cursor-pointer bg-white">
+                        <optgroup label="Khách hàng">
+                            <option value="tenant">Người đi thuê (Tenant)</option>
+                            <option value="owner">Chủ nhà (Owner)</option>
+                        </optgroup>
+                        <optgroup label="Nhân sự nội bộ">
+                            <option value="broker">Môi giới (Broker)</option>
+                            <option value="agent">Sale / Đại lý (Agent)</option>
+                            <option value="manager">Quản lý (Manager)</option>
+                            <option value="it">IT Admin</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-on-surface-variant mb-1">SỐ CCCD</label>
+                    <input id="cccdInput" type="text" class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+                </div>
+                <div class="col-span-2" id="passwordGroup">
+                    <label class="block text-[12px] font-bold text-on-surface-variant mb-1">MẬT KHẨU (Nếu tạo mới) *</label>
+                    <input id="passwordInput" type="password" class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+                </div>
+            </div>
+            <div class="flex gap-3 pt-4 border-t border-outline-variant">
+                <button type="button" onclick="closeUserModal()" class="flex-1 py-3 bg-surface-container border border-outline-variant rounded-xl text-[15px] font-bold">Hủy bỏ</button>
+                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl text-[15px] font-bold hover:bg-primary-container">Lưu dữ liệu</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="fixed inset-0 z-[110] hidden" id="editListingModal">
+    <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm" onclick="closeEditListingModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl bg-surface-container-lowest rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-[modalSlideUp_0.3s_ease-out]">
+        <div class="flex items-center justify-between p-5 border-b border-outline-variant bg-surface-container-lowest">
+            <h2 class="text-[20px] font-bold text-primary flex items-center gap-2">
+                <span class="material-symbols-outlined icon-filled text-primary">edit_note</span>
+                Cập nhật Tin đăng #<span id="editListingTitleId"></span>
+            </h2>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container" onclick="closeEditListingModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <form id="editListingForm" class="p-6 overflow-y-auto max-h-[70vh] flex flex-col gap-5">
+            <input type="hidden" id="editListingId">
+
+            <div>
+                <label class="block text-[12px] font-bold text-on-surface-variant mb-1">TIÊU ĐỀ TIN ĐĂNG *</label>
+                <input id="editListingTitle" type="text" required class="w-full px-4 py-3 border border-outline-variant rounded-xl text-[14px] font-semibold text-on-surface focus:ring-primary focus:border-primary">
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-bold text-on-surface-variant mb-1">MÔ TẢ CHI TIẾT (Description) *</label>
+                <textarea id="editListingDesc" required rows="6" class="w-full px-4 py-3 border border-outline-variant rounded-xl text-[14px] text-on-surface focus:ring-primary focus:border-primary resize-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-bold text-on-surface-variant mb-1">GIÁ CHO THUÊ (VNĐ/Tháng) *</label>
+                <input id="editListingPrice" type="number" required class="w-full px-4 py-2 border border-outline-variant rounded-xl text-[14px] focus:ring-primary focus:border-primary">
+            </div>
+
+            <div class="flex gap-3 pt-4 border-t border-outline-variant">
+                <button type="button" onclick="closeEditListingModal()" class="flex-1 py-3 bg-surface-container border border-outline-variant rounded-xl text-[15px] font-bold">Hủy bỏ</button>
+                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl text-[15px] font-bold hover:bg-primary-container">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    const token = (typeof getToken === 'function') ? getToken() : localStorage.getItem('token');
+    let currentView = 'customers';
+    let allData = [];
+    const staffRoles = ['broker', 'agent', 'manager', 'accountant', 'legal', 'it', 'sale'];
+
+    const tableHead = document.getElementById('tableHead');
+    const tableBody = document.getElementById('tableBody');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const mainActionBtn = document.getElementById('mainActionBtn');
+
+    function formatPrice(price) {
+        if (!price) return "Đang cập nhật";
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    }
+
+    function getStatusBadge(status) {
+        const s = (status || 'draft').toLowerCase();
+        if (s === 'surveyed' || s === 'approved') return `<span class="px-3 py-1 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[12px] font-black uppercase flex items-center w-max gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>${s === 'active' ? 'Đang hiển thị' : 'Đã duyệt'}</span>`;
+        if (s === 'pending') return `<span class="px-3 py-1 bg-amber-100 text-amber-700 border border-amber-200 rounded-full text-[12px] font-black uppercase flex items-center w-max gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>Chờ xử lý</span>`;
+        if (s === 'decline' || s === 'declined' || s === 'cancelled' || s === 'rejected') return `<span class="px-3 py-1 bg-red-100 text-red-700 border border-red-200 rounded-full text-[12px] font-black uppercase flex items-center w-max gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span>Từ chối / Hủy</span>`;
+        if (s === 'draft' || s === 'inactive') return `<span class="px-3 py-1 bg-orange-100 text-orange-700 border border-orange-200 rounded-full text-[12px] font-black uppercase flex items-center w-max gap-1"><span class="w-2 h-2 rounded-full bg-orange-500"></span>${s === 'inactive' ? 'Đã ẩn' : 'Bản nháp'}</span>`;
+        return `<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full text-[12px] font-bold uppercase">${s}</span>`;
+    }
+
+    function switchTab(tab) {
+        currentView = tab;
+        ['customers', 'staff', 'submissions', 'listings'].forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            btn.className = (t === tab) ? "tab-btn px-4 py-2.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap bg-surface-container-lowest text-primary shadow-sm" : "tab-btn px-4 py-2.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap text-on-surface-variant hover:text-primary";
+        });
+
+        searchInput.value = '';
+        if (tab === 'customers' || tab === 'staff') {
+            statusFilter.classList.add('hidden');
+            mainActionBtn.innerHTML = `<span class="material-symbols-outlined text-[20px]">person_add</span>Thêm tài khoản`;
+            mainActionBtn.onclick = () => openUserModal(true);
+            mainActionBtn.classList.remove('hidden');
+            fetchUsersData();
+        }
+        else if (tab === 'submissions') {
+            statusFilter.classList.remove('hidden');
+            statusFilter.innerHTML = `<option value="all">Tất cả trạng thái</option><option value="pending">Chờ xử lý (Pending)</option><option value="surveyed">Đã duyệt (Surveyed)</option><option value="draft">Bản nháp (Draft)</option><option value="cancelled">Đã hủy (Cancelled)</option>`;
+            statusFilter.value = 'all';
+            mainActionBtn.classList.add('hidden');
+            fetchSubmissionsData();
+        }
+        else if (tab === 'listings') {
+            statusFilter.classList.remove('hidden');
+            statusFilter.innerHTML = `<option value="all">Tất cả trạng thái</option><option value="active">Đang hiển thị (Active)</option><option value="inactive">Đã ẩn (Inactive)</option>`;
+            statusFilter.value = 'all';
+            mainActionBtn.classList.add('hidden');
+            fetchListingsData();
+        }
+    }
+
+    // ================= 100% FETCH TỪ DATABASE =================
+    async function fetchUsersData() {
+        try {
+            const res = await fetch('http://localhost:5050/api/IT/users', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) allData = await res.json();
+            else allData = [];
+        } catch (e) { console.error(e); allData = []; }
+        renderTable();
+    }
+
+    async function fetchSubmissionsData() {
+        try {
+            const res = await fetch('http://localhost:5050/api/IT/submissions', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const rawData = await res.json();
+                allData = rawData.map(item => ({
+                    id: item.submission_id,
+                    owner: item.owner_name || `User #${item.owner_id || 'N/A'}`,
+                    type: item.property_type,
+                    area: item.area,
+                    price: item.proposed_price,
+                    address: item.address,
+                    status: item.status
+                }));
+            } else {
+                allData = [];
+            }
+        } catch (e) { console.error("Lỗi lấy dữ liệu ký gửi:", e); allData = []; }
+        renderTable();
+    }
+
+    async function fetchListingsData() {
+        try {
+            const res = await fetch('http://localhost:5050/api/IT/listings', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const rawData = await res.json();
+                allData = rawData.map(item => ({
+                    id: item.listing_id,
+                    sub_id: item.submission_id,
+                    title: item.title,
+                    description: item.description,
+                    price: item.price_display,
+                    views: item.view_count || 0,
+                    status: item.status,
+                    date: item.activated_at ? new Date(item.activated_at).toLocaleDateString('vi-VN') : 'Đang cập nhật'
+                }));
+            } else {
+                allData = [];
+            }
+        } catch (e) { console.error("Lỗi lấy dữ liệu tin đăng:", e); allData = []; }
+        renderTable();
+    }
+
+    // ================= RENDER BẢNG =================
+    function renderTable() {
+        let filtered = allData;
+        const kw = searchInput.value.toLowerCase();
+        const st = statusFilter.value;
+
+        if (currentView === 'customers' || currentView === 'staff') {
+            filtered = filtered.filter(u => {
+                const isStaff = staffRoles.includes(u.role);
+                return currentView === 'staff' ? isStaff : !isStaff;
+            });
+            if (kw) filtered = filtered.filter(u => (u.full_name||'').toLowerCase().includes(kw) || (u.email||'').toLowerCase().includes(kw));
+        } else {
+            if (kw) filtered = filtered.filter(item => JSON.stringify(item).toLowerCase().includes(kw));
+            if (st !== 'all') filtered = filtered.filter(item => (item.status || '').toLowerCase() === st);
+        }
+
+        tableHead.innerHTML = '';
+        tableBody.innerHTML = '';
+        if (filtered.length === 0) { emptyState.classList.remove('hidden'); return; }
+        emptyState.classList.add('hidden');
+
+        if (currentView === 'customers' || currentView === 'staff') {
+            tableHead.innerHTML = `<tr><th class="px-6 py-4">ID</th><th class="px-6 py-4">Họ và Tên</th><th class="px-6 py-4">Liên hệ</th><th class="px-6 py-4">Vai trò (Role)</th><th class="px-6 py-4 text-center">Thao tác</th></tr>`;
+            filtered.forEach(u => {
+                let roleBadge = `<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full text-[12px] font-bold uppercase">${u.role}</span>`;
+                if(u.role === 'owner') roleBadge = `<span class="px-3 py-1 bg-[#F59E0B]/10 text-[#D97706] rounded-full text-[12px] font-bold uppercase">Chủ nhà</span>`;
+                if(staffRoles.includes(u.role)) roleBadge = `<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[12px] font-bold uppercase">${u.role}</span>`;
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-surface-container/30 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-on-surface-variant">#${u.user_id}</td>
+                        <td class="px-6 py-4"><div class="font-bold text-[15px]">${u.full_name}</div>${u.id_card ? `<div class="text-[12px] text-on-surface-variant mt-1">CCCD: ${u.id_card}</div>` : ''}</td>
+                        <td class="px-6 py-4"><div>${u.email}</div><div class="text-on-surface-variant">${u.phone || 'Chưa có SĐT'}</div></td>
+                        <td class="px-6 py-4">${roleBadge}</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="openUserModal(false, ${u.user_id})" class="w-8 h-8 rounded-full bg-surface-container hover:bg-primary/10 hover:text-primary transition-colors flex items-center justify-center text-on-surface-variant" title="Sửa"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button onclick="deleteUser(${u.user_id})" class="w-8 h-8 rounded-full bg-surface-container hover:bg-error/10 hover:text-error transition-colors flex items-center justify-center text-on-surface-variant" title="Xóa"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        else if (currentView === 'submissions') {
+            tableHead.innerHTML = `<tr><th class="px-6 py-4 w-48">TRẠNG THÁI</th><th class="px-6 py-4">Mã số</th><th class="px-6 py-4">Bất động sản</th><th class="px-6 py-4">Chủ nhà</th><th class="px-6 py-4 text-center">Thao tác</th></tr>`;
+            filtered.forEach(item => {
+                // Kiểm tra xem status có đúng là 'surveyed' không
+                const isApproved = (item.status || '').toLowerCase() === 'surveyed';
+
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-surface-container/30 transition-colors">
+                        <td class="px-6 py-4">${getStatusBadge(item.status)}</td>
+                        <td class="px-6 py-4 font-bold text-on-surface-variant">SUB-${item.id}</td>
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-primary">${item.type} - ${item.area}m²</div>
+                            <div class="text-[12px] text-on-surface-variant mt-1"><span class="material-symbols-outlined text-[12px]">location_on</span> ${item.address}</div>
+                            <div class="text-[13px] font-semibold text-emerald-600 mt-1">${formatPrice(item.price)}</div>
+                        </td>
+                        <td class="px-6 py-4 font-medium">${item.owner}</td>
+                        <td class="px-6 py-4 text-center">
+                            ${isApproved ? `
+                                <button onclick="openPostModal(${item.id}, '${item.address}', ${item.price}, '${item.type} - ${item.area}m2')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-[13px] font-bold hover:bg-emerald-700 transition-colors flex items-center gap-1 mx-auto shadow-sm">
+                                    <span class="material-symbols-outlined text-[16px]">post_add</span> Đăng tin
+                                </button>
+                            ` : '<span class="text-[12px] text-outline-variant italic">Không khả dụng</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        else if (currentView === 'listings') {
+            tableHead.innerHTML = `<tr><th class="px-6 py-4 w-48">TRẠNG THÁI</th><th class="px-6 py-4">Mã tin (Gốc)</th><th class="px-6 py-4">Tiêu đề & Giá hiển thị</th><th class="px-6 py-4 text-center">Lượt xem</th><th class="px-6 py-4 text-right">Thao tác</th></tr>`;
+            filtered.forEach(item => {
+                const isInactive = item.status === 'inactive';
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-surface-container/30 transition-colors ${isInactive ? 'opacity-70 bg-surface-container-high/20' : ''}">
+                        <td class="px-6 py-4">${getStatusBadge(item.status)}</td>
+                        <td class="px-6 py-4 font-bold text-on-surface-variant">LST-${item.id}<br><span class="text-[11px] font-normal">Từ SUB-${item.sub_id}</span></td>
+                        <td class="px-6 py-4 max-w-md"><div class="font-bold text-on-surface line-clamp-2">${item.title}</div><div class="text-[14px] font-black text-emerald-600 mt-1">${formatPrice(item.price)}</div><div class="text-[11px] text-on-surface-variant mt-1">Ngày đăng: ${item.date}</div></td>
+                        <td class="px-6 py-4 text-center font-bold text-primary text-[16px]">${item.views}</td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="toggleListingStatus(${item.id}, '${item.status}')" class="w-9 h-9 rounded-full bg-surface-container hover:bg-orange-100 hover:text-orange-600 transition-colors flex items-center justify-center text-on-surface-variant" title="${isInactive ? 'Hiển thị lại' : 'Ẩn tin đăng'}"><span class="material-symbols-outlined text-[18px]">${isInactive ? 'visibility' : 'visibility_off'}</span></button>
+                                <button onclick="openEditListingModal(${item.id})" class="w-9 h-9 rounded-full bg-surface-container hover:bg-primary/10 hover:text-primary transition-colors flex items-center justify-center text-on-surface-variant" title="Cập nhật"><span class="material-symbols-outlined text-[18px]">edit_note</span></button>
+                                <button onclick="deleteListing(${item.id})" class="w-9 h-9 rounded-full bg-surface-container hover:bg-red-100 hover:text-red-600 transition-colors flex items-center justify-center text-on-surface-variant" title="Xóa vĩnh viễn"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    }
+
+    searchInput.addEventListener('input', renderTable);
+    statusFilter.addEventListener('change', renderTable);
+
+    // ================= LOGIC THÊM/SỬA/XÓA TÀI KHOẢN (GỌI API THẬT) =================
+    function openUserModal(isNew = true, userId = null) {
+        document.getElementById('userForm').reset();
+        const pwdGroup = document.getElementById('passwordGroup');
+        const cccdInput = document.getElementById('cccdInput');
+
+        if (isNew) {
+            document.getElementById('modalTitle').innerText = "Thêm Nhân sự / Người dùng mới";
+            document.getElementById('userIdInput').value = "";
+            document.getElementById('emailInput').readOnly = false;
+            pwdGroup.classList.remove('hidden');
+            document.getElementById('passwordInput').required = true;
+        } else {
+            document.getElementById('modalTitle').innerText = "Cập nhật thông tin";
+            pwdGroup.classList.add('hidden');
+            document.getElementById('passwordInput').required = false;
+
+            const user = allData.find(u => u.user_id === userId);
+            if(user) {
+                document.getElementById('userIdInput').value = user.user_id;
+                document.getElementById('nameInput').value = user.full_name;
+                document.getElementById('emailInput').value = user.email;
+                document.getElementById('emailInput').readOnly = true;
+                document.getElementById('phoneInput').value = user.phone || "";
+                document.getElementById('roleInput').value = user.role;
+                document.getElementById('cccdInput').value = user.id_card || "";
+            }
+        }
+        document.getElementById('userModal').classList.remove('hidden');
+    }
+
+    function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
+
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('userIdInput').value;
+        const payload = {
+            full_name: document.getElementById('nameInput').value,
+            email: document.getElementById('emailInput').value,
+            phone: document.getElementById('phoneInput').value,
+            role: document.getElementById('roleInput').value,
+            id_card: document.getElementById('cccdInput').value,
+        };
+        const isNew = id === "";
+        if (isNew) { payload.password = document.getElementById('passwordInput').value; }
+
+        try {
+            const url = isNew ? 'http://localhost:5050/api/IT/users' : `http://localhost:5050/api/IT/users/${id}`;
+            const method = isNew ? 'POST' : 'PUT';
+            const response = await fetch(url, {
+                method: method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                alert(isNew ? "Thêm mới thành công!" : "Cập nhật thành công!");
+                closeUserModal();
+                fetchUsersData();
+            } else {
+                const err = await response.json(); alert(err.message || "Có lỗi xảy ra");
+            }
+        } catch (error) {
+            alert("Lỗi kết nối máy chủ");
+        }
+    });
+
+    async function deleteUser(id) {
+        if(!confirm(`Bạn có chắc chắn muốn xóa tài khoản #${id} này không?`)) return;
+        try {
+            const response = await fetch(`http://localhost:5050/api/IT/users/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) { alert("Đã xóa thành công!"); fetchUsersData(); }
+            else { alert("Xóa thất bại!"); }
+        } catch (error) { alert("Lỗi khi xóa!"); }
+    }
+
+    // ================= LOGIC ĐĂNG TIN / ẨN TIN / XÓA TIN (GỌI API THẬT) =================
+    function openPostModal(subId, address, price, details) {
+        document.getElementById('postListingForm').reset();
+        document.getElementById('postSubmissionId').value = subId;
+        document.getElementById('origSubId').innerText = subId;
+        document.getElementById('origAddress').innerText = address;
+        document.getElementById('origDetails').innerText = details;
+        document.getElementById('postPrice').value = price;
+        document.getElementById('postListingModal').classList.remove('hidden');
+    }
+
+    function closePostModal() { document.getElementById('postListingModal').classList.add('hidden'); }
+
+    document.getElementById('postListingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            submission_id: document.getElementById('postSubmissionId').value,
+            title: document.getElementById('postTitle').value,
+            description: document.getElementById('postDesc').value,
+            price_display: document.getElementById('postPrice').value,
+            status: 'active'
+        };
+
+        try {
+            const res = await fetch('http://localhost:5050/api/IT/listings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                alert(`Tạo tin đăng thành công!`);
+                closePostModal();
+                switchTab('listings'); // Chuyển tab và tự động fetch data mới từ DB
+            } else {
+                alert("Lỗi khi tạo tin đăng!");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi kết nối máy chủ");
+        }
+    });
+
+    async function toggleListingStatus(id, currentStatus) {
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+        if (!confirm(`Bạn có chắc muốn ${newStatus === 'active' ? 'hiển thị lại' : 'ẨN'} tin đăng #${id} này?`)) return;
+
+        try {
+            const res = await fetch(`http://localhost:5050/api/IT/listings/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if(res.ok) {
+                alert(`Đã cập nhật trạng thái thành công!`);
+                fetchListingsData(); // Fetch lại data thật từ DB
+            } else {
+                alert("Lỗi khi cập nhật trạng thái");
+            }
+        } catch (e) { console.error(e); alert("Lỗi kết nối máy chủ"); }
+    }
+
+    async function deleteListing(id) {
+        if (!confirm(`CẢNH BÁO: Xóa vĩnh viễn tin đăng #${id}?`)) return;
+
+        try {
+            const res = await fetch(`http://localhost:5050/api/IT/listings/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if(res.ok) {
+                alert("Đã xóa tin đăng thành công!");
+                fetchListingsData(); // Fetch lại data thật từ DB
+            } else {
+                alert("Lỗi khi xóa tin đăng");
+            }
+        } catch(e) { console.error(e); alert("Lỗi kết nối máy chủ"); }
+    }
+
+    switchTab('customers'); // Trả về mặc định load tab Khách hàng đầu tiên
+    // ================= LOGIC SỬA TIN ĐĂNG =================
+    function openEditListingModal(id) {
+        const item = allData.find(d => d.id === id);
+        if (!item) return;
+
+        // Đổ dữ liệu cũ vào Form
+        document.getElementById('editListingId').value = item.id;
+        document.getElementById('editListingTitleId').innerText = item.id;
+        document.getElementById('editListingTitle').value = item.title;
+        document.getElementById('editListingDesc').value = item.description || '';
+        document.getElementById('editListingPrice').value = item.price;
+
+        document.getElementById('editListingModal').classList.remove('hidden');
+    }
+
+    function closeEditListingModal() {
+        document.getElementById('editListingModal').classList.add('hidden');
+    }
+
+    document.getElementById('editListingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editListingId').value;
+        const payload = {
+            title: document.getElementById('editListingTitle').value,
+            description: document.getElementById('editListingDesc').value,
+            price_display: document.getElementById('editListingPrice').value
+        };
+
+        try {
+            const res = await fetch(`http://localhost:5050/api/IT/listings/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                alert(`Cập nhật tin đăng #${id} thành công!`);
+                closeEditListingModal();
+                fetchListingsData(); // Tải lại bảng dữ liệu
+            } else {
+                alert("Lỗi khi cập nhật tin đăng!");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi kết nối máy chủ");
+        }
+    });
+</script>
+</body>
+</html>
