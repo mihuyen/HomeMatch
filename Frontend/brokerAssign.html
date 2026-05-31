@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
         tailwind.config = {
@@ -30,17 +30,17 @@
                         "full": "9999px"
                     },
                     fontFamily: {
-                        headline: ["Public Sans", "sans-serif"],
-                        display: ["Public Sans", "sans-serif"],
-                        body: ["Public Sans", "sans-serif"],
-                        label: ["Public Sans", "sans-serif"]
+                        headline: ["Inter", "sans-serif"],
+                        display: ["Inter", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
+                        label: ["Inter", "sans-serif"]
                     }
                 }
             }
         }
     </script>
 <style>
-        body { font-family: 'Public Sans', sans-serif; background-color: #F8FAFC; }
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
         .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.5); }
     </style>
@@ -52,7 +52,6 @@
 <span class="font-headline text-2xl font-extrabold text-primary tracking-tight">HomeMatch</span>
 <nav class="hidden md:flex items-center gap-6">
 <a class="text-slate-500 hover:text-primary transition-colors font-medium" href="brokerHome.html">Trang chủ</a>
-<a class="text-primary border-b-2 border-primary pb-1 font-bold" href="brokerAssign.html">Phân công</a>
 </nav>
 </div>
 <div class="flex items-center gap-4">
@@ -91,7 +90,7 @@
 </div>
 <div class="bg-surface p-6 rounded-xl border border-outline shadow-sm hover:shadow-md transition-shadow">
 <div class="flex items-center justify-between mb-2">
-<span class="text-secondary font-medium">Đang thực hiện</span>
+<span class="text-secondary font-medium">Đang hoàn thiện</span>
 <span class="material-symbols-outlined text-secondary">trending_up</span>
 </div>
 <div class="text-2xl font-bold text-primary" id="activeAssignments">0</div>
@@ -111,7 +110,7 @@
 <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg w-fit">
 <button class="px-4 py-1.5 rounded-md text-sm font-semibold bg-white shadow-sm text-primary">Tất cả</button>
 <button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Chờ xử lý</button>
-<button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Đang thực hiện</button>
+<button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Đang hoàn thiện</button>
 <button class="px-4 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:bg-white/50 transition-all">Hoàn tất</button>
 </div>
 <div class="relative">
@@ -141,23 +140,15 @@
 </table>
 </div>
 <!-- Pagination Footer -->
-<div class="border-t border-outline px-6 py-4 flex items-center justify-between bg-slate-50">
-<p class="text-sm text-slate-500">
-                    Hiển thị <span class="font-bold text-primary">1</span> đến <span class="font-bold text-primary">4</span> trên <span class="font-bold text-primary">18</span> phân công
-                </p>
-<div class="flex items-center gap-2">
-<button class="p-2 border border-outline rounded-lg bg-white text-slate-400 hover:bg-slate-100 transition-colors disabled:opacity-50" disabled="">
-<span class="material-symbols-outlined">chevron_left</span>
-</button>
-<button class="w-10 h-10 bg-primary text-white font-bold rounded-lg shadow-sm">1</button>
-<button class="w-10 h-10 border border-outline bg-white text-slate-600 font-medium rounded-lg hover:bg-slate-100 transition-colors">2</button>
-<button class="p-2 border border-outline rounded-lg bg-white text-slate-600 hover:bg-slate-100 transition-colors">
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
- </main>
+                <div class="border-t border-outline px-6 py-4 flex items-center justify-between bg-slate-50">
+                    <p class="text-sm text-slate-500" id="paginationSummary">
+                        Hiển thị <span class="font-bold text-primary">0</span> đến <span class="font-bold text-primary">0</span> trên <span class="font-bold text-primary">0</span> phân công
+                    </p>
+                    <div class="flex items-center gap-2" id="paginationButtons">
+                    </div>
+                </div>
+            </div>
+        </main>
 
 <script src="api.js"></script>
 <script>
@@ -169,14 +160,17 @@
         const doneAssignments = document.getElementById('doneAssignments');
 
         const statusMap = {
-            pending: ['đang xử lý', 'cho xu ly', 'cho xu ly', 'pending', 'đã phân công lại', 'da phan cong lai'],
-            active: ['đang chăm sóc', 'đang thực hiện', 'dang cham soc', 'dang thuc hien', 'active'],
+            pending: ['chờ xử lý', 'đang xử lý', 'cho xu ly', 'pending', 'đã phân công lại', 'da phan cong lai'],
+            active: ['đang hoàn thiện', 'đang chăm sóc', 'đang thực hiện', 'dang cham soc', 'dang thuc hien', 'active'],
             done: ['hoàn tất', 'hoàn thành', 'done', 'completed', 'đã hoàn thành', 'da hoan thanh']
         };
 
         const tabs = document.querySelectorAll('.bg-slate-100 button');
         let currentFilter = 'all';
         let allItems = [];
+        let filteredItems = [];
+        let currentPage = 1;
+        const itemsPerPage = 5;
 
         function formatDate(value) {
             if (!value) return '-';
@@ -192,12 +186,12 @@
         function badgeForStatus(status) {
             const normalized = normalizeStatus(status);
             if (statusMap.done.some(val => normalized.includes(val))) {
-                return { label: 'Đã hoàn thành', cls: 'bg-emerald-100 text-emerald-700' };
+                return { label: 'Hoàn tất', cls: 'bg-emerald-100 text-emerald-700' };
             }
-            if (normalized.includes('phân công lại')) {
-                return { label: 'Đã phân công lại', cls: 'bg-indigo-100 text-indigo-700 border border-indigo-200/50' };
+            if (statusMap.active.some(val => normalized.includes(val))) {
+                return { label: 'Đang hoàn thiện', cls: 'bg-indigo-100 text-indigo-700 border border-indigo-200/50' };
             }
-            return { label: 'Hệ thống đã phân công', cls: 'bg-blue-100 text-blue-700' };
+            return { label: 'Chờ xử lý', cls: 'bg-blue-100 text-blue-700' };
         }
 
         function buildAvatar(name) {
@@ -228,9 +222,14 @@
                 const appointmentLink = `brokerAppointmentDetail.html?assignmentId=${item.assignment_id}`;
                 const interest = item.notes || 'Đang cập nhật';
 
+                const isCompleted = badge.label === 'Hoàn tất';
+                const actionButtonHtml = isCompleted
+                    ? `<span class="inline-block px-3 py-1.5 bg-slate-100 text-slate-400 text-xs font-bold rounded-lg cursor-not-allowed whitespace-nowrap min-w-[90px] text-center border border-slate-200">Đã hoàn tất</span>`
+                    : `<a class="px-3 py-1.5 bg-secondary text-white text-xs font-bold rounded-lg hover:bg-on-secondary-container transition-all whitespace-nowrap min-w-[90px] text-center" href="${appointmentLink}">Tạo lịch hẹn</a>`;
+
                 return `
                     <tr class="hover:bg-slate-50/50 transition-colors">
-                        <td class="px-6 py-4 font-bold text-primary">${assignmentCode}</td>
+                        <td class="px-6 py-4 font-bold text-primary font-mono">${assignmentCode}</td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-xs text-indigo-700">${buildAvatar(tenantName)}</div>
@@ -249,8 +248,8 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
-                                <a class="px-3 py-1.5 border border-outline text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all" href="${detailLink}">Chi tiết</a>
-                                <a class="px-3 py-1.5 bg-secondary text-white text-xs font-bold rounded-lg hover:bg-on-secondary-container transition-all" href="${appointmentLink}">Tạo lịch hẹn</a>
+                                <a class="px-3 py-1.5 border border-outline text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all whitespace-nowrap min-w-[70px] text-center" href="${detailLink}">Chi tiết</a>
+                                ${actionButtonHtml}
                             </div>
                         </td>
                     </tr>
@@ -258,9 +257,75 @@
             }).join('');
         }
 
+        function renderTablePage() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredItems.length);
+            const pageItems = filteredItems.slice(startIndex, endIndex);
+
+            renderTable(pageItems);
+            updatePaginationControls(filteredItems.length, startIndex, endIndex);
+        }
+
+        function updatePaginationControls(total, start, end) {
+            const summary = document.getElementById('paginationSummary');
+            const buttonsContainer = document.getElementById('paginationButtons');
+
+            if (total === 0) {
+                summary.innerHTML = `Hiển thị <span class="font-bold text-primary">0</span> đến <span class="font-bold text-primary">0</span> trên <span class="font-bold text-primary">0</span> phân công`;
+                buttonsContainer.innerHTML = '';
+                return;
+            }
+
+            summary.innerHTML = `Hiển thị <span class="font-bold text-primary">${start + 1}</span> đến <span class="font-bold text-primary">${end}</span> trên <span class="font-bold text-primary">${total}</span> phân công`;
+            buttonsContainer.innerHTML = '';
+
+            // Previous Button
+            const prevButton = document.createElement('button');
+            prevButton.className = `p-2 border border-outline rounded-lg bg-white text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50`;
+            prevButton.disabled = currentPage === 1;
+            prevButton.innerHTML = `<span class="material-symbols-outlined">chevron_left</span>`;
+            prevButton.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTablePage();
+                }
+            };
+            buttonsContainer.appendChild(prevButton);
+
+            // Page numbers
+            const totalPages = Math.ceil(total / itemsPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                if (i === currentPage) {
+                    pageBtn.className = `w-10 h-10 bg-primary text-white font-bold rounded-lg shadow-sm`;
+                } else {
+                    pageBtn.className = `w-10 h-10 border border-outline bg-white text-slate-600 font-medium rounded-lg hover:bg-slate-100 transition-colors`;
+                }
+                pageBtn.innerText = i;
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    renderTablePage();
+                };
+                buttonsContainer.appendChild(pageBtn);
+            }
+
+            // Next Button
+            const nextButton = document.createElement('button');
+            nextButton.className = `p-2 border border-outline rounded-lg bg-white text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50`;
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.innerHTML = `<span class="material-symbols-outlined">chevron_right</span>`;
+            nextButton.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTablePage();
+                }
+            };
+            buttonsContainer.appendChild(nextButton);
+        }
+
         function applyFilters() {
             const keyword = (searchInput.value || '').toLowerCase().trim();
-            const filtered = allItems.filter(item => {
+            filteredItems = allItems.filter(item => {
                 const status = normalizeStatus(item.status);
                 const matchesStatus = currentFilter === 'all'
                     || (currentFilter === 'pending' && statusMap.pending.some(val => status.includes(val)))
@@ -273,7 +338,8 @@
                 return matchesStatus && matchesSearch;
             });
 
-            renderTable(filtered);
+            currentPage = 1;
+            renderTablePage();
         }
 
         function updateStats(items) {
@@ -294,8 +360,8 @@
 
                 const label = tab.textContent.trim().toLowerCase();
                 if (label.includes('chờ')) currentFilter = 'pending';
-                else if (label.includes('đang')) currentFilter = 'active';
-                else if (label.includes('hoàn')) currentFilter = 'done';
+                else if (label.includes('hoàn thiện')) currentFilter = 'active';
+                else if (label.includes('hoàn tất')) currentFilter = 'done';
                 else currentFilter = 'all';
 
                 applyFilters();

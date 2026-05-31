@@ -6,7 +6,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>HomeMatch - Chi tiết phân công</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
     rel="stylesheet">
@@ -46,10 +46,10 @@
             "full": "9999px"
           },
           fontFamily: {
-            headline: ["Public Sans", "sans-serif"],
-            display: ["Public Sans", "sans-serif"],
-            body: ["Public Sans", "sans-serif"],
-            label: ["Public Sans", "sans-serif"]
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
           }
         },
       },
@@ -130,9 +130,7 @@
           class="">HomeMatch</span></div>
       <div class="hidden md:flex gap-10 h-full items-center"><a
           class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
-          href="brokerHome.html">Trang chủ</a><a
-          class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
-          href="brokerAssign.html">Phân công</a></div>
+          href="brokerHome.html">Trang chủ</a></div>
       <div class="flex items-center gap-6"><button
           class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95"
           onclick="localStorage.removeItem('token'); window.location.href='login.html';">Đăng xuất</button><button
@@ -292,14 +290,14 @@
           document.getElementById('assignDate').innerText = 'Ngày phân công: ' + (isNaN(assignedDate.getTime()) ? '-' : assignedDate.toLocaleDateString('vi-VN'));
 
           let badgeClass = 'bg-blue-100 text-blue-700';
-          let badgeText = 'Hệ thống đã phân công';
+          let badgeText = 'Chờ xử lý';
           const status = String(data.status).toLowerCase().trim();
-          if (status.includes('phân công lại')) {
+          if (status.includes('hoàn thiện') || status.includes('thực hiện') || status.includes('chăm sóc')) {
             badgeClass = 'bg-indigo-100 text-indigo-700 border border-indigo-200/50';
-            badgeText = 'Đã phân công lại';
-          } else if (status.includes('hoàn') || status.includes('done')) {
+            badgeText = 'Đang hoàn thiện';
+          } else if (status.includes('hoàn') || status.includes('done') || status.includes('tất')) {
             badgeClass = 'bg-emerald-100 text-emerald-700';
-            badgeText = 'Đã hoàn thành';
+            badgeText = 'Hoàn tất';
           }
 
           const statusBadge = document.getElementById('assignStatus');
@@ -314,7 +312,7 @@
 
           const actionButtonsEl = document.getElementById('actionButtons');
           if (actionButtonsEl) {
-            if (!status.includes('hoàn') && !status.includes('done')) {
+            if (badgeText !== 'Hoàn tất') {
               actionButtonsEl.innerHTML = `
                 <button onclick="window.location.href='brokerAppointmentDetail.html?assignmentId=${assignmentId}'"
                   class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
@@ -331,7 +329,7 @@
               actionButtonsEl.innerHTML = `
                 <div class="px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-semibold text-sm flex items-center gap-2 shadow-sm">
                   <span class="material-symbols-outlined text-[18px]">verified</span>
-                  Phân công này đã hoàn tất chốt giao dịch
+                    Khách hàng này đã hoàn tất chốt giao dịch
                 </div>
               `;
             }

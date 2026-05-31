@@ -10,6 +10,9 @@ const saleRoutes = require('./routes/sale');
 const legalRoutes = require('./routes/legal');
 const listingRoutes = require('./routes/listing');
 const savedRoutes = require('./routes/saved');
+const accountantRoutes = require('./routes/accountant');
+const appointmentRoutes = require('./routes/appointments');
+const brokerRoutes = require('./routes/broker');
 const ITRoutes = require('./routes/IT');
 const adminRoutes = require('./routes/admin');
 
@@ -41,6 +44,9 @@ app.use('/api/sale', saleRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/saved', savedRoutes);
+app.use('/api/accountant', accountantRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/broker', brokerRoutes);
 app.use('/api/IT', ITRoutes);
 app.use('/api/admin', adminRoutes);
 

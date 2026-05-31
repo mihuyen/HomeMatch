@@ -68,7 +68,7 @@ async function runTest() {
         console.log('3. Creating test Staff Assignment...');
         const [assignResult] = await db.query(
             `INSERT INTO STAFF_ASSIGNMENTS (tenant_id, sale_broker_id, status, notes)
-             VALUES (?, ?, 'đang xử lý', 'Test assignment notes')`,
+             VALUES (?, ?, 'chờ xử lý', 'Test assignment notes')`,
             [tenantId, brokerId]
         );
         const assignmentId = assignResult.insertId;

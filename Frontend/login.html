@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html class="light h-full" lang="vi">
+
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Đăng nhập - HomeMatch</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -86,11 +88,11 @@
                         "label-sm": ["Inter"]
                     },
                     "fontSize": {
-                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}]
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }]
                     }
                 }
             }
@@ -101,10 +103,12 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             user-select: none;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #faf8ff;
         }
+
         .bg-login-hero {
             background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCcG4PdB3wXH-WJdNgNqkTRxFSp9VDD5_9uDBUV8REBRhmS5YRezK7OfzOVzH0VA0pX7w2JAckgi-RvD66I35pB35YSKBOPLtcAAdXi1i4NxAX6stmRVDEMW-QxwVB-FFUv7FM_nlxo7F1KTOqYnRPlojukKBoww6fcQ5qqooszE05dS4mj5CjRokBw3kBcM3B4VLH0nNTWpP2JSTA44QW_sBAGOOp5umEvmgxYsTO7r8nMR6e021oOlgKDWl8o489Macq1sC30ow');
             background-size: cover;
@@ -113,150 +117,145 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center bg-login-hero relative p-4">
 
-<!-- Atmospheric Overlay -->
-<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
+    <!-- Atmospheric Overlay -->
+    <div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
 
-<!-- Login Card Container -->
-<main class="relative z-10 w-full max-w-[440px] my-auto">
-    <div class="bg-surface-container-lowest rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-outline-variant overflow-hidden">
-        <div class="p-lg md:p-xl space-y-xl">
+    <!-- Login Card Container -->
+    <main class="relative z-10 w-full max-w-[440px] my-auto">
+        <div
+            class="bg-surface-container-lowest rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-outline-variant overflow-hidden">
+            <div class="p-lg md:p-xl space-y-xl">
 
-            <!-- Brand Identity -->
-            <div class="flex flex-col items-center text-center space-y-md">
-                <div class="flex items-center justify-center w-16 h-16 rounded-full bg-primary-container mb-xs">
-                    <span class="material-symbols-outlined text-[32px] text-on-primary">apartment</span>
-                </div>
-                <div class="space-y-xs">
-                    <h1 class="font-headline-md text-headline-md text-primary tracking-tight">HomeMatch</h1>
-                    <p class="font-body-md text-body-md text-secondary">Chào mừng trở lại</p>
-                </div>
-            </div>
-
-            <!-- Alert Box (ẩn mặc định) -->
-            <div id="alert" class="hidden p-md rounded-lg text-body-sm" role="alert"></div>
-
-            <!-- Login Form -->
-            <form class="space-y-lg" id="loginForm">
-
-                <!-- Email -->
-                <div class="space-y-xs">
-                    <label class="font-label-md text-label-md text-on-surface-variant block" for="email">Email</label>
-                    <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-4 text-outline">person</span>
-                        <input class="w-full py-md bg-surface-container border border-outline-variant rounded-xl font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-all pl-12 pr-4"
-                               id="email" name="email" placeholder="email@example.com" type="email" required>
+                <!-- Brand Identity -->
+                <div class="flex flex-col items-center text-center space-y-md">
+                    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-primary-container mb-xs">
+                        <span class="material-symbols-outlined text-[32px] text-on-primary">apartment</span>
+                    </div>
+                    <div class="space-y-xs">
+                        <h1 class="font-headline-md text-headline-md text-primary tracking-tight">HomeMatch</h1>
+                        <p class="font-body-md text-body-md text-secondary">Chào mừng trở lại</p>
                     </div>
                 </div>
 
-                <!-- Password -->
-                <div class="space-y-xs">
-                    <label class="font-label-md text-label-md text-on-surface-variant block" for="password">Mật khẩu</label>
-                    <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-4 text-outline">lock</span>
-                        <input class="w-full py-md bg-surface-container border border-outline-variant rounded-xl font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-all pl-12 pr-12"
-                               id="password" name="password" placeholder="••••••••" type="password" required>
-                        <button class="absolute right-4 text-outline hover:text-primary transition-colors focus:outline-none" onclick="togglePasswordVisibility()" type="button">
-                            <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
-                        </button>
+                <!-- Alert Box (ẩn mặc định) -->
+                <div id="alert" class="hidden p-md rounded-lg text-body-sm" role="alert"></div>
+
+                <!-- Login Form -->
+                <form class="space-y-lg" id="loginForm">
+
+                    <!-- Email -->
+                    <div class="space-y-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant block"
+                            for="email">Email</label>
+                        <div class="relative flex items-center">
+                            <span class="material-symbols-outlined absolute left-4 text-outline">person</span>
+                            <input
+                                class="w-full py-md bg-surface-container border border-outline-variant rounded-xl font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-all pl-12 pr-4"
+                                id="email" name="email" placeholder="email@example.com" type="email" required>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Actions Row -->
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-xs cursor-pointer group">
-                        <input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox" id="remember">
-                        <span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-primary transition-colors">Ghi nhớ đăng nhập</span>
-                    </label>
-                    <a class="font-label-md text-label-md text-primary-container hover:underline transition-all" href="#">Quên mật khẩu?</a>
-                </div>
+                    <!-- Password -->
+                    <div class="space-y-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant block" for="password">Mật
+                            khẩu</label>
+                        <div class="relative flex items-center">
+                            <span class="material-symbols-outlined absolute left-4 text-outline">lock</span>
+                            <input
+                                class="w-full py-md bg-surface-container border border-outline-variant rounded-xl font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-all pl-12 pr-12"
+                                id="password" name="password" placeholder="••••••••" type="password" required>
+                            <button
+                                class="absolute right-4 text-outline hover:text-primary transition-colors focus:outline-none"
+                                onclick="togglePasswordVisibility()" type="button">
+                                <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
+                            </button>
+                        </div>
+                    </div>
 
-                <!-- Submit Button -->
-                <button class="w-full py-md bg-primary-container text-on-primary font-headline-md text-headline-md rounded-lg shadow-md hover:bg-primary transition-all active:scale-[0.98] focus:ring-4 focus:ring-primary-container/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                    <!-- Actions Row -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center gap-xs cursor-pointer group">
+                            <input
+                                class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container"
+                                type="checkbox" id="remember">
+                            <span
+                                class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-primary transition-colors">Ghi
+                                nhớ đăng nhập</span>
+                        </label>
+                        <a class="font-label-md text-label-md text-primary-container hover:underline transition-all"
+                            href="#">Quên mật khẩu?</a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button
+                        class="w-full py-md bg-primary-container text-on-primary font-headline-md text-headline-md rounded-lg shadow-md hover:bg-primary transition-all active:scale-[0.98] focus:ring-4 focus:ring-primary-container/20 disabled:opacity-60 disabled:cursor-not-allowed"
                         type="submit" id="submitBtn">
-                    <span id="submitText">Đăng nhập</span>
-                </button>
-            </form>
+                        <span id="submitText">Đăng nhập</span>
+                    </button>
+                </form>
 
-            <!-- Signup Prompt -->
-            <div class="pt-lg border-t border-outline-variant text-center">
-                <p class="font-body-sm text-body-sm text-on-surface-variant">
-                    Bạn chưa có tài khoản?
-                    <a class="text-primary font-label-md text-label-md ml-xs hover:underline transition-all" href="register.html">Đăng ký ngay</a>
-                </p>
+                <!-- Signup Prompt -->
+                <div class="pt-lg border-t border-outline-variant text-center">
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Bạn chưa có tài khoản?
+                        <a class="text-primary font-label-md text-label-md ml-xs hover:underline transition-all"
+                            href="register.html">Đăng ký ngay</a>
+                    </p>
+                </div>
+
             </div>
-
         </div>
-    </div>
 
-    <!-- System Footer -->
-    <div class="mt-lg flex flex-col items-center gap-xs">
-        <p class="font-label-sm text-label-sm text-on-primary/80">© 2024 HomeMatch</p>
-        <div class="flex gap-md">
-            <a class="font-label-sm text-label-sm text-on-primary/60 hover:text-on-primary transition-colors" href="#">Chính sách bảo mật</a>
-            <a class="font-label-sm text-label-sm text-on-primary/60 hover:text-on-primary transition-colors" href="#">Điều khoản dịch vụ</a>
+        <!-- System Footer -->
+        <div class="mt-lg flex flex-col items-center gap-xs">
+            <p class="font-label-sm text-label-sm text-on-primary/80">© 2024 HomeMatch</p>
+            <div class="flex gap-md">
+                <a class="font-label-sm text-label-sm text-on-primary/60 hover:text-on-primary transition-colors"
+                    href="#">Chính sách bảo mật</a>
+                <a class="font-label-sm text-label-sm text-on-primary/60 hover:text-on-primary transition-colors"
+                    href="#">Điều khoản dịch vụ</a>
+            </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<!-- Kết nối các hàm gọi API -->
-<script src="api.js"></script>
+    <!-- Kết nối các hàm gọi API -->
+    <script src="api.js"></script>
 
-<script>
-    // ========================================
-    // Toggle hiện/ẩn mật khẩu
-    // ========================================
-    function togglePasswordVisibility() {
-        const passwordInput = document.getElementById('password');
-        const passwordIcon = document.getElementById('passwordIcon');
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            passwordIcon.innerText = 'visibility_off';
-        } else {
-            passwordInput.type = 'password';
-            passwordIcon.innerText = 'visibility';
+    <script>
+        // ========================================
+        // Toggle hiện/ẩn mật khẩu
+        // ========================================
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.innerText = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.innerText = 'visibility';
+            }
         }
-    }
 
-    // ========================================
-    // Hiển thị thông báo
-    // ========================================
-    function showAlert(message, type = 'error') {
-        const alertBox = document.getElementById('alert');
-        alertBox.textContent = message;
-        alertBox.classList.remove('hidden');
-        if (type === 'error') {
-            alertBox.className = 'p-md rounded-lg text-body-sm bg-error-container text-on-error-container';
-        } else {
-            alertBox.className = 'p-md rounded-lg text-body-sm bg-success-container text-on-success-container';
+        // ========================================
+        // Hiển thị thông báo
+        // ========================================
+        function showAlert(message, type = 'error') {
+            const alertBox = document.getElementById('alert');
+            alertBox.textContent = message;
+            alertBox.classList.remove('hidden');
+            if (type === 'error') {
+                alertBox.className = 'p-md rounded-lg text-body-sm bg-error-container text-on-error-container';
+            } else {
+                alertBox.className = 'p-md rounded-lg text-body-sm bg-success-container text-on-success-container';
+            }
         }
-    }
 
     function hideAlert() {
         document.getElementById('alert').classList.add('hidden');
-    }
-
-    // ========================================
-    // Nếu đã đăng nhập rồi thì chuyển về đúng trang
-    // ========================================
-    if (getToken()) {
-        const currentUser = getCurrentUser();
-        if (currentUser && currentUser.role === 'sale') {
-            window.location.href = 'saleAssign.html';
-        } else if (currentUser && currentUser.role === 'legal') {
-            window.location.href = 'legalReviewList.html';
-        } else if (currentUser && currentUser.role === 'broker') {
-            window.location.href = 'brokerHome.html';
-        } else if (currentUser && currentUser.role === 'owner') {
-            window.location.href = 'ownerSignmentTracking.html';
-        } else if (currentUser && currentUser.role === 'IT') { // <-- ĐÃ THÊM ROLE IT
-            window.location.href = 'IT_dashboard.html';
-        } else if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager')) {
-            window.location.href = 'adminDashboard.html';
-        } else {
-            window.location.href = 'home.html';
-        }
     }
 
     // ========================================
@@ -275,57 +274,64 @@
             window.location.href = 'brokerHome.html';
             return;
         }
-        if (user && user.role === 'owner') {
-            window.location.href = 'ownerSignmentTracking.html';
-            return;
-        }
-        if (user && user.role === 'IT') { // <-- ĐÃ THÊM ROLE IT
-            window.location.href = 'IT_dashboard.html';
-            return;
-        }
-        if (user && (user.role === 'admin' || user.role === 'manager')) {
-            window.location.href = 'adminDashboard.html';
-            return;
-        }
-        window.location.href = 'home.html';
-    }
 
-    // ========================================
-    // Xử lý submit form đăng nhập
-    // ========================================
-    const form = document.getElementById('loginForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const submitText = document.getElementById('submitText');
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideAlert();
-
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-
-        if (!email || !password) {
-            showAlert('Vui lòng nhập đầy đủ email và mật khẩu');
-            return;
+        function redirectAfterLogin(user) {
+            if (user && user.role === 'sale') {
+                window.location.href = 'saleAssign.html';
+                return;
+            }
+            if (user && user.role === 'legal') {
+                window.location.href = 'legalReviewList.html';
+                return;
+            }
+            if (user && user.role === 'broker') {
+                window.location.href = 'brokerHome.html';
+                return;
+            }
+            if (user && user.role === 'owner') {
+                window.location.href = 'ownerSignmentTracking.html';
+                return;
+            }
+            window.location.href = 'home.html';
         }
 
-        // Disable nút và đổi text trong lúc đợi
-        submitBtn.disabled = true;
-        submitText.textContent = 'Đang đăng nhập...';
+        // ========================================
+        // Xử lý submit form đăng nhập
+        // ========================================
+        const form = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
 
-        try {
-            const data = await login(email, password);
-            showAlert('Đăng nhập thành công, đang chuyển trang...', 'success');
-            setTimeout(() => {
-                redirectAfterLogin(data.user);
-            }, 600);
-        } catch (err) {
-            showAlert(err.message || 'Đăng nhập thất bại');
-            submitBtn.disabled = false;
-            submitText.textContent = 'Đăng nhập';
-        }
-    });
-</script>
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showAlert('Vui lòng nhập đầy đủ email và mật khẩu');
+                return;
+            }
+
+            // Disable nút và đổi text trong lúc đợi
+            submitBtn.disabled = true;
+            submitText.textContent = 'Đang đăng nhập...';
+
+            try {
+                const data = await login(email, password);
+                showAlert('Đăng nhập thành công, đang chuyển trang...', 'success');
+                setTimeout(() => {
+                    redirectAfterLogin(data.user);
+                }, 600);
+            } catch (err) {
+                showAlert(err.message || 'Đăng nhập thất bại');
+                submitBtn.disabled = false;
+                submitText.textContent = 'Đăng nhập';
+            }
+        });
+    </script>
 
 </body>
+
 </html>

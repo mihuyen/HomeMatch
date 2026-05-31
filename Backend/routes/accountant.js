@@ -214,4 +214,178 @@ router.post('/returns', requireAuth, requireRole('accountant', 'manager'), async
     }
 });
 
+// GET /api/accountant/contracts/pending
+// Lấy danh sách hợp đồng thuê nhà (chờ duyệt, đã duyệt, từ chối)
+router.get('/contracts/pending', requireAuth, requireRole('accountant', 'manager'), async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT rc.rental_contract_id,
+                    rc.listing_id,
+                    rc.tenant_id,
+                    rc.broker_id,
+                    rc.agreed_price,
+                    rc.lease_term_months,
+                    rc.signed_at,
+                    rc.contract_scan_url,
+                    rc.status,
+                    pl.title AS listing_title,
+                    u_tenant.full_name AS tenant_name,
+                    u_tenant.phone AS tenant_phone,
+                    u_tenant.email AS tenant_email,
+                    u_broker.full_name AS broker_name,
+                    rca.approved_price,
+                    rca.approved_commission,
+                    rca.rejection_reason,
+                    rca.reviewer_notes
+             FROM RENTAL_CONTRACTS rc
+             LEFT JOIN property_listings pl ON pl.listing_id = rc.listing_id
+             LEFT JOIN users u_tenant ON u_tenant.user_id = rc.tenant_id
+             LEFT JOIN users u_broker ON u_broker.user_id = rc.broker_id
+             LEFT JOIN RENTAL_CONTRACT_APPROVALS rca ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = (CASE WHEN rc.status = 'Đã duyệt' THEN 'duyệt' ELSE 'từ chối' END)
+             WHERE rc.status IN ('chờ duyệt', 'Đã duyệt', 'Từ chối')
+             ORDER BY rc.signed_at DESC, rc.rental_contract_id DESC`
+        );
+
+        res.json({ contracts: rows });
+    } catch (err) {
+        console.error('Get pending contracts error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// GET /api/accountant/contracts/stats
+// Lấy các thông số thống kê hợp đồng cho kế toán
+router.get('/contracts/stats', requireAuth, requireRole('accountant', 'manager'), async (req, res) => {
+    try {
+        const [pendingRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'chờ duyệt'");
+        const [approvedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'Đã duyệt'");
+        const [rejectedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'Từ chối'");
+        const [sumPriceRows] = await db.query("SELECT SUM(approved_price) AS total FROM RENTAL_CONTRACT_APPROVALS WHERE status = 'duyệt'");
+        const [sumCommissionRows] = await db.query("SELECT SUM(approved_commission) AS total FROM RENTAL_CONTRACT_APPROVALS WHERE status = 'duyệt'");
+
+        const pendingCount = Number(pendingRows[0]?.count || 0);
+        const approvedCount = Number(approvedRows[0]?.count || 0);
+        const rejectedCount = Number(rejectedRows[0]?.count || 0);
+        const totalApprovedPrice = Number(sumPriceRows[0]?.total || 0);
+        const totalCommission = Number(sumCommissionRows[0]?.total || 0);
+
+        let approvedRate = 100;
+        const totalProcessed = approvedCount + rejectedCount;
+        if (totalProcessed > 0) {
+            approvedRate = Math.round((approvedCount / totalProcessed) * 100);
+        }
+
+        res.json({
+            pendingCount,
+            approvedCount,
+            rejectedCount,
+            approvedRate,
+            totalApprovedPrice,
+            totalCommission
+        });
+    } catch (err) {
+        console.error('Get contract stats error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+// POST /api/accountant/contracts/approve
+// Kế toán phê duyệt / từ chối hợp đồng thuê nhà
+router.post('/contracts/approve', requireAuth, requireRole('accountant', 'manager'), async (req, res) => {
+    const { rental_contract_id, status, approved_price, rejection_reason, reviewer_notes } = req.body;
+
+    if (!rental_contract_id) {
+        return res.status(400).json({ message: 'Thiếu mã hợp đồng (rental_contract_id)' });
+    }
+
+    if (!status || !['duyệt', 'từ chối'].includes(status)) {
+        return res.status(400).json({ message: 'Trạng thái phê duyệt không hợp lệ (phải là duyệt hoặc từ chối)' });
+    }
+
+    if (approved_price === undefined || approved_price === null || isNaN(Number(approved_price))) {
+        return res.status(400).json({ message: 'Giá thuê thực tế không hợp lệ' });
+    }
+
+    // Recalculate commission automatically on backend to strictly enforce 10%
+    const calculatedCommission = Math.round(Number(approved_price) * 0.1);
+
+    const connection = await db.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        // 1. Kiểm tra xem hợp đồng này có tồn tại và đang ở trạng thái 'chờ duyệt' không
+        const [contracts] = await connection.query(
+            `SELECT * FROM RENTAL_CONTRACTS WHERE rental_contract_id = ? AND status = 'chờ duyệt' LIMIT 1`,
+            [rental_contract_id]
+        );
+
+        if (contracts.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng hợp lệ hoặc hợp đồng đã được phê duyệt trước đó' });
+        }
+
+        const contract = contracts[0];
+
+        // 2. Thêm một bản ghi mới vào RENTAL_CONTRACT_APPROVALS
+        await connection.query(
+            `INSERT INTO RENTAL_CONTRACT_APPROVALS 
+                (rental_contract_id, submitted_by, approved_by, status, approved_price, approved_commission, rejection_reason, reviewer_notes, approved_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+            [
+                rental_contract_id,
+                contract.broker_id,
+                req.user.user_id,
+                status,
+                Number(approved_price),
+                calculatedCommission,
+                status === 'từ chối' ? rejection_reason : null,
+                reviewer_notes || null
+            ]
+        );
+
+        // 3. Cập nhật lại trạng thái hợp đồng RENTAL_CONTRACTS
+        const finalStatus = status === 'duyệt' ? 'Đã duyệt' : 'Từ chối';
+        await connection.query(
+            `UPDATE RENTAL_CONTRACTS SET status = ? WHERE rental_contract_id = ?`,
+            [finalStatus, rental_contract_id]
+        );
+
+        // 4. Nếu được duyệt, cập nhật trạng thái bất động sản thành 'rented'
+        if (status === 'duyệt') {
+            if (contract.listing_id) {
+                await connection.query(
+                    `UPDATE property_listings SET status = 'rented' WHERE listing_id = ?`,
+                    [contract.listing_id]
+                );
+
+                const [listings] = await connection.query(
+                    `SELECT submission_id FROM property_listings WHERE listing_id = ? LIMIT 1`,
+                    [contract.listing_id]
+                );
+                if (listings.length > 0) {
+                    const submissionId = listings[0].submission_id;
+                    await connection.query(
+                        `UPDATE property_submissions SET status = 'rented' WHERE submission_id = ?`,
+                        [submissionId]
+                    );
+                }
+            }
+        }
+
+        await connection.commit();
+
+        res.status(200).json({
+            message: `Hợp đồng #${rental_contract_id} đã được ${status === 'duyệt' ? 'duyệt thành công' : 'từ chối thành công'}!`,
+            rental_contract_id,
+            status: finalStatus,
+            approved_commission: calculatedCommission
+        });
+    } catch (err) {
+        await connection.rollback();
+        console.error('Approve contract error:', err);
+        res.status(500).json({ message: 'Lỗi hệ thống khi phê duyệt: ' + err.message });
+    } finally {
+        connection.release();
+    }
+});
+
 module.exports = router;

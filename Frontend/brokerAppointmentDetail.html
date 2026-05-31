@@ -1,240 +1,453 @@
-<!DOCTYPE html><html class="light" lang="vi" style=""><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Tạo lịch hẹn chi tiết - HomeMatch</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Tạo lịch hẹn chi tiết - HomeMatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
-                        primary: "#0F172A",
-                        "on-primary": "#F8FAFC",
-                        "primary-container": "#1E293B",
-                        "on-primary-container": "#F1F5F9",
-                        secondary: "#334155",
-                        "on-secondary": "#FFFFFF",
-                        "secondary-container": "#E2E8F0",
-                        "on-secondary-container": "#0F172A",
-                        surface: "#FFFFFF",
-                        "on-surface": "#0F172A",
-                        "surface-container-low": "#F8FAFC",
-                        "surface-container-high": "#F1F5F9",
-                        "surface-container-highest": "#E2E8F0",
-                        outline: "#94A3B8",
-                        "outline-variant": "#CBD5E1",
-                        error: "#B91C1C"
+                    "colors": {
+                        "outline-variant": "#c5c5d3",
+                        "on-tertiary-container": "#f39461",
+                        "surface-container": "#eeedf4",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-dim": "#dad9e1",
+                        "primary-container": "#1e3a8a",
+                        "surface-tint": "#4059aa",
+                        "surface-container-high": "#e9e7ef",
+                        "on-primary-fixed": "#00164e",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b6c4ff",
+                        "on-tertiary-fixed-variant": "#773205",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-bright": "#faf8ff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#6e2c00",
+                        "outline": "#757682",
+                        "on-surface": "#1a1b21",
+                        "on-primary-container": "#90a8ff",
+                        "on-primary-fixed-variant": "#264191",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3036",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dce1ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "background": "#faf8ff",
+                        "surface": "#faf8ff",
+                        "surface-container-low": "#f4f3fa",
+                        "tertiary-fixed": "#ffdbcb",
+                        "secondary": "#505f76",
+                        "on-surface-variant": "#444651",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f1f0f7",
+                        "surface-container-highest": "#e3e1e9",
+                        "secondary-fixed": "#d3e4fe",
+                        "tertiary": "#4b1c00",
+                        "primary": "#00236f",
+                        "on-background": "#1a1b21"
                     },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    fontFamily: {
-                        "headline": ["Public Sans", "sans-serif"],
-                        "display": ["Public Sans", "sans-serif"],
-                        "body": ["Public Sans", "sans-serif"],
-                        "label": ["Public Sans", "sans-serif"]
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
                     }
-                },
-            },
+                }
+            }
         }
     </script>
-<style>
-        body { font-family: 'Public Sans', sans-serif; }
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+        .icon-filled { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Pulsing SOTA Marker styles */
+        .pulsing-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        .pulsing-marker-core {
+            width: 12px;
+            height: 12px;
+            background-color: #00236f;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 8px rgba(0, 35, 111, 0.5);
+            z-index: 2;
+        }
+        .pulsing-marker-pulse {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(0, 35, 111, 0.4);
+            border-radius: 50%;
+            animation: marker-pulse 1.8s infinite ease-in-out;
+            z-index: 1;
+        }
+        @keyframes marker-pulse {
+            0% {
+                transform: scale(0.6);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
         }
     </style>
-<style id="custom-cursor" type="text/css">body button, body [type='button'], body input[type='reset'], body input[type='submit'], body [role="button"], ::-webkit-search-cancel-button, ::-webkit-search-decoration, ::-webkit-scrollbar-button, ::-webkit-file-upload-button, [role^=button], .cc_pointer, [type="search"]::-webkit-search-cancel-button, a, select, [type="search"]::-webkit-search-decoration, .paper-button, .ytp-progress-bar-container, input[type=submit], :link, :visited, a > *, img,  ::-webkit-scrollbar-button, .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer, ::-webkit-file-upload-button, .ytp-volume-panel, #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon, body .custom-cursor-on-hover {cursor: url("data:image/png;base64,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") 11 0, pointer !important;} html,body,body select,body .custom-cursor-default-hover {cursor: url("data:image/png;base64,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") 1 0, auto !important;}</style></head>
-<body class="bg-surface-container-low text-on-surface min-h-screen">
-<!-- TopNavBar (Shared Component Logic) -->
-<header class="bg-white border-b border-outline-variant h-16 sticky top-0 z-50">
-<div class="max-w-[1440px] mx-auto px-6 h-full flex items-center justify-between">
-<div class="flex items-center gap-8">
-<div class="flex items-center gap-2">
-<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-<span class="material-symbols-outlined text-white text-[20px] fill-icon">home_work</span>
-</div>
-<span class="text-headline-md font-bold text-primary tracking-tight">HomeMatch</span>
-</div>
-<nav class="hidden md:flex items-center gap-1">
-<a class="px-4 py-2 text-sm font-medium text-secondary hover:text-primary rounded-md transition-colors" href="#">Trang chủ</a>
-<a class="px-4 py-2 text-sm font-medium text-primary bg-primary-container/30 rounded-md transition-colors" href="#">Phân công</a>
+    <style id="custom-cursor" type="text/css">
+        body button, body [type='button'], body input[type='reset'], body input[type='submit'], body [role="button"], ::-webkit-search-cancel-button, ::-webkit-search-decoration, ::-webkit-scrollbar-button, ::-webkit-file-upload-button, [role^=button], .cc_pointer, [type="search"]::-webkit-search-cancel-button, a, select, [type="search"]::-webkit-search-decoration, .paper-button, .ytp-progress-bar-container, input[type=submit], :link, :visited, a > *, img, ::-webkit-scrollbar-button, .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer, ::-webkit-file-upload-button, .ytp-volume-panel, #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon, body .custom-cursor-on-hover {
+            cursor: url("data:image/png;base64,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") 11 0, pointer !important;
+        }
+        html, body, body select, body .custom-cursor-default-hover {
+            cursor: url("data:image/png;base64,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") 1 0, auto !important;
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-on-surface flex flex-col min-h-screen">
+    <!-- TopNavBar -->
+    <nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
+        <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
+            <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3"
+                onclick="window.location.href='brokerHome.html'"><span
+                class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span><span
+                class="">HomeMatch</span></div>
+            <div class="hidden md:flex gap-10 h-full items-center"><a
+                class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
+                href="brokerHome.html">Trang chủ</a></div>
+            <div class="flex items-center gap-6"><button
+                class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95"
+                onclick="localStorage.removeItem('token'); window.location.href='login.html';">Đăng xuất</button><button
+                class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all"><img
+                    alt="User profile avatar" class="w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY"></button>
+            </div>
+        </div>
+    </nav>
 
-</nav>
-</div>
-<div class="flex items-center gap-4">
-<button class="p-2 text-secondary hover:bg-surface-container rounded-full transition-colors relative">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
-</button>
-<div class="h-8 w-px bg-outline-variant mx-2"></div>
-<div class="flex items-center gap-3">
-<div class="text-right hidden sm:block">
-<p class="text-xs font-bold text-on-surface">Môi giới viên</p>
-<p class="text-[11px] text-secondary">ID: BRK-9902</p>
-</div>
-<div class="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold text-sm">
-                        MV
+    <!-- Main Content Grid -->
+    <main class="max-w-[1440px] w-full mx-auto px-6 md:px-12 py-8 mt-0 flex-1">
+        <!-- Breadcrumbs Section -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+                <nav class="flex items-center gap-2 text-sm text-secondary opacity-80 mb-2">
+                    <a class="hover:text-primary transition-colors cursor-pointer" href="brokerHome.html">Trang chủ</a>
+                    <span class="material-symbols-outlined text-[16px] text-secondary">chevron_right</span>
+                    <a class="hover:text-primary transition-colors cursor-pointer" href="brokerAssign.html">Phân công</a>
+                    <span class="material-symbols-outlined text-[16px] text-secondary">chevron_right</span>
+                    <a id="breadcrumbDetailLink" class="hover:text-primary transition-colors cursor-pointer" href="#">Chi tiết phân công</a>
+                    <span class="material-symbols-outlined text-[16px] text-secondary">chevron_right</span>
+                    <span class="text-primary font-semibold">Tạo lịch hẹn</span>
+                </nav>
+                <h1 class="text-3xl font-extrabold text-primary tracking-tight">Tạo lịch hẹn chi tiết</h1>
+                <p class="text-secondary text-sm mt-1 opacity-70">Lên lịch gặp mặt khách hàng chính thức và xác định vị trí khảo sát.</p>
+            </div>
+        </div>
+
+        <form class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="appointmentForm">
+            <!-- Left Column: Primary Details & Map -->
+            <div class="lg:col-span-8 space-y-8">
+                <!-- Section 1: Thông tin chung -->
+                <section class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-primary bg-secondary-container/50 p-2.5 rounded-2xl">info</span>
+                        <h2 class="text-xl font-bold text-primary">Thông tin phân công</h2>
                     </div>
-<button class="text-secondary hover:text-error transition-colors">
-<span class="material-symbols-outlined">logout</span>
-</button>
-</div>
-</div>
-</div>
-</header>
-<main class="max-w-6xl mx-auto py-10 px-6">
-<!-- Header Title Section -->
-<div class="mb-10">
-<h1 class="text-3xl font-extrabold text-primary tracking-tight mb-2">Tạo lịch hẹn chi tiết</h1>
-<p class="text-secondary opacity-70">Vui lòng điền đầy đủ các thông tin để lên lịch làm việc chính thức.</p>
-</div>
-<form class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="appointmentForm">
-<!-- Left Column: Primary Details -->
-<div class="lg:col-span-8 space-y-8">
-<!-- Section 1: Thông tin chung -->
-<section class="glass-card rounded-xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary bg-secondary-container p-2 rounded-lg">info</span>
-<h2 class="text-xl font-bold text-primary">Thông tin chung</h2>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="flex flex-col gap-1.5">
-<label class="text-sm font-semibold text-secondary px-1">Mã cuộc hẹn</label>
-<input id="inputAssignCode" class="bg-surface-container-high border-outline-variant text-secondary rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all cursor-not-allowed" readonly="" type="text" value="Đang tải...">
-<p class="text-[11px] text-outline italic px-1">* Mã được tạo tự động bởi hệ thống</p>
-</div><div class="flex flex-col gap-1.5">
-  <label class="text-sm font-semibold text-secondary px-1">Khách hàng</label>
-  <input id="inputCustomerName" class="bg-surface-container-high border-outline-variant text-secondary rounded-lg px-4 py-2.5 outline-none transition-all cursor-not-allowed" readonly="" type="text" value="Đang tải...">
-</div><div class="flex flex-col gap-1.5 md:col-span-2">
-  <label class="text-sm font-semibold text-secondary px-1">Ghi chú (nhu cầu)</label>
-  <input id="inputProperty" class="bg-surface-container-high border-outline-variant text-secondary rounded-lg px-4 py-2.5 outline-none transition-all cursor-not-allowed" readonly="" type="text" value="Đang tải...">
-</div>
-<div class="flex flex-col gap-1.5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-secondary px-1">Mã phân công</label>
+                            <input id="inputAssignCode" class="bg-surface-container-low/50 border border-dashed border-outline-variant/60 text-secondary font-medium rounded-xl px-4 py-3 outline-none cursor-not-allowed" readonly type="text" value="Đang tải...">
+                            <p class="text-[11px] text-outline italic px-1">* Mã phân công được ghi nhận từ hệ thống</p>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-secondary px-1">Khách hàng</label>
+                            <input id="inputCustomerName" class="bg-surface-container-low/50 border border-dashed border-outline-variant/60 text-secondary font-medium rounded-xl px-4 py-3 outline-none cursor-not-allowed" readonly type="text" value="Đang tải...">
+                        </div>
+                        <div class="flex flex-col gap-1.5 md:col-span-2">
+                            <label class="text-sm font-semibold text-secondary px-1">Ghi chú nhu cầu từ khách hàng</label>
+                            <input id="inputProperty" class="bg-surface-container-low/50 border border-dashed border-outline-variant/60 text-secondary font-medium rounded-xl px-4 py-3 outline-none cursor-not-allowed" readonly type="text" value="Đang tải...">
+                        </div>
+                    </div>
+                </section>
 
+                <!-- Section 2: Chi tiết lịch trình & Bản đồ SOTA -->
+                <section class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-primary bg-secondary-container/50 p-2.5 rounded-2xl">event</span>
+                        <h2 class="text-xl font-bold text-primary">Chi tiết lịch trình & Bản đồ</h2>
+                    </div>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-secondary px-1">Thời gian hẹn</label>
+                            <div class="relative max-w-md">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">calendar_today</span>
+                                <input id="inputScheduledTime" class="w-full bg-surface border border-outline-variant text-on-surface rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" type="datetime-local" required>
+                            </div>
+                        </div>
 
-</div>
-<div class="flex flex-col gap-1.5 md:col-span-2">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-secondary px-1">Vị trí điểm hẹn</label>
+                            <p class="text-xs text-secondary opacity-70 mb-2">Vị trí này sẽ hiển thị trực quan trên bản đồ. Bạn có thể tìm kiếm hoặc kéo thả điểm định vị.</p>
+                            
+                            <!-- Interactive Map Card -->
+                            <div class="relative rounded-2xl overflow-hidden h-[450px] border border-outline-variant shadow-inner group z-10">
+                                <!-- Floating SOTA glassmorphic search input -->
+                                <div class="absolute top-4 left-4 right-4 z-[999] flex gap-2 p-2 bg-white/95 backdrop-blur-md rounded-2xl border border-outline-variant/50 shadow-lg max-w-xl transition-all focus-within:shadow-xl focus-within:bg-white">
+                                    <span class="material-symbols-outlined text-outline self-center pl-2">location_on</span>
+                                    <input id="inputLocation" class="w-full bg-transparent text-on-surface placeholder-secondary/60 text-sm py-1.5 focus:outline-none focus:ring-0 border-0 outline-none" placeholder="Nhập địa chỉ cụ thể hoặc click chọn trên bản đồ..." type="text" required>
+                                    <button type="button" id="btnSearchLocation" class="px-5 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-container hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 shadow">Tìm kiếm</button>
+                                </div>
 
-<div class="grid grid-cols-2 gap-4 mt-1">
+                                <!-- Leaflet Map Div -->
+                                <div id="map" class="w-full h-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
+            <!-- Right Column: Notes & Actions -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Notes Section -->
+                <section class="bg-white rounded-3xl p-8 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-primary bg-secondary-container/50 p-2.5 rounded-2xl">history_edu</span>
+                        <h2 class="text-xl font-bold text-primary">Thông tin bổ sung</h2>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-secondary px-1">Ghi chú lịch hẹn</label>
+                            <textarea id="inputNotes" class="w-full bg-surface border border-outline-variant text-on-surface rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="Ví dụ: Khách hàng muốn xem kỹ phòng ngủ chính, mang theo chìa khóa ban công..." rows="4"></textarea>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-secondary px-1">Thời điểm tạo</label>
+                            <div class="flex items-center gap-3 bg-surface-container-low/50 border border-dashed border-outline-variant/60 rounded-xl px-4 py-3 text-secondary text-sm">
+                                <span class="material-symbols-outlined text-lg">schedule</span>
+                                <span id="createdTimeDisplay" class="font-medium">Đang tải...</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-</div>
-</div>
-</div>
-</section>
-<!-- Section 2: Liên kết dữ liệu (Dynamic Content) -->
-
-<!-- Section 3: Chi tiết lịch trình -->
-<section class="glass-card rounded-xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary bg-secondary-container p-2 rounded-lg">event</span>
-<h2 class="text-xl font-bold text-primary">Chi tiết lịch trình</h2>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="flex flex-col gap-1.5">
-<label class="text-sm font-semibold text-secondary px-1">Thời gian hẹn</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">calendar_today</span>
-<input id="inputScheduledTime" class="w-full bg-surface border-outline-variant text-on-surface rounded-lg pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" type="datetime-local" required>
-</div>
-</div>
-<div class="flex flex-col gap-1.5">
-<label class="text-sm font-semibold text-secondary px-1">Địa điểm hẹn</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
-<input id="inputLocation" class="w-full bg-surface border-outline-variant text-on-surface rounded-lg pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="Nhập địa chỉ cụ thể..." type="text" required>
-</div>
-</div>
-<div class="md:col-span-2 rounded-xl overflow-hidden h-48 border border-outline-variant">
-<img alt="Location Map" class="w-full h-full object-cover" data-alt="A clean, minimalist digital map representation showing a premium real estate location marker in a vibrant city grid. The aesthetic is high-tech and modern, using a color palette of navy blue, soft gray, and white with subtle glowing elements. The mood is precise and reliable, designed for an institutional real estate management portal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOZlIUg1tCqNEo9PLHaz0qTjS1qlAQshraxJNHpzAhfP90IrvvDQILe1spEycwsqZSYtYK_3BUpyLSdYgqSIXX2oCHUmv8Iul5BjZ5TONusiFalM3taqw2E3msiBzhUTl-K7yKmKWMhsyTHv4XRRNJUC8KsdfXAgTTdeCbowVXVN4_oKX1w_nKd73o7I3AJmSQoRnlqpKsYEo2T6vBQdzt_AqTEGuk6WniSQSIRF3tfhYh4jvAqBfiDwcNhqkR53Mf9vZ1xkh5vNjI">
-</div>
-</div>
-</section>
-</div>
-<!-- Right Column: Results, Notes & Actions -->
-<div class="lg:col-span-4 space-y-8">
-<!-- Result & Notes Section -->
-<section class="glass-card rounded-xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary bg-secondary-container p-2 rounded-lg">history_edu</span>
-<h2 class="text-xl font-bold text-primary">Ghi chú</h2>
-</div>
-<div class="space-y-6">
-<div class="flex flex-col gap-1.5">
-<label class="text-sm font-semibold text-secondary px-1">Ghi chú</label>
-<textarea class="w-full bg-surface border-outline-variant text-on-surface rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="Nhập thông tin" rows="4"></textarea>
-</div>
-<div class="flex flex-col gap-1.5">
-<label class="text-sm font-semibold text-secondary px-1">Thời điểm tạo</label>
-<div class="flex items-center gap-3 bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2.5 text-secondary text-sm">
-<span class="material-symbols-outlined text-lg">schedule</span>
-<span id="createdTimeDisplay">Đang tải...</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Action Card -->
-<section class="bg-primary text-on-primary rounded-xl p-8 shadow-xl">
-<h3 class="text-lg font-bold mb-4">Xác nhận lịch hẹn</h3>
-<p class="text-sm opacity-80 mb-6">Đảm bảo các thông tin đã chính xác trước khi lưu. Hệ thống sẽ gửi thông báo đến các bên liên quan.</p>
-<div class="flex flex-col gap-3">
-<button class="w-full bg-on-primary text-primary font-bold py-3.5 rounded-xl hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 active:scale-95" type="submit">
-<span class="material-symbols-outlined">save</span>
+                <!-- Action Card -->
+                <section class="bg-primary text-on-primary rounded-3xl p-8 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-green-300">verified</span>
+                        Xác nhận lịch hẹn
+                    </h3>
+                    <p class="text-sm opacity-80 mb-6 leading-relaxed">Đảm bảo các thông tin đã chính xác trước khi lưu. Hệ thống sẽ cập nhật trạng thái phân công thành "Đang hoàn thiện".</p>
+                    <div class="flex flex-col gap-3 relative z-10">
+                        <button class="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg" type="submit">
+                            <span class="material-symbols-outlined">save</span>
                             Lưu lịch hẹn
                         </button>
-<button class="w-full bg-transparent border border-on-primary/30 text-on-primary font-medium py-3.5 rounded-xl hover:bg-white/10 transition-all active:scale-95" type="button">
+                        <button id="btnCancel" class="w-full bg-transparent border border-white/30 text-white font-semibold py-3.5 rounded-xl hover:bg-white/10 active:scale-[0.98] transition-all" type="button">
                             Hủy bỏ
                         </button>
-</div>
-</section>
-<!-- Quick Stats/Info Tip -->
-<div class="p-6 bg-secondary-container/50 border border-secondary-container rounded-xl flex gap-4">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-<div class="text-xs text-on-secondary-container leading-relaxed">
-<p class="font-bold mb-1">Mẹo nhỏ:</p>
-<p class="">Các lịch hẹn xem nhà thường đạt hiệu quả cao nhất vào khung giờ 09:00 - 11:00 và 15:00 - 17:00 hàng ngày.</p>
-</div>
-</div>
-</div>
-</form>
-</main>
-<!-- Success Toast (Hidden by default) -->
-<div class="fixed bottom-10 right-10 flex items-center gap-4 bg-primary text-on-primary px-6 py-4 rounded-xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300" id="successToast">
-<span class="material-symbols-outlined text-green-400">check_circle</span>
-<div>
-<p class="font-bold">Thành công!</p>
-<p class="text-sm opacity-80">Lịch hẹn đã được lưu vào hệ thống.</p>
-</div>
-</div>
-<script src="api.js"></script>
-<script>
+                    </div>
+                </section>
+
+                <!-- Quick Tip -->
+                <div class="p-6 bg-secondary-container/30 border border-secondary-container/50 rounded-3xl flex gap-4">
+                    <span class="material-symbols-outlined text-primary text-2xl shrink-0" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+                    <div class="text-xs text-on-secondary-container leading-relaxed">
+                        <p class="font-bold mb-1">Mẹo nhỏ cho môi giới:</p>
+                        <p class="">Các lịch hẹn xem nhà thường đạt hiệu quả cao nhất vào khung giờ 09:00 - 11:00 và 15:00 - 17:00 hàng ngày.</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <!-- Success Toast (Hidden by default) -->
+    <div class="fixed bottom-10 right-10 flex items-center gap-4 bg-primary text-on-primary px-6 py-4 rounded-2xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300 z-[9999]" id="successToast">
+        <span class="material-symbols-outlined text-green-400 text-2xl">check_circle</span>
+        <div>
+            <p class="font-bold text-sm">Thành công!</p>
+            <p class="text-xs opacity-80">Lịch hẹn đã được lưu vào hệ thống.</p>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let map, marker, circle;
+        
+        function initMap() {
+            const defaultLatLng = [10.7769, 106.7009]; // HCMC Central
+            map = L.map('map', {
+                zoomControl: false
+            }).setView(defaultLatLng, 15);
+
+            // Add standard zoom control at bottom right corner to avoid overlap
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(map);
+
+            // Using premium, high-quality Voyager basemap tiles
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors © CARTO',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // Custom pulsing divIcon marker style
+            const pulsingIcon = L.divIcon({
+                className: 'custom-pulsing-icon',
+                html: '<div class="pulsing-marker"><div class="pulsing-marker-pulse"></div><div class="pulsing-marker-core"></div></div>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            // Add draggable marker with custom pulsing icon
+            marker = L.marker(defaultLatLng, { 
+                icon: pulsingIcon,
+                draggable: true 
+            }).addTo(map);
+
+            updateCircle(defaultLatLng);
+
+            // Handle map click to drag marker
+            map.on('click', async (e) => {
+                const { lat, lng } = e.latlng;
+                marker.setLatLng([lat, lng]);
+                updateCircle(e.latlng);
+                await reverseGeocode(lat, lng);
+            });
+
+            // Handle marker dragend
+            marker.on('dragend', async (e) => {
+                const { lat, lng } = e.target.getLatLng();
+                updateCircle(e.target.getLatLng());
+                await reverseGeocode(lat, lng);
+            });
+        }
+
+        function updateCircle(latlng) {
+            if (circle) {
+                circle.setLatLng(latlng);
+            } else {
+                circle = L.circle(latlng, {
+                    color: '#00236f',
+                    fillColor: '#00236f',
+                    fillOpacity: 0.08,
+                    weight: 1.5,
+                    radius: 200
+                }).addTo(map);
+            }
+        }
+
+        async function reverseGeocode(lat, lng) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.display_name) {
+                        document.getElementById('inputLocation').value = data.display_name;
+                    }
+                }
+            } catch (err) {
+                console.error('Reverse geocoding error:', err);
+            }
+        }
+
+        async function searchLocation(query) {
+            if (!query) return;
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=vi`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        const { lat, lon } = data[0];
+                        const latlng = [parseFloat(lat), parseFloat(lon)];
+                        map.setView(latlng, 15);
+                        marker.setLatLng(latlng);
+                        updateCircle(latlng);
+                    }
+                }
+            } catch (err) {
+                console.error('Geocoding error:', err);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const user = await requireLogin();
             if (!user) return;
+
+            // Initialize SOTA Map
+            setTimeout(initMap, 500);
+
+            // Search button click handler
+            document.getElementById('btnSearchLocation').addEventListener('click', () => {
+                const query = document.getElementById('inputLocation').value;
+                searchLocation(query);
+            });
+
+            // Allow enter key search
+            document.getElementById('inputLocation').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchLocation(e.target.value);
+                }
+            });
 
             const params = new URLSearchParams(window.location.search);
             const assignmentId = params.get('assignmentId');
 
             if (!assignmentId) {
-                alert('Không có mã phân công');
+                alert('Không tìm thấy mã phân công hợp lệ.');
+                window.location.href = 'brokerAssign.html';
                 return;
             }
 
+            // Set Breadcrumb Detail link
+            const breadcrumbDetailLink = document.getElementById('breadcrumbDetailLink');
+            if (breadcrumbDetailLink) {
+                breadcrumbDetailLink.href = `brokerAssignDetail.html?assignmentId=${assignmentId}`;
+            }
+
+            // Cancel action
+            document.getElementById('btnCancel').addEventListener('click', () => {
+                window.location.href = `brokerAssignDetail.html?assignmentId=${assignmentId}`;
+            });
+
             try {
                 const assignment = await getBrokerAssignmentDetail(assignmentId);
+                const status = String(assignment.status || '').toLowerCase().trim();
+                
+                // If assignment is completed, deny creating a new appointment
+                const isCompleted = (status.includes('hoàn tất') || status.includes('hoàn thành') || status.includes('done') || status.includes('completed') || status.includes('tất')) && !status.includes('hoàn thiện');
+                if (isCompleted) {
+                    alert('Phân công này đã hoàn tất chốt giao dịch. Không thể tạo lịch hẹn mới.');
+                    window.location.href = 'brokerAssign.html';
+                    return;
+                }
+                
                 document.getElementById('inputAssignCode').value = 'ASN-' + String(assignment.assignment_id).padStart(6, '0');
                 document.getElementById('inputCustomerName').value = assignment.tenant_name || `Khách hàng #${assignment.tenant_id}`;
                 document.getElementById('inputProperty').value = assignment.notes || 'Không có';
@@ -260,7 +473,7 @@
                     
                     setTimeout(() => {
                         toast.classList.add('translate-y-20', 'opacity-0');
-                        window.location.href = 'brokerAppointment.html';
+                        window.location.href = 'brokerHome.html';
                     }, 2000);
                 } catch (err) {
                     console.error(err);
@@ -268,13 +481,6 @@
                 }
             });
         });
-
-        const interactiveCards = document.querySelectorAll('.glass-card');
-        interactiveCards.forEach(card => {
-            card.addEventListener('mouseenter', () => card.classList.add('shadow-md'));
-            card.addEventListener('mouseleave', () => card.classList.remove('shadow-md'));
-        });
     </script>
-
-
-</body></html>
+</body>
+</html>
