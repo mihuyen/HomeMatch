@@ -260,8 +260,20 @@ router.get('/contracts/stats', requireAuth, requireRole('accountant', 'manager')
         const [pendingRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'chờ duyệt'");
         const [approvedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'Đã duyệt'");
         const [rejectedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'Từ chối'");
-        const [sumPriceRows] = await db.query("SELECT SUM(approved_price) AS total FROM RENTAL_CONTRACT_APPROVALS WHERE status = 'duyệt'");
-        const [sumCommissionRows] = await db.query("SELECT SUM(approved_commission) AS total FROM RENTAL_CONTRACT_APPROVALS WHERE status = 'duyệt'");
+        const [sumPriceRows] = await db.query(
+            `SELECT SUM(IFNULL(rca.approved_price, rc.agreed_price)) AS total 
+             FROM RENTAL_CONTRACTS rc 
+             LEFT JOIN RENTAL_CONTRACT_APPROVALS rca 
+               ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = 'duyệt'
+             WHERE rc.status = 'Đã duyệt'`
+        );
+        const [sumCommissionRows] = await db.query(
+            `SELECT SUM(IFNULL(rca.approved_commission, rc.agreed_price * 0.1)) AS total 
+             FROM RENTAL_CONTRACTS rc 
+             LEFT JOIN RENTAL_CONTRACT_APPROVALS rca 
+               ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = 'duyệt'
+             WHERE rc.status = 'Đã duyệt'`
+        );
 
         const pendingCount = Number(pendingRows[0]?.count || 0);
         const approvedCount = Number(approvedRows[0]?.count || 0);

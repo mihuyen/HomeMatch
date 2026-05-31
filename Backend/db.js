@@ -3,11 +3,11 @@ const mysql = require('mysql2');
 const dbName = process.env.DB_NAME || 'homematch';
 
 const pool = mysql.createPool({
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 3306,
     user: 'root',
-    password: 'Quan@134',
-    database: 'property_schema',
+    password: 'socnhi123',
+    database: 'homematch',
     waitForConnections: true,
     connectionLimit: 10
 });
