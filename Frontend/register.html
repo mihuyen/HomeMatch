@@ -283,6 +283,8 @@
             window.location.href = 'accountantContractApproval.html';
         } else if (currentUser && currentUser.role === 'admin') {
             window.location.href = 'adminDashboard.html';
+        } else if (currentUser && currentUser.role === 'it') {
+            window.location.href = 'IT_dashboard.html';
         } else {
             window.location.href = 'home.html';
         }
