@@ -447,7 +447,29 @@
 <!-- Preview Area -->
 <div id="survey-preview-grid" class="grid grid-cols-2 md:grid-cols-4 gap-md mt-sm hidden"></div>
 </section>
-<!-- Phần 6: Ghi chú -->
+<!-- Phần 6: Đánh giá kết quả khảo sát -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
+<div class="border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="fact_check">fact_check</span>
+                            Đánh giá kết quả khảo sát
+                        </h2>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface mb-2 font-medium">Hiện trạng ngôi nhà có đạt yêu cầu ký gửi hay không?</label>
+<div class="flex gap-2 segmented-control max-w-sm">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only" name="survey_decision" type="radio" value="đạt">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Đạt yêu cầu</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="survey_decision" type="radio" value="không đạt">
+<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không đạt</div>
+</label>
+</div>
+</div>
+</section>
+<!-- Phần 7: Ghi chú -->
 <section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
 <div class="border-b border-surface-variant pb-sm">
 <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
@@ -538,6 +560,19 @@
                 const notesArea = document.querySelector('[name="survey_notes"]');
                 if (notesArea && latestSurvey.survey_notes) {
                     notesArea.value = latestSurvey.survey_notes;
+                }
+
+                // Populate survey decision
+                if (latestSurvey.survey_status) {
+                    const statusStr = String(latestSurvey.survey_status).toLowerCase();
+                    const decisionInputs = document.querySelectorAll('[name="survey_decision"]');
+                    decisionInputs.forEach(inp => {
+                        if (statusStr.includes('khong dat') || statusStr.includes('không đạt')) {
+                            if (inp.value === 'không đạt') inp.checked = true;
+                        } else if (statusStr.includes('dat') || statusStr.includes('đạt')) {
+                            if (inp.value === 'đạt') inp.checked = true;
+                        }
+                    });
                 }
             } else {
                 document.getElementById('draft-status-text').textContent = 'Sẵn sàng lưu bản nháp';
@@ -732,6 +767,8 @@
 
     btnSave && btnSave.addEventListener('click', async ()=>{
         try{
+            const decisionInput = document.querySelector('[name="survey_decision"]:checked');
+            const selectedStatus = decisionInput ? decisionInput.value : 'đạt';
             const payload = {
                 submissionId: submissionId,
                 appointmentId: appointmentId,
@@ -740,7 +777,7 @@
                 legalChecklist: collectLegal(),
                 imageChecklist: uploadedImages,
                 surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
-                surveyStatus: 'draft'
+                surveyStatus: 'draft_' + selectedStatus
             };
             // save as draft by calling survey endpoint (surveyStatus = 'draft')
             await submitSaleSurvey(payload);
@@ -757,8 +794,11 @@
 
     btnSubmit && btnSubmit.addEventListener('click', async ()=>{
         try{
+            const decisionInput = document.querySelector('[name="survey_decision"]:checked');
+            const selectedStatus = decisionInput ? decisionInput.value : 'đạt';
+
             // Ask user to confirm final status
-            const ok = confirm('Bạn chắc chắn muốn hoàn thành khảo sát và gửi kết quả chứ?');
+            const ok = confirm(`Bạn chắc chắn muốn hoàn thành khảo sát và gửi kết quả với đánh giá là "${selectedStatus.toUpperCase()}" chứ?`);
             if(!ok) return;
             const payload = {
                 submissionId: submissionId,
@@ -768,7 +808,7 @@
                 legalChecklist: collectLegal(),
                 imageChecklist: uploadedImages,
                 surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
-                surveyStatus: 'đạt'
+                surveyStatus: selectedStatus
             };
             await submitSaleSurvey(payload);
             alert('Gửi kết quả khảo sát thành công');

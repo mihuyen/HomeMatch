@@ -106,9 +106,9 @@
         <div class="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto">
             <select id="typeFilter" class="bg-surface-container-lowest border border-outline-variant rounded-xl pl-4 pr-10 py-2 text-[14px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all h-10 shadow-sm cursor-pointer">
                 <option value="">Loại hình</option>
-                <option value="can-ho">Căn hộ</option>
-                <option value="nha-pho">Nhà phố</option>
-                <option value="dat-nen">Đất nền</option>
+                <option value="canho">Căn hộ / Chung cư</option>
+                <option value="House">Nhà phố</option>
+                <option value="datnen">Đất nền</option>
                 <option value="phong-tro">Phòng trọ</option>
             </select>
             <select id="priceFilter" class="bg-surface-container-lowest border border-outline-variant rounded-xl pl-4 pr-10 py-2 text-[14px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all h-10 shadow-sm cursor-pointer">
@@ -150,6 +150,7 @@
 <div class="fixed inset-0 z-[100] hidden" id="propertyModal">
     <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
     <div class="absolute inset-4 md:inset-10 top-20 bg-surface-container-lowest rounded-xl shadow-2xl flex flex-col overflow-hidden animate-[modalSlideUp_0.3s_ease-out]">
+
         <div class="flex items-center justify-between p-4 border-b border-outline-variant bg-surface-container-lowest z-10 sticky top-0">
             <div class="flex items-center gap-2 text-primary font-bold text-[20px]">
                 <span class="material-symbols-outlined icon-filled">real_estate_agent</span>
@@ -165,51 +166,67 @@
                 <div class="w-full h-[300px] md:h-[450px] bg-surface-container rounded-xl overflow-hidden mb-8 relative">
                     <img id="modalImg" class="w-full h-full object-cover" src="" alt="Property Image">
                 </div>
+
                 <div class="mb-6">
                     <div class="flex items-center gap-2 mb-3">
                         <span id="modalTypeBadge" class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant text-[10px] rounded font-bold uppercase tracking-wider"></span>
+
                         <span class="text-[14px] text-on-surface-variant flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">schedule</span> <span id="modalTime"></span>
                         </span>
+
+                        <span class="text-[14px] text-on-surface-variant flex items-center gap-1 ml-3 pl-3 border-l border-outline-variant">
+                            <span class="material-symbols-outlined text-[16px]">visibility</span>
+                            <span id="modalViewCount" class="font-semibold text-primary">0</span> <span class="hidden sm:inline">lượt xem</span>
+                        </span>
                     </div>
                     <h2 id="modalTitle" class="text-[32px] font-bold text-on-surface uppercase mb-4 leading-tight"></h2>
-                    <div class="flex items-center gap-2 text-[18px] text-on-surface-variant mb-6">
-                        <span class="material-symbols-outlined text-primary">location_on</span>
+                    <div class="flex items-center gap-2 text-[16px] text-on-surface-variant mb-6 font-medium">
+                        <span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
                         <span id="modalAddress"></span>
                     </div>
                     <div class="flex items-baseline gap-4 mb-8">
-                        <span id="modalPrice" class="text-[48px] font-bold text-primary tracking-tight"></span>
+                        <span id="modalPrice" class="text-[40px] font-black text-primary tracking-tight"></span>
                     </div>
                 </div>
+
                 <hr class="border-outline-variant mb-8">
+
                 <div class="mb-8">
                     <h3 class="text-[20px] font-bold text-on-surface mb-6">Thông số kỹ thuật</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1">
-                            <span class="text-[12px] font-bold text-on-surface-variant">DIỆN TÍCH</span>
-                            <span id="modalArea" class="text-[20px] font-semibold text-on-surface"></span>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1 items-center justify-center text-center">
+                            <span class="material-symbols-outlined text-on-surface-variant text-[24px]">straighten</span>
+                            <span class="text-[11px] font-bold text-on-surface-variant mt-1">DIỆN TÍCH</span>
+                            <span id="modalArea" class="text-[16px] font-bold text-primary"></span>
                         </div>
-                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1">
-                            <span class="text-[12px] font-bold text-on-surface-variant">PHÒNG NGỦ / WC</span>
-                            <span id="modalRooms" class="text-[20px] font-semibold text-on-surface"></span>
+                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1 items-center justify-center text-center">
+                            <span class="material-symbols-outlined text-on-surface-variant text-[24px]">bed</span>
+                            <span class="text-[11px] font-bold text-on-surface-variant mt-1">PHÒNG NGỦ</span>
+                            <span id="modalBedrooms" class="text-[16px] font-bold text-primary"></span>
                         </div>
-                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1">
-                            <span class="text-[12px] font-bold text-on-surface-variant">PHÁP LÝ</span>
-                            <span class="text-[20px] font-semibold text-on-surface flex items-center gap-1 text-[#059669]">
-                                Có sổ <span class="material-symbols-outlined text-[16px]">verified</span>
-                            </span>
+                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1 items-center justify-center text-center">
+                            <span class="material-symbols-outlined text-on-surface-variant text-[24px]">shower</span>
+                            <span class="text-[11px] font-bold text-on-surface-variant mt-1">PHÒNG TẮM</span>
+                            <span id="modalBathrooms" class="text-[16px] font-bold text-primary"></span>
+                        </div>
+                        <div class="bg-surface p-4 rounded-xl border border-outline-variant/50 flex flex-col gap-1 items-center justify-center text-center">
+                            <span class="material-symbols-outlined text-on-surface-variant text-[24px]">explore</span>
+                            <span class="text-[11px] font-bold text-on-surface-variant mt-1">HƯỚNG NHÀ</span>
+                            <span id="modalDirection" class="text-[16px] font-bold text-primary uppercase"></span>
                         </div>
                     </div>
                 </div>
+
                 <div class="mb-8">
                     <h3 class="text-[20px] font-bold text-on-surface mb-4">Mô tả chi tiết</h3>
-                    <div id="modalDesc" class="text-[16px] text-on-surface-variant space-y-4 leading-relaxed whitespace-pre-line"></div>
+                    <div id="modalDesc" class="text-[15px] text-on-surface-variant space-y-4 leading-relaxed whitespace-pre-line p-4 bg-surface rounded-xl border border-outline-variant/30"></div>
                 </div>
             </div>
 
             <div class="w-full lg:w-[350px] border-t lg:border-t-0 lg:border-l border-outline-variant bg-surface-bright flex flex-col p-6 z-20 shadow-[-4px_0_15px_rgba(0,0,0,0.03)]">
                 <div class="sticky top-0 flex flex-col items-center mt-8">
-                    <div class="w-20 h-20 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-6">
+                    <div class="w-20 h-20 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-6 shadow-sm border border-primary/10">
                         <span class="material-symbols-outlined text-[40px]">calendar_month</span>
                     </div>
                     <h3 class="text-[20px] font-bold text-on-surface mb-2 text-center">Bạn thích bất động sản này?</h3>
@@ -224,23 +241,20 @@
         </div>
     </div>
 </div>
+
 <div class="fixed inset-0 z-[150] hidden" id="authPopup">
     <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm transition-opacity" onclick="closeAuthPopup()"></div>
-
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-surface-container-lowest rounded-xl shadow-2xl p-6 flex flex-col items-center animate-[modalSlideUp_0.3s_ease-out]">
         <button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant" onclick="closeAuthPopup()">
             <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
-
         <div class="w-16 h-16 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-4 mt-2">
             <span class="material-symbols-outlined text-[32px]">lock_person</span>
         </div>
-
         <h3 class="text-[20px] font-bold text-on-surface mb-2 text-center">Yêu cầu đăng nhập</h3>
         <p class="text-[14px] text-on-surface-variant mb-6 text-center leading-relaxed">
             Vui lòng đăng nhập hoặc đăng ký tài khoản miễn phí để xem thông tin chi tiết và lưu bất động sản yêu thích.
         </p>
-
         <div class="flex flex-col w-full gap-3">
             <button onclick="window.location.href='login.html'" class="w-full py-3 bg-primary hover:bg-primary-container text-white rounded-xl text-[16px] font-bold transition-colors shadow-sm">
                 Đăng nhập
@@ -252,441 +266,6 @@
     </div>
 </div>
 
-<script>
-    // ==========================================
-    // 1. KHAI BÁO BIẾN TRẠNG THÁI & DOM ELEMENTS
-    // ==========================================
-    let dbData = [];
-    let currentTab = 'home';
-    let savedIds = [];
-    let currentModalId = null;
-    let currentUserData = null;
-
-    const token = (typeof getToken === 'function') ? getToken() : localStorage.getItem('token');
-
-    const grid = document.getElementById('listingsGrid');
-    const emptyState = document.getElementById('emptyState');
-    const searchInput = document.getElementById('searchInput');
-    const typeFilter = document.getElementById('typeFilter');
-    const priceFilter = document.getElementById('priceFilter');
-    const areaFilter = document.getElementById('areaFilter');
-    const sortFilter = document.getElementById('sortFilter');
-
-    // ==========================================
-    // 2. GIAO DIỆN NAVBAR (ĐĂNG NHẬP / CHƯA ĐĂNG NHẬP)
-    // ==========================================
-    function updateNavbarUI() {
-        const loggedOutMenu = document.getElementById('loggedOutMenu');
-        const loggedInMenu = document.getElementById('loggedInMenu');
-
-        if (token) {
-            if(loggedInMenu) {
-                loggedInMenu.classList.remove('hidden');
-                loggedInMenu.classList.add('flex');
-            }
-        } else {
-            if(loggedOutMenu) {
-                loggedOutMenu.classList.remove('hidden');
-                loggedOutMenu.classList.add('flex');
-            }
-        }
-    }
-
-    // ==========================================
-    // 3. API FETCH (LẤY DỮ LIỆU BĐS VÀ TIN ĐÃ LƯU)
-    // ==========================================
-    async function fetchSavedIds() {
-        if (!token) return;
-        try {
-            const response = await fetch('http://localhost:5000/api/saved', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                savedIds = await response.json();
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải danh sách tin đã lưu:", error);
-        }
-    }
-
-    async function fetchListings() {
-        try {
-            const response = await fetch('http://localhost:5000/api/listings');
-            if (!response.ok) throw new Error('Network response was not ok');
-
-            const data = await response.json();
-            dbData = data.map(item => ({
-                ...item,
-                postedAt: new Date(item.postedAt)
-            }));
-
-            applyFilters();
-        } catch (error) {
-            console.error("Lỗi khi tải dữ liệu bài đăng:", error);
-            grid.innerHTML = '<p class="text-primary col-span-full text-center py-10 font-bold">Không thể tải dữ liệu từ máy chủ.</p>';
-        }
-    }
-
-    // ==========================================
-    // 4. CÁC HÀM FORMAT VÀ RENDER GIAO DIỆN
-    // ==========================================
-    function formatPrice(priceNum) {
-        if (priceNum >= 1000000000) return (priceNum / 1000000000).toFixed(1) + " Tỷ";
-        return (priceNum / 1000000).toFixed(1) + " Triệu";
-    }
-
-    function timeAgo(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        if (seconds < 60) return seconds + " giây trước";
-        if (seconds < 3600) return Math.floor(seconds / 60) + " phút trước";
-        if (seconds < 86400) return Math.floor(seconds / 3600) + " giờ trước";
-        return Math.floor(seconds / 86400) + " ngày trước";
-    }
-
-    function getTypeLabel(typeId) {
-        const types = { 'can-ho': 'Căn hộ', 'nha-pho': 'Nhà phố', 'dat-nen': 'Đất nền', 'phong-tro': 'Phòng trọ' };
-        return types[typeId] || 'Khác';
-    }
-
-    function renderListings(data) {
-        grid.innerHTML = '';
-        if (data.length === 0) {
-            emptyState.classList.remove('hidden');
-        } else {
-            emptyState.classList.add('hidden');
-            data.forEach(item => {
-                const isSaved = savedIds.includes(item.id);
-                const heartColorClass = isSaved ? 'icon-filled text-primary' : 'text-on-surface-variant';
-
-                const cardHTML = `
-                    <div class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 cursor-pointer flex flex-col relative" onclick="openModal(${item.id})">
-                        <div class="relative h-48 w-full overflow-hidden bg-surface-container-high">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${item.image}">
-                            <button onclick="toggleSave(${item.id}, event)" class="absolute top-3 right-3 w-8 h-8 bg-surface-container-lowest/80 backdrop-blur rounded-full flex items-center justify-center hover:text-primary transition-colors z-10">
-                                <span class="material-symbols-outlined text-[20px] ${heartColorClass}">favorite</span>
-                            </button>
-                            <div class="absolute bottom-3 left-3 bg-surface-container-lowest/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold tracking-wider text-on-surface-variant flex items-center gap-1 shadow-sm">
-                                <span class="material-symbols-outlined text-[12px]">schedule</span> ${timeAgo(item.postedAt)}
-                            </div>
-                        </div>
-                        <div class="p-4 flex flex-col flex-grow">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant text-[10px] rounded font-bold uppercase tracking-wider">${getTypeLabel(item.type)}</span>
-                            </div>
-                            <h3 class="text-[16px] font-semibold text-on-surface uppercase mb-2 line-clamp-2 leading-tight">${item.title}</h3>
-                            <div class="flex items-baseline gap-2 mb-4 mt-auto">
-                                <span class="text-[20px] font-bold text-primary tracking-tight">${formatPrice(item.price)}/Th</span>
-                            </div>
-                            <div class="flex flex-wrap gap-4 text-[14px] text-on-surface-variant mb-4 border-t border-outline-variant/30 pt-4">
-                                <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">straighten</span>${item.area} m2</div>
-                                <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">bed</span>${item.bedrooms || 0} PN</div>
-                            </div>
-                            <div class="flex items-center gap-1 text-[12px] font-semibold text-on-surface-variant truncate">
-                                <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
-                                <span class="truncate">${item.address}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += cardHTML;
-            });
-        }
-    }
-
-    // ==========================================
-    // 5. BỘ LỌC VÀ TÌM KIẾM
-    // ==========================================
-    function applyFilters() {
-        let filtered = dbData;
-        if (currentTab === 'saved') {
-            filtered = filtered.filter(item => savedIds.includes(item.id));
-        }
-
-        const keyword = searchInput.value.toLowerCase();
-        if (keyword) {
-            filtered = filtered.filter(item => item.title.toLowerCase().includes(keyword) || item.address.toLowerCase().includes(keyword));
-        }
-
-        const type = typeFilter.value;
-        if (type) filtered = filtered.filter(item => item.type === type);
-
-        const price = priceFilter.value;
-        if (price === 'duoi-10') filtered = filtered.filter(item => item.price < 10000000);
-        else if (price === '10-20') filtered = filtered.filter(item => item.price >= 10000000 && item.price <= 20000000);
-        else if (price === 'tren-20') filtered = filtered.filter(item => item.price > 20000000);
-
-        const area = areaFilter.value;
-        if (area === 'duoi-30') filtered = filtered.filter(item => item.area < 30);
-        else if (area === '30-50') filtered = filtered.filter(item => item.area >= 30 && item.area <= 50);
-        else if (area === 'tren-50') filtered = filtered.filter(item => item.area > 50);
-
-        const sort = sortFilter.value;
-        if (sort === 'moi-nhat') filtered.sort((a, b) => b.postedAt - a.postedAt);
-        else if (sort === 'gia-tang') filtered.sort((a, b) => a.price - b.price);
-        else if (sort === 'gia-giam') filtered.sort((a, b) => b.price - a.price);
-
-        renderListings(filtered);
-    }
-
-    [searchInput, typeFilter, priceFilter, areaFilter, sortFilter].forEach(el => {
-        if (el) el.addEventListener('input', applyFilters);
-    });
-
-    function switchTab(tab) {
-        if(tab === 'saved' && !token) {
-            showAuthPopup();
-            return;
-        }
-
-        currentTab = tab;
-        document.getElementById('tab-home').className = tab === 'home' ? "text-primary border-b-2 border-primary pb-1 h-full flex items-center pt-1 text-[14px] font-semibold transition-all cursor-pointer" : "text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer";
-        document.getElementById('tab-saved').className = tab === 'saved' ? "text-primary border-b-2 border-primary pb-1 h-full flex items-center pt-1 text-[14px] font-semibold transition-all cursor-pointer" : "text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer";
-        document.getElementById('pageTitle').innerText = tab === 'home' ? "Bất động sản nổi bật" : "Tin đăng đã lưu";
-        document.getElementById('pageSubtitle').innerText = tab === 'home' ? "Khám phá các danh mục cho thuê tốt nhất." : "Xem lại các bất động sản bạn đã yêu thích.";
-
-        applyFilters();
-    }
-
-    // ==========================================
-    // 6. POPUP ĐĂNG NHẬP (KHÁCH VÃNG LAI)
-    // ==========================================
-    function showAuthPopup() {
-        const popup = document.getElementById('authPopup');
-        if(popup) popup.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeAuthPopup() {
-        const popup = document.getElementById('authPopup');
-        if(popup) popup.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-
-    // ==========================================
-    // 7. CHỨC NĂNG LƯU TIN VÀ CHI TIẾT BĐS
-    // ==========================================
-    async function toggleSave(id, event) {
-        event.stopPropagation();
-        if (!token) {
-            showAuthPopup();
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://localhost:5000/api/saved/${id}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.isSaved) {
-                    savedIds.push(id);
-                } else {
-                    const index = savedIds.indexOf(id);
-                    if (index > -1) savedIds.splice(index, 1);
-                }
-                applyFilters();
-            } else {
-                alert("Lỗi khi lưu tin, vui lòng thử lại!");
-            }
-        } catch (error) {
-            console.error("Lỗi kết nối:", error);
-        }
-    }
-
-    function openModal(id) {
-        if (!token) {
-            showAuthPopup();
-            return;
-        }
-
-        const item = dbData.find(d => d.id === id);
-        if (!item) return;
-
-        currentModalId = id;
-
-        document.getElementById('modalImg').src = item.image;
-        document.getElementById('modalTypeBadge').innerText = getTypeLabel(item.type);
-        document.getElementById('modalTime').innerText = timeAgo(item.postedAt);
-        document.getElementById('modalTitle').innerText = item.title;
-        document.getElementById('modalAddress').innerText = item.address;
-        document.getElementById('modalPrice').innerText = formatPrice(item.price) + "/Tháng";
-        document.getElementById('modalArea').innerText = item.area + " m2";
-        document.getElementById('modalRooms').innerText = `${item.bedrooms || 0} PN / ${item.bathrooms || 0} WC`;
-        document.getElementById('modalDesc').innerText = item.description || 'Chưa có mô tả';
-
-        document.getElementById('propertyModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        document.getElementById('propertyModal').classList.add('hidden');
-        document.body.style.overflow = '';
-        currentModalId = null;
-    }
-
-    const modalRequestViewBtn = document.getElementById('modalRequestViewBtn');
-    if(modalRequestViewBtn) {
-        modalRequestViewBtn.onclick = () => {
-            alert("Yêu cầu xem nhà đã được gửi! Hệ thống sẽ phân công môi giới liên hệ lại cho bạn sớm nhất.");
-        };
-    }
-
-    // ==========================================
-    // 8. PROFILE MODAL VÀ CHỈNH SỬA TÀI KHOẢN
-    // ==========================================
-    async function openProfileModal() {
-        if (!token) {
-            showAuthPopup();
-            return;
-        }
-
-        try {
-            const response = await fetch('http://localhost:5000/api/auth/me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) throw new Error('Không thể tải profile');
-
-            const result = await response.json();
-            currentUserData = result.user;
-
-            document.getElementById('profileNameDisplay').innerText = currentUserData.full_name || 'Chưa cập nhật';
-            document.getElementById('profileEmailDisplay').innerText = currentUserData.email || 'Chưa cập nhật';
-            document.getElementById('profilePhoneDisplay').innerText = currentUserData.phone || 'Chưa cập nhật';
-
-            const roleLabels = { 'tenant': 'Người đi thuê', 'owner': 'Chủ nhà', 'sale': 'Môi giới' };
-            document.getElementById('profileRoleBadge').innerText = roleLabels[currentUserData.role] || currentUserData.role;
-
-            document.getElementById('profileModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        } catch (err) {
-            console.error(err);
-            alert('Có lỗi xảy ra khi lấy thông tin tài khoản.');
-        }
-    }
-
-    function closeProfileModal() {
-        document.getElementById('profileModal').classList.add('hidden');
-        if (document.getElementById('propertyModal') && document.getElementById('propertyModal').classList.contains('hidden')) {
-            document.body.style.overflow = '';
-        }
-    }
-
-    function openEditProfileModal() {
-        if (!currentUserData) return;
-        document.getElementById('editNameInput').value = currentUserData.full_name || '';
-        document.getElementById('editPhoneInput').value = currentUserData.phone || '';
-        document.getElementById('editProfileModal').classList.remove('hidden');
-    }
-
-    function closeEditProfileModal() {
-        document.getElementById('editProfileModal').classList.add('hidden');
-    }
-
-    function openChangePasswordModal() {
-        document.getElementById('changePasswordForm').reset();
-        document.getElementById('changePasswordModal').classList.remove('hidden');
-    }
-
-    function closeChangePasswordModal() {
-        document.getElementById('changePasswordModal').classList.add('hidden');
-    }
-
-    // ĐẢM BẢO GẮN SỰ KIỆN SAU KHI HTML ĐÃ TẢI XONG TOÀN BỘ
-    window.addEventListener('load', () => {
-
-        // SỰ KIỆN: Cập nhật thông tin cá nhân
-        const editProfileForm = document.getElementById('editProfileForm');
-        if (editProfileForm) {
-            editProfileForm.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Ngăn chặn reload trang tuyệt đối
-
-                const fullName = document.getElementById('editNameInput').value.trim();
-                const phone = document.getElementById('editPhoneInput').value.trim();
-
-                try {
-                    const response = await fetch('http://localhost:5000/api/auth/update-profile', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ full_name: fullName, phone: phone })
-                    });
-
-                    const result = await response.json();
-                    if (response.ok) {
-                        alert(result.message);
-                        closeEditProfileModal();
-                        await openProfileModal(); // Tải lại thông tin mới lên giao diện
-                    } else {
-                        alert(result.message || 'Cập nhật thất bại');
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert('Lỗi kết nối máy chủ');
-                }
-            });
-        }
-
-        // SỰ KIỆN: Thay đổi mật khẩu
-        const changePasswordForm = document.getElementById('changePasswordForm');
-        if (changePasswordForm) {
-            changePasswordForm.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Ngăn chặn reload trang tuyệt đối
-
-                const currentPassword = document.getElementById('currentPasswordInput').value;
-                const newPassword = document.getElementById('newPasswordInput').value;
-                const confirmNewPassword = document.getElementById('confirmNewPasswordInput').value;
-
-                if (newPassword !== confirmNewPassword) {
-                    alert('Mật khẩu xác nhận không trùng khớp!');
-                    return;
-                }
-                if (newPassword.length < 6) {
-                    alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
-                    return;
-                }
-
-                try {
-                    const response = await fetch('http://localhost:5000/api/auth/change-password', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
-                    });
-
-                    const result = await response.json();
-                    if (response.ok) {
-                        alert(result.message);
-                        closeChangePasswordModal();
-                        closeProfileModal();
-                    } else {
-                        // Nếu sai mật khẩu hiện tại, Backend trả về lỗi và lọt vào đây chứ không reload trang
-                        alert(result.message || 'Đổi mật khẩu thất bại');
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert('Lỗi kết nối máy chủ');
-                }
-            });
-        }
-    });
-
-    // ==========================================
-    // 9. KHỞI CHẠY (INITIALIZATION)
-    // ==========================================
-    async function initPage() {
-        updateNavbarUI();
-        await fetchSavedIds();
-        await fetchListings();
-    }
-
-    initPage();
-</script>
 <div class="fixed inset-0 z-[110] hidden" id="profileModal">
     <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm" onclick="closeProfileModal()"></div>
     <div class="absolute inset-4 md:inset-x-auto md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 max-w-lg w-full bg-surface-container-lowest rounded-xl shadow-2xl flex flex-col overflow-hidden animate-[modalSlideUp_0.3s_ease-out] h-fit">
@@ -699,14 +278,12 @@
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-
         <div class="p-8 flex flex-col items-center">
             <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-primary/10 mb-5 shadow-sm bg-surface-container-high">
                 <img class="w-full h-full object-cover" src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" alt="User Big Avatar">
             </div>
             <h2 id="profileNameDisplay" class="text-[26px] font-bold text-on-surface mb-2">---</h2>
             <span id="profileRoleBadge" class="px-4 py-1 bg-primary-container/10 text-primary text-[13px] rounded-full font-bold uppercase tracking-wider mb-8">---</span>
-
             <div class="w-full space-y-5 border-t border-outline-variant/50 pt-6 mb-8 text-[16px]">
                 <div class="flex justify-between items-center">
                     <span class="text-on-surface-variant font-medium flex items-center gap-2"><span class="material-symbols-outlined text-[20px]">mail</span> Email:</span>
@@ -717,7 +294,6 @@
                     <span id="profilePhoneDisplay" class="text-on-surface font-semibold">---</span>
                 </div>
             </div>
-
             <div class="flex w-full gap-4">
                 <button onclick="openEditProfileModal()" class="flex-1 py-3.5 bg-surface-container-lowest border-2 border-primary text-primary hover:bg-primary/5 rounded-xl text-[15px] font-bold transition-colors">Cập nhật thông tin</button>
                 <button onclick="openChangePasswordModal()" class="flex-1 py-3.5 bg-primary hover:bg-primary-container text-white rounded-xl text-[15px] font-bold transition-colors shadow-sm">Đổi mật khẩu</button>
@@ -771,5 +347,504 @@
         </form>
     </div>
 </div>
+
+<script>
+    // ==========================================
+    // KHAI BÁO BIẾN
+    // ==========================================
+    let dbData = [];
+    let currentTab = 'home';
+    let savedIds = [];
+    let currentModalId = null;
+    let currentUserData = null;
+
+    const token = (typeof getToken === 'function') ? getToken() : localStorage.getItem('token');
+
+    const grid = document.getElementById('listingsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const areaFilter = document.getElementById('areaFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    // ==========================================
+    // UI NAVBAR
+    // ==========================================
+    function updateNavbarUI() {
+        const loggedOutMenu = document.getElementById('loggedOutMenu');
+        const loggedInMenu = document.getElementById('loggedInMenu');
+
+        if (token) {
+            if(loggedInMenu) {
+                loggedInMenu.classList.remove('hidden');
+                loggedInMenu.classList.add('flex');
+            }
+        } else {
+            if(loggedOutMenu) {
+                loggedOutMenu.classList.remove('hidden');
+                loggedOutMenu.classList.add('flex');
+            }
+        }
+    }
+
+    // ==========================================
+    // API FETCH DATA
+    // ==========================================
+    async function fetchSavedIds() {
+        if (!token) return;
+        try {
+            const response = await fetch('http://localhost:5050/api/saved', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                savedIds = await response.json();
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách tin đã lưu:", error);
+        }
+    }
+
+    // ==========================================
+    // HÀM FORMAT VÀ PARSE DỮ LIỆU TỪ DB
+    // ==========================================
+    function formatPrice(priceNum) {
+        if (!priceNum || isNaN(priceNum)) return "Đang cập nhật";
+        if (priceNum >= 1000000000) return (priceNum / 1000000000).toFixed(1) + " Tỷ";
+        return (priceNum / 1000000).toFixed(1) + " Triệu";
+    }
+
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 60) return seconds + " giây trước";
+        if (seconds < 3600) return Math.floor(seconds / 60) + " phút trước";
+        if (seconds < 86400) return Math.floor(seconds / 3600) + " giờ trước";
+        return Math.floor(seconds / 86400) + " ngày trước";
+    }
+
+    function getTypeLabel(typeId) {
+        const types = { 'canho': 'Căn hộ', 'datnen': 'Đất nền', 'House': 'Nhà phố', 'Flat': 'Chung cư', 'phong-tro': 'Phòng trọ' };
+        return types[typeId] || typeId || 'Khác';
+    }
+
+    async function fetchListings() {
+        try {
+            // 1. Gọi API lấy dữ liệu
+            const response = await fetch('http://localhost:5050/api/listings');
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+
+            // 2. Vòng lặp MAP (Đoạn này bị thiếu trong code của bạn)
+            dbData = data.map(item => {
+
+                // Xử lý chuỗi JSON ảnh từ DB (Hỗ trợ cả Base64 và HTTP link)
+                let imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'; // Ảnh mặc định dự phòng
+
+                try {
+                    if (item.images_uploaded) {
+                        // Parse JSON nếu nó đang là chuỗi string
+                        const parsedImages = typeof item.images_uploaded === 'string' ? JSON.parse(item.images_uploaded) : item.images_uploaded;
+
+                        if (Array.isArray(parsedImages) && parsedImages.length > 0 && parsedImages[0]) {
+                            let firstImage = parsedImages[0];
+
+                            // Kiểm tra: Nếu là chuỗi Base64 (chứa 'data:image') HOẶC là link web thật ('http')
+                            if (firstImage.startsWith('data:image') || firstImage.startsWith('http')) {
+                                imageUrl = firstImage;
+                            } else {
+                                // Nếu nó chỉ lưu mỗi tên file (vd: 'anh.jpg') mà máy bạn không có
+                                imageUrl = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.warn("Lỗi parse ảnh JSON:", e);
+                }
+
+                const finalTitle = item.title || `${getTypeLabel(item.property_type)} tại ${item.address || 'Hà Nội'}`;
+                const finalPrice = parseFloat(item.price_display || item.proposed_price || 0);
+
+                return {
+                    id: item.listing_id || item.submission_id,
+                    title: finalTitle,
+                    type: item.property_type,
+                    price: finalPrice,
+                    area: item.area || 0,
+                    viewCount: item.view_count || 0,
+                    bedrooms: item.num_bedrooms || 0,
+                    bathrooms: item.num_bathrooms || 0,
+                    direction: item.direction || 'Không rõ',
+                    address: item.address || 'Đang cập nhật địa chỉ',
+                    description: item.description || 'Chưa có thông tin mô tả chi tiết cho bất động sản này.',
+                    image: imageUrl,
+                    postedAt: new Date(item.activated_at || item.submitted_at || Date.now())
+                };
+            }); // Dấu ngoặc này đã có vòng lặp MAP tương ứng ở trên
+
+            applyFilters();
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu bài đăng:", error);
+            grid.innerHTML = '<p class="text-primary col-span-full text-center py-10 font-bold">Không thể tải dữ liệu từ máy chủ.</p>';
+        }
+    }
+
+    function renderListings(data) {
+        grid.innerHTML = '';
+        if (data.length === 0) {
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+            data.forEach(item => {
+                const isSaved = savedIds.includes(item.id);
+                const heartColorClass = isSaved ? 'icon-filled text-primary' : 'text-on-surface-variant';
+
+                const cardHTML = `
+                    <div class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 cursor-pointer flex flex-col relative" onclick="openModal(${item.id})">
+                        <div class="relative h-48 w-full overflow-hidden bg-surface-container-high">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${item.image}">
+                            <button onclick="toggleSave(${item.id}, event)" class="absolute top-3 right-3 w-8 h-8 bg-surface-container-lowest/80 backdrop-blur rounded-full flex items-center justify-center hover:text-primary transition-colors z-10">
+                                <span class="material-symbols-outlined text-[20px] ${heartColorClass}">favorite</span>
+                            </button>
+                            <div class="absolute bottom-3 left-3 bg-surface-container-lowest/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold tracking-wider text-on-surface-variant flex items-center gap-1 shadow-sm">
+                                <span class="material-symbols-outlined text-[12px]">schedule</span> ${timeAgo(item.postedAt)}
+                            </div>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant text-[10px] rounded font-bold uppercase tracking-wider">${getTypeLabel(item.type)}</span>
+                            </div>
+                            <h3 class="text-[16px] font-semibold text-on-surface uppercase mb-2 line-clamp-2 leading-tight">${item.title}</h3>
+                            <div class="flex items-baseline gap-2 mb-4 mt-auto">
+                                <span class="text-[20px] font-bold text-primary tracking-tight">${formatPrice(item.price)}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-4 text-[14px] text-on-surface-variant mb-4 border-t border-outline-variant/30 pt-4">
+                                <div class="flex items-center gap-1" title="Diện tích"><span class="material-symbols-outlined text-[16px]">straighten</span>${item.area}m²</div>
+                                <div class="flex items-center gap-1" title="Phòng ngủ"><span class="material-symbols-outlined text-[16px]">bed</span>${item.bedrooms} PN</div>
+                                <div class="flex items-center gap-1" title="Phòng tắm"><span class="material-symbols-outlined text-[16px]">shower</span>${item.bathrooms} WC</div>
+                            </div>
+                            <div class="flex items-center gap-1 text-[12px] font-semibold text-on-surface-variant truncate">
+                                <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+                                <span class="truncate">${item.address}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+    }
+
+    // ==========================================
+    // BỘ LỌC VÀ TÌM KIẾM
+    // ==========================================
+    function applyFilters() {
+        let filtered = dbData;
+        if (currentTab === 'saved') {
+            filtered = filtered.filter(item => savedIds.includes(item.id));
+        }
+
+        const keyword = searchInput.value.toLowerCase();
+        if (keyword) {
+            filtered = filtered.filter(item => item.title.toLowerCase().includes(keyword) || item.address.toLowerCase().includes(keyword));
+        }
+
+        const type = typeFilter.value;
+        if (type) filtered = filtered.filter(item => item.type === type);
+
+        const price = priceFilter.value;
+        if (price === 'duoi-10') filtered = filtered.filter(item => item.price > 0 && item.price < 10000000);
+        else if (price === '10-20') filtered = filtered.filter(item => item.price >= 10000000 && item.price <= 20000000);
+        else if (price === 'tren-20') filtered = filtered.filter(item => item.price > 20000000);
+
+        const area = areaFilter.value;
+        if (area === 'duoi-30') filtered = filtered.filter(item => item.area > 0 && item.area < 30);
+        else if (area === '30-50') filtered = filtered.filter(item => item.area >= 30 && item.area <= 50);
+        else if (area === 'tren-50') filtered = filtered.filter(item => item.area > 50);
+
+        const sort = sortFilter.value;
+        if (sort === 'moi-nhat') filtered.sort((a, b) => b.postedAt - a.postedAt);
+        else if (sort === 'gia-tang') filtered.sort((a, b) => a.price - b.price);
+        else if (sort === 'gia-giam') filtered.sort((a, b) => b.price - a.price);
+
+        renderListings(filtered);
+    }
+
+    [searchInput, typeFilter, priceFilter, areaFilter, sortFilter].forEach(el => {
+        if (el) el.addEventListener('input', applyFilters);
+    });
+
+    function switchTab(tab) {
+        if(tab === 'saved' && !token) {
+            showAuthPopup();
+            return;
+        }
+
+        currentTab = tab;
+        document.getElementById('tab-home').className = tab === 'home' ? "text-primary border-b-2 border-primary pb-1 h-full flex items-center pt-1 text-[14px] font-semibold transition-all cursor-pointer" : "text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer";
+        document.getElementById('tab-saved').className = tab === 'saved' ? "text-primary border-b-2 border-primary pb-1 h-full flex items-center pt-1 text-[14px] font-semibold transition-all cursor-pointer" : "text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer";
+        document.getElementById('pageTitle').innerText = tab === 'home' ? "Bất động sản nổi bật" : "Tin đăng đã lưu";
+        document.getElementById('pageSubtitle').innerText = tab === 'home' ? "Khám phá các danh mục cho thuê tốt nhất." : "Xem lại các bất động sản bạn đã yêu thích.";
+
+        applyFilters();
+    }
+
+    // ==========================================
+    // POPUP YÊU CẦU ĐĂNG NHẬP
+    // ==========================================
+    function showAuthPopup() {
+        const popup = document.getElementById('authPopup');
+        if(popup) popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAuthPopup() {
+        const popup = document.getElementById('authPopup');
+        if(popup) popup.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    // ==========================================
+    // CHỨC NĂNG LƯU VÀ HIỂN THỊ MODAL CHI TIẾT
+    // ==========================================
+    async function toggleSave(id, event) {
+        event.stopPropagation();
+        if (!token) {
+            showAuthPopup();
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5050/api/saved/${id}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.isSaved) {
+                    savedIds.push(id);
+                } else {
+                    const index = savedIds.indexOf(id);
+                    if (index > -1) savedIds.splice(index, 1);
+                }
+                applyFilters();
+            } else {
+                alert("Lỗi khi lưu tin, vui lòng thử lại!");
+            }
+        } catch (error) {
+            console.error("Lỗi kết nối:", error);
+        }
+    }
+
+    function openModal(id) {
+        if (!token) {
+            showAuthPopup();
+            return;
+        }
+
+        const item = dbData.find(d => d.id === id);
+        if (!item) return;
+
+        currentModalId = id;
+
+        // 1. ĐỔ DỮ LIỆU CŨ LÊN GIAO DIỆN
+        document.getElementById('modalImg').src = item.image;
+        document.getElementById('modalTypeBadge').innerText = getTypeLabel(item.type);
+        document.getElementById('modalTime').innerText = timeAgo(item.postedAt);
+        document.getElementById('modalTitle').innerText = item.title;
+        document.getElementById('modalAddress').innerText = item.address;
+
+        // Hiện số view lấy từ Backend
+        const viewCountEl = document.getElementById('modalViewCount');
+        if (viewCountEl) {
+            viewCountEl.innerText = item.viewCount || 0;
+        }
+
+        document.getElementById('modalPrice').innerText = formatPrice(item.price);
+        document.getElementById('modalArea').innerText = item.area + " m²";
+        document.getElementById('modalBedrooms').innerText = item.bedrooms;
+        document.getElementById('modalBathrooms').innerText = item.bathrooms;
+        document.getElementById('modalDirection').innerText = item.direction;
+        document.getElementById('modalDesc').innerText = item.description;
+
+        document.getElementById('propertyModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // 2. BẮN API TĂNG VIEW (Chạy ngầm)
+        fetch(`http://localhost:5050/api/listings/${id}/view`, {
+            method: 'POST' // Phải là POST giống backend đã viết
+        })
+            .then(response => {
+                if(response.ok) {
+                    // Nếu Backend báo thành công, tự động cộng 1 vào số hiển thị trên màn hình
+                    item.viewCount = (item.viewCount || 0) + 1;
+                    if (viewCountEl) viewCountEl.innerText = item.viewCount;
+                }
+            })
+            .catch(err => console.error("Lỗi gọi API tăng view:", err));
+    }
+
+    function closeModal() {
+        document.getElementById('propertyModal').classList.add('hidden');
+        document.body.style.overflow = '';
+        currentModalId = null;
+    }
+
+    const modalRequestViewBtn = document.getElementById('modalRequestViewBtn');
+    if(modalRequestViewBtn) {
+        modalRequestViewBtn.onclick = () => {
+            alert("Yêu cầu xem nhà đã được gửi! Hệ thống sẽ phân công môi giới liên hệ lại cho bạn sớm nhất.");
+        };
+    }
+
+    // ==========================================
+    // PROFILE VÀ CHỈNH SỬA TÀI KHOẢN
+    // ==========================================
+    async function openProfileModal() {
+        if (!token) {
+            showAuthPopup();
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:5050/api/auth/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Không thể tải profile');
+
+            const result = await response.json();
+            currentUserData = result.user;
+
+            document.getElementById('profileNameDisplay').innerText = currentUserData.full_name || 'Chưa cập nhật';
+            document.getElementById('profileEmailDisplay').innerText = currentUserData.email || 'Chưa cập nhật';
+            document.getElementById('profilePhoneDisplay').innerText = currentUserData.phone || 'Chưa cập nhật';
+
+            const roleLabels = { 'tenant': 'Người đi thuê', 'owner': 'Chủ nhà', 'sale': 'Môi giới' };
+            document.getElementById('profileRoleBadge').innerText = roleLabels[currentUserData.role] || currentUserData.role;
+
+            document.getElementById('profileModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } catch (err) {
+            console.error(err);
+            alert('Có lỗi xảy ra khi lấy thông tin tài khoản.');
+        }
+    }
+
+    function closeProfileModal() {
+        document.getElementById('profileModal').classList.add('hidden');
+        if (document.getElementById('propertyModal') && document.getElementById('propertyModal').classList.contains('hidden')) {
+            document.body.style.overflow = '';
+        }
+    }
+
+    function openEditProfileModal() {
+        if (!currentUserData) return;
+        document.getElementById('editNameInput').value = currentUserData.full_name || '';
+        document.getElementById('editPhoneInput').value = currentUserData.phone || '';
+        document.getElementById('editProfileModal').classList.remove('hidden');
+    }
+
+    function closeEditProfileModal() {
+        document.getElementById('editProfileModal').classList.add('hidden');
+    }
+
+    function openChangePasswordModal() {
+        document.getElementById('changePasswordForm').reset();
+        document.getElementById('changePasswordModal').classList.remove('hidden');
+    }
+
+    function closeChangePasswordModal() {
+        document.getElementById('changePasswordModal').classList.add('hidden');
+    }
+
+    window.addEventListener('load', () => {
+
+        const editProfileForm = document.getElementById('editProfileForm');
+        if (editProfileForm) {
+            editProfileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('editNameInput').value.trim();
+                const phone = document.getElementById('editPhoneInput').value.trim();
+
+                try {
+                    const response = await fetch('http://localhost:5050/api/auth/update-profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ full_name: fullName, phone: phone })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.message);
+                        closeEditProfileModal();
+                        await openProfileModal();
+                    } else {
+                        alert(result.message || 'Cập nhật thất bại');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Lỗi kết nối máy chủ');
+                }
+            });
+        }
+
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const currentPassword = document.getElementById('currentPasswordInput').value;
+                const newPassword = document.getElementById('newPasswordInput').value;
+                const confirmNewPassword = document.getElementById('confirmNewPasswordInput').value;
+
+                if (newPassword !== confirmNewPassword) {
+                    alert('Mật khẩu xác nhận không trùng khớp!');
+                    return;
+                }
+                if (newPassword.length < 6) {
+                    alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:5050/api/auth/change-password', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.message);
+                        closeChangePasswordModal();
+                        closeProfileModal();
+                    } else {
+                        alert(result.message || 'Đổi mật khẩu thất bại');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Lỗi kết nối máy chủ');
+                }
+            });
+        }
+    });
+
+    // ==========================================
+    // KHỞI CHẠY (INITIALIZATION)
+    // ==========================================
+    async function initPage() {
+        updateNavbarUI();
+        await fetchSavedIds();
+        await fetchListings();
+    }
+
+    initPage();
+</script>
 </body>
 </html>

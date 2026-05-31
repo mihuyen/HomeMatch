@@ -13,6 +13,7 @@ const savedRoutes = require('./routes/saved');
 const accountantRoutes = require('./routes/accountant');
 const appointmentRoutes = require('./routes/appointments');
 const brokerRoutes = require('./routes/broker');
+const ITRoutes = require('./routes/IT');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/saved', savedRoutes);
 app.use('/api/accountant', accountantRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/broker', brokerRoutes);
+app.use('/api/IT', ITRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Test endpoints
@@ -76,7 +78,7 @@ global.io = io;
 
 io.on('connection', (socket) => {
     console.log(`Socket connected: ${socket.id}`);
-    
+
     socket.on('joinRoom', (roomName) => {
         socket.join(roomName);
         console.log(`Socket ${socket.id} joined room: ${roomName}`);
