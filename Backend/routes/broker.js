@@ -298,4 +298,62 @@ router.get('/dashboard-stats', requireAuth, requireRole('broker', 'manager'), as
     }
 });
 
+// POST /api/broker/contracts/upload-scan
+// Cho phép broker upload file scan hợp đồng (pdf, png, jpeg) dưới dạng base64
+router.post('/contracts/upload-scan', requireAuth, requireRole('broker', 'manager'), async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        const { fileName, mimeType, fileDataBase64 } = req.body;
+
+        if (!fileDataBase64) {
+            return res.status(400).json({ message: 'Thiếu dữ liệu tệp tin' });
+        }
+
+        let dataBase64 = fileDataBase64;
+        let resolvedMime = mimeType || null;
+
+        const dataUrlMatch = String(fileDataBase64).match(/^data:([^;]+);base64,(.*)$/);
+        if (dataUrlMatch) {
+            resolvedMime = resolvedMime || dataUrlMatch[1];
+            dataBase64 = dataUrlMatch[2];
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (resolvedMime && !allowedTypes.includes(resolvedMime)) {
+            return res.status(400).json({ message: 'Định dạng tệp tin không hợp lệ' });
+        }
+
+        const extMap = {
+            'image/jpeg': '.jpg',
+            'image/png': '.png',
+            'application/pdf': '.pdf'
+        };
+
+        const fallbackExt = fileName ? path.extname(fileName) : '';
+        const extension = resolvedMime ? extMap[resolvedMime] : fallbackExt || '.bin';
+        const safeExt = extension.startsWith('.') ? extension : `.${extension}`;
+        
+        const uploadDir = path.join(__dirname, '..', 'uploads', 'contracts');
+        await fs.promises.mkdir(uploadDir, { recursive: true });
+
+        const fileId = `broker-${req.user.user_id}-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const storedFileName = `contract_${fileId}${safeExt}`;
+        const storedPath = path.join(uploadDir, storedFileName);
+
+        await fs.promises.writeFile(storedPath, Buffer.from(dataBase64, 'base64'));
+
+        const publicUrl = `/uploads/contracts/${storedFileName}`;
+
+        res.json({
+            message: 'Tải file scan hợp đồng thành công',
+            contract_scan_url: publicUrl
+        });
+    } catch (err) {
+        console.error('broker upload contract scan error:', err);
+        res.status(500).json({ message: 'Lỗi server upload: ' + err.message });
+    }
+});
+
 module.exports = router;

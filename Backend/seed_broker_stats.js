@@ -111,7 +111,7 @@ async function seed() {
             // Insert assignments
             for (let i = 0; i < config.totalAssignments; i++) {
                 const tenantId = tenantIds[i % tenantIds.length];
-                const status = i < config.approvedContracts ? 'hoàn tất' : 'đang xử lý';
+                const status = i < config.approvedContracts ? 'hoàn tất' : 'chờ xử lý';
                 const notes = `Yêu cầu xem nhà #${i + 1}`;
                 await db.query(
                     `INSERT INTO STAFF_ASSIGNMENTS (tenant_id, sale_broker_id, status, notes, assigned_at)

@@ -255,6 +255,41 @@ async function updateLegalApproval(submissionContractId, payload) {
     });
 }
 
+// Broker API helpers
+async function listBrokerAssignments() {
+    return apiCall('/broker/assignments');
+}
+
+async function listBrokerAppointments() {
+    return apiCall('/broker/appointments');
+}
+
+async function getBrokerDashboardStats() {
+    return apiCall('/broker/dashboard-stats');
+}
+
+async function getBrokerAssignmentDetail(assignmentId) {
+    return apiCall(`/broker/assignments/${assignmentId}`);
+}
+
+async function getBrokerAppointmentsForAssignment(assignmentId) {
+    return apiCall(`/broker/assignments/${assignmentId}/appointments`);
+}
+
+async function createBrokerContract(payload) {
+    return apiCall('/broker/contracts', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function createBrokerAppointment(payload) {
+    return apiCall('/appointments/viewings', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {
     if (!getToken()) {

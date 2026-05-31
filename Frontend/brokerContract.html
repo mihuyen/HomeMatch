@@ -118,7 +118,6 @@
         </div>
         <nav class="hidden md:flex items-center gap-xl">
             <a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors text-body-md font-medium" href="brokerHome.html">Trang chủ</a>
-            <a class="text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed font-bold pb-1 text-body-md" href="brokerAssign.html">Phân công</a>
         </nav>
         <div class="flex items-center gap-md">
             <button class="material-symbols-outlined text-secondary hover:bg-surface-container-low p-2 rounded-full transition-all duration-200">notifications</button>
@@ -201,25 +200,6 @@
                         </div>
                     </section>
 
-                    <!-- Section 2: Associated Appointment & Result Note -->
-                    <section class="glass-card rounded-xl p-lg">
-                        <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
-                            <span class="material-symbols-outlined text-primary">calendar_today</span>
-                            <h3 class="text-headline-md font-headline-md text-primary">Lịch hẹn &amp; Thương lượng</h3>
-                        </div>
-                        <div class="space-y-md">
-                            <div class="space-y-xs">
-                                <label class="text-label-sm font-label-sm text-secondary">Chọn lịch xem nhà thực địa liên quan *</label>
-                                <select id="selAppointment" required class="w-full border border-outline-variant rounded-lg px-md py-2.5 bg-surface focus:ring-primary focus:border-primary text-body-md font-body-md">
-                                    <option value="">-- Đang tải danh sách lịch hẹn --</option>
-                                </select>
-                            </div>
-                            <div class="space-y-xs">
-                                <label class="text-label-sm font-label-sm text-secondary">Ghi chú kết quả thương lượng *</label>
-                                <textarea id="txtResultNote" required rows="3" class="w-full border border-outline-variant rounded-lg px-md py-2.5 bg-surface focus:ring-primary focus:border-primary text-body-md font-body-md" placeholder="Ví dụ: Khách đồng ý thuê giá 150 triệu/tháng, dọn vào từ tuần sau..."></textarea>
-                            </div>
-                        </div>
-                    </section>
 
                     <!-- Section 3: Lease Terms -->
                     <section class="glass-card rounded-xl p-lg">
@@ -255,12 +235,21 @@
                         </div>
                         <div class="space-y-md">
                             <div class="space-y-xs">
-                                <label class="text-label-sm font-label-sm text-secondary">Đường dẫn file scan hợp đồng (.pdf, .jpg, .png) *</label>
-                                <input id="txtContractScanUrl" type="text" required class="w-full border border-outline-variant rounded-lg px-md py-2.5 bg-surface focus:ring-primary focus:border-primary text-body-md font-body-md" value="/uploads/contracts/scan-rental-01.pdf" placeholder="Nhập đường dẫn file scan...">
-                            </div>
-                            <div class="border-2 border-dashed border-outline-variant rounded-xl p-6 flex flex-col items-center justify-center text-center bg-surface-container-lowest">
-                                <span class="material-symbols-outlined text-[36px] text-outline mb-sm">cloud_upload</span>
-                                <p class="text-body-sm font-body-sm text-secondary">Dữ liệu quét hợp đồng sẽ được liên kết trực tiếp để Ban Kế toán đối soát.</p>
+                                <label class="text-label-sm font-label-sm text-secondary">Tải file scan hợp đồng từ máy cá nhân (.pdf, .png, .jpg) *</label>
+                                <div id="uploadContainer" class="border-2 border-dashed border-outline-variant rounded-xl p-6 flex flex-col items-center justify-center text-center bg-surface-container-lowest cursor-pointer hover:border-primary transition-all">
+                                    <span class="material-symbols-outlined text-[36px] text-outline mb-sm" id="uploadIcon">cloud_upload</span>
+                                    <p class="text-body-sm font-body-sm text-slate-800 font-semibold" id="uploadStatusText">Nhấp để chọn tệp tin hoặc kéo thả vào đây</p>
+                                    <p class="text-[11px] text-secondary mt-1">Hỗ trợ định dạng PDF, PNG, JPG tối đa 10MB</p>
+                                    <input id="fileContractScan" type="file" accept="image/png, image/jpeg, application/pdf" class="hidden">
+                                </div>
+                                <input id="txtContractScanUrl" type="hidden" required>
+                                <div id="uploadPreview" class="hidden mt-3 p-3 bg-slate-100 rounded-xl flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[#00236f]">description</span>
+                                        <span class="text-xs font-semibold text-[#00236f] truncate max-w-[250px]" id="previewFileName">scan.pdf</span>
+                                    </div>
+                                    <button type="button" class="text-xs text-red-600 font-bold hover:underline" id="btnRemoveFile">Xóa</button>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -353,6 +342,93 @@
             const today = new Date();
             document.getElementById('txtSignedDate').value = today.toLocaleDateString('vi-VN');
 
+            // File Upload logic
+            const uploadContainer = document.getElementById('uploadContainer');
+            const fileInput = document.getElementById('fileContractScan');
+            const statusText = document.getElementById('uploadStatusText');
+            const uploadIcon = document.getElementById('uploadIcon');
+            const hiddenUrlInput = document.getElementById('txtContractScanUrl');
+            const uploadPreview = document.getElementById('uploadPreview');
+            const previewFileName = document.getElementById('previewFileName');
+            const btnRemoveFile = document.getElementById('btnRemoveFile');
+
+            uploadContainer.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Drag and drop events
+            uploadContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadContainer.classList.add('border-primary', 'bg-slate-50');
+            });
+
+            uploadContainer.addEventListener('dragleave', () => {
+                uploadContainer.classList.remove('border-primary', 'bg-slate-50');
+            });
+
+            uploadContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadContainer.classList.remove('border-primary', 'bg-slate-50');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect(e.dataTransfer.files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length) {
+                    handleFileSelect(fileInput.files[0]);
+                }
+            });
+
+            btnRemoveFile.addEventListener('click', () => {
+                fileInput.value = '';
+                hiddenUrlInput.value = '';
+                uploadPreview.classList.add('hidden');
+                uploadContainer.classList.remove('hidden');
+            });
+
+            async function handleFileSelect(file) {
+                // Validate size
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Kích thước tệp tin tối đa là 10MB.');
+                    return;
+                }
+
+                statusText.innerText = 'Đang tải tệp tin lên hệ thống...';
+                uploadIcon.innerText = 'sync';
+                uploadIcon.classList.add('animate-spin');
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = async () => {
+                    const base64Data = reader.result;
+                    try {
+                        const uploadResponse = await apiCall('/broker/contracts/upload-scan', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                fileName: file.name,
+                                mimeType: file.type,
+                                fileDataBase64: base64Data
+                            })
+                        });
+
+                        hiddenUrlInput.value = uploadResponse.contract_scan_url;
+                        previewFileName.innerText = file.name;
+                        
+                        uploadPreview.classList.remove('hidden');
+                        uploadContainer.classList.add('hidden');
+                    } catch (err) {
+                        console.error(err);
+                        alert('Tải file lên thất bại: ' + err.message);
+                        statusText.innerText = 'Nhấp để chọn tệp tin hoặc kéo thả vào đây';
+                    } finally {
+                        uploadIcon.innerText = 'cloud_upload';
+                        uploadIcon.classList.remove('animate-spin');
+                    }
+                };
+            }
+
             let tenantId = null;
 
             // 1. Fetch Assignment Detail
@@ -365,25 +441,6 @@
                 alert('Không tải được thông tin phân công.');
             }
 
-            // 2. Fetch Pending Appointments for this Assignment
-            try {
-                const appointments = await getBrokerAppointmentsForAssignment(assignmentId);
-                const selectElement = document.getElementById('selAppointment');
-                selectElement.innerHTML = '';
-                
-                if (appointments.length === 0) {
-                    selectElement.innerHTML = '<option value="">-- Không có lịch hẹn chưa hoàn thành --</option>';
-                } else {
-                    selectElement.innerHTML = '<option value="">-- Chọn lịch hẹn xem nhà --</option>';
-                    appointments.forEach(apt => {
-                        const d = new Date(apt.scheduled_time);
-                        const dateStr = isNaN(d.getTime()) ? apt.scheduled_time : d.toLocaleString('vi-VN');
-                        selectElement.innerHTML += `<option value="${apt.appointment_id}">${apt.appointment_type || 'Xem nhà'} - ${dateStr} (${apt.location || 'Tại địa chỉ'})</option>`;
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-            }
 
             // 3. Realtime Totals calculation
             const agreedPriceInput = document.getElementById('numAgreedPrice');
@@ -410,16 +467,9 @@
             form.onsubmit = async (e) => {
                 e.preventDefault();
 
-                const appointmentId = document.getElementById('selAppointment').value;
-                const resultNote = document.getElementById('txtResultNote').value.trim();
                 const agreedPrice = Number(agreedPriceInput.value);
                 const leaseTermMonths = Number(leaseTermInput.value);
                 const contractScanUrl = document.getElementById('txtContractScanUrl').value.trim();
-
-                if (!appointmentId) {
-                    alert('Vui lòng chọn lịch hẹn xem nhà liên quan đến giao dịch này.');
-                    return;
-                }
 
                 const btnSubmit = document.getElementById('btnSubmit');
                 const origContent = btnSubmit.innerHTML;
@@ -440,8 +490,6 @@
                         agreedPrice,
                         leaseTermMonths,
                         listingId: 1, // Default test listing link
-                        appointmentId,
-                        resultNote,
                         contractScanUrl
                     };
 

@@ -128,6 +128,12 @@ router.post('/viewings', requireAuth, requireRole(...BROKER_ROLES), async (req, 
             [parsedAssignmentId, scheduledTime, location]
         );
 
+        // Update staff assignment status to 'đang hoàn thiện'
+        await db.query(
+            `UPDATE staff_assignments SET status = 'đang hoàn thiện' WHERE assignment_id = ?`,
+            [parsedAssignmentId]
+        );
+
         res.status(201).json({
             message: 'Tạo lịch hẹn xem nhà thành công',
             appointment_id: result.insertId,

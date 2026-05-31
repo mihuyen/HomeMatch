@@ -50,9 +50,7 @@
 <span class="text-headline-md font-bold text-primary tracking-tight">HomeMatch</span>
 </div>
 <nav class="hidden md:flex items-center gap-1">
-<a class="px-4 py-2 text-sm font-medium text-secondary hover:text-primary rounded-md transition-colors" href="#">Trang chủ</a>
-<a class="px-4 py-2 text-sm font-medium text-primary bg-primary-container/30 rounded-md transition-colors" href="#">Phân công</a>
-
+<a class="px-4 py-2 text-sm font-medium text-secondary hover:text-primary rounded-md transition-colors" href="brokerHome.html">Trang chủ</a>
 </nav>
 </div>
 <div class="flex items-center gap-4">
@@ -186,5 +184,79 @@
 </div>
 </footer>
 
+  <script src="api.js"></script>
+  <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+          const user = await requireLogin();
+          if (!user) return;
 
+          // Display Broker ID on header profile
+          const brokerIdEl = document.querySelector('.text-right p.text-secondary');
+          if (brokerIdEl) {
+              brokerIdEl.textContent = 'ID: BRK-' + String(user.user_id).padStart(4, '0');
+          }
+          const brokerNameEl = document.querySelector('.text-right p.text-on-surface');
+          if (brokerNameEl && user.full_name) {
+              brokerNameEl.textContent = user.full_name;
+          }
+
+          const container = document.getElementById('appointmentListContainer');
+          const emptyState = document.getElementById('emptyStateContainer');
+
+          try {
+              const data = await listBrokerAppointments();
+              const items = data.items || [];
+              
+              if (items.length === 0) {
+                  container.classList.add('hidden');
+                  emptyState.classList.remove('hidden');
+                  return;
+              }
+
+              container.innerHTML = items.map(apt => {
+                  const d = new Date(apt.scheduled_time);
+                  const dateStr = d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+                  
+                  // Color coding for status
+                  const isFinished = ['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes((apt.status || '').toLowerCase());
+                  const statusColor = isFinished ? 'bg-green-500' : 'bg-blue-500';
+                  const statusText = isFinished ? 'Đã xong' : 'Sắp tới';
+
+                  return `
+                  <div class="bg-white rounded-xl border border-outline-variant p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div class="flex gap-3">
+                          <div class="w-10 h-10 rounded-full ${isFinished ? 'bg-green-50' : 'bg-blue-50'} flex items-center justify-center shrink-0">
+                              <span class="material-symbols-outlined ${isFinished ? 'text-green-600' : 'text-blue-600'} text-[22px]">calendar_today</span>
+                          </div>
+                          <div>
+                              <div class="flex items-center gap-2 flex-wrap">
+                                  <h3 class="font-bold text-on-surface text-sm">${apt.appointment_type || 'Xem nhà'}</h3>
+                                  <span class="w-2 h-2 rounded-full ${statusColor}"></span>
+                                  <span class="text-xs text-secondary">${statusText}</span>
+                              </div>
+                              <p class="text-xs text-secondary mt-1 flex items-center gap-1">
+                                  <span class="material-symbols-outlined text-[14px]">person</span> Khách hàng: <strong>${apt.tenant_name || `KH #${apt.tenant_id}`}</strong>
+                              </p>
+                              <p class="text-xs text-secondary mt-0.5 flex items-center gap-1">
+                                  <span class="material-symbols-outlined text-[14px]">location_on</span> Địa điểm: <span>${apt.location || 'Tại địa chỉ'}</span>
+                              </p>
+                              ${apt.result_note ? `
+                              <p class="text-xs text-emerald-700 mt-2 bg-emerald-50 px-2 py-1 rounded border border-emerald-100 font-medium max-w-max">
+                                  Ghi chú kết quả: ${apt.result_note}
+                              </p>` : ''}
+                          </div>
+                      </div>
+                      <div class="text-right shrink-0 flex flex-col items-end gap-1 w-full md:w-auto">
+                          <span class="text-xs font-bold text-primary bg-primary-container/20 px-3 py-1 rounded-full">${dateStr}</span>
+                          ${apt.rental_contract_id ? `<span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md mt-1">Đã chốt hợp đồng #${apt.rental_contract_id}</span>` : ''}
+                      </div>
+                  </div>
+                  `;
+              }).join('');
+          } catch (err) {
+              console.error(err);
+              container.innerHTML = `<div class="p-4 text-red-600">Lỗi tải danh sách lịch hẹn: ${err.message}</div>`;
+          }
+      });
+  </script>
 </body></html>

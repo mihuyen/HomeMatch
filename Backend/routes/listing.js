@@ -11,7 +11,7 @@ async function pickBrokerId() {
          FROM users u
          LEFT JOIN staff_assignments sa
            ON sa.sale_broker_id = u.user_id
-          AND sa.status IN ('đang xử lý', 'đang chăm sóc', 'dang xu ly', 'dang cham soc', 'đã phân công lại')
+          AND sa.status IN ('chờ xử lý', 'đang hoàn thiện')
          WHERE u.role = 'broker'
          GROUP BY u.user_id
          ORDER BY active_count ASC, u.user_id ASC
@@ -113,7 +113,7 @@ router.post('/:listingId/request-view', requireAuth, requireRole('tenant'), asyn
         const [result] = await db.query(
             `INSERT INTO staff_assignments (tenant_id, sale_broker_id, status, notes)
              VALUES (?, ?, ?, ?)`,
-            [tenantId, brokerId, 'đang xử lý', assignmentNote]
+            [tenantId, brokerId, 'chờ xử lý', assignmentNote]
         );
 
         res.status(201).json({

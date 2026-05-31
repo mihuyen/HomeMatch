@@ -429,7 +429,7 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
              FROM users u
              LEFT JOIN staff_assignments sa 
                ON sa.sale_broker_id = u.user_id 
-              AND sa.status IN ('đang xử lý', 'đã phân công lại')
+              AND sa.status IN ('chờ xử lý', 'đang hoàn thiện')
              WHERE u.role = 'broker'
              GROUP BY u.user_id
              ORDER BY active_count ASC, u.user_id ASC`
@@ -439,10 +439,10 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
         const conditions = [];
         const params = [];
 
-        if (status === 'pending' || status === 'đang xử lý') {
-            conditions.push("sa.status = 'đang xử lý'");
-        } else if (status === 'reassigned' || status === 'đã phân công lại') {
-            conditions.push("sa.status = 'đã phân công lại'");
+        if (status === 'pending' || status === 'chờ xử lý') {
+            conditions.push("sa.status = 'chờ xử lý'");
+        } else if (status === 'active' || status === 'đang hoàn thiện') {
+            conditions.push("sa.status = 'đang hoàn thiện'");
         } else if (status === 'completed' || status === 'hoàn tất') {
             conditions.push("sa.status = 'hoàn tất'");
         } else if (status && status !== 'Tất cả trạng thái' && status !== 'all' && status !== '') {
@@ -466,7 +466,7 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
         const [pendingRows] = await db.query(
             `SELECT COUNT(DISTINCT sa.assignment_id) AS total 
              FROM staff_assignments sa
-             WHERE sa.status = 'đang xử lý'`
+             WHERE sa.status = 'chờ xử lý'`
         );
         const totalPending = Number(pendingRows[0]?.total || 0);
 
@@ -491,11 +491,11 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
             suggestedBroker,
             items: rows.map(row => {
                 const isBrokerValid = row.sale_broker_id && row.broker_role === 'broker';
-                let assignmentStatus = 'HỆ THỐNG ĐÃ PHÂN CÔNG';
-                if (row.status === 'đã phân công lại') {
-                    assignmentStatus = 'ĐÃ PHÂN CÔNG LẠI';
+                let assignmentStatus = 'CHỜ XỬ LÝ';
+                if (row.status === 'đang hoàn thiện') {
+                    assignmentStatus = 'ĐANG HOÀN THIỆN';
                 } else if (row.status === 'hoàn tất') {
-                    assignmentStatus = 'ĐÃ HOÀN THÀNH';
+                    assignmentStatus = 'HOÀN TẤT';
                 }
 
                 return {
@@ -528,7 +528,7 @@ router.get('/brokers', requireAuth, requireRole('admin', 'manager'), async (req,
              FROM users u
              LEFT JOIN staff_assignments sa 
                ON sa.sale_broker_id = u.user_id 
-              AND sa.status IN ('đang xử lý', 'đã phân công lại')
+              AND sa.status IN ('chờ xử lý', 'đang hoàn thiện')
              WHERE u.role = 'broker'
              GROUP BY u.user_id
              ORDER BY active_count ASC, u.user_id ASC`
@@ -567,7 +567,7 @@ router.post('/broker-assignments/:assignmentId', requireAuth, requireRole('admin
 
         await db.query(
             `UPDATE staff_assignments 
-             SET sale_broker_id = ?, status = 'đã phân công lại'
+             SET sale_broker_id = ?, status = 'chờ xử lý'
              WHERE assignment_id = ?`,
             [assignedBrokerId, assignmentId]
         );
