@@ -232,9 +232,8 @@
                     <h3 class="text-[20px] font-bold text-on-surface mb-2 text-center">Bạn thích bất động sản này?</h3>
                     <p class="text-[14px] text-on-surface-variant mb-8 text-center px-4">Hãy đặt lịch ngay để đến xem trực tiếp và nhận tư vấn chi tiết từ hệ thống HomeMatch.</p>
 
-                    <button id="modalRequestViewBtn" class="w-full h-12 bg-primary hover:bg-primary-container text-white rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-colors shadow-md active:scale-95">
-                        <span class="material-symbols-outlined">event_available</span>
-                        Yêu cầu xem nhà
+                    <button id="requestViewBtn" class="w-full py-3 bg-primary text-white rounded-xl text-[15px] font-bold hover:bg-primary-container transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined">calendar_month</span> Yêu cầu xem nhà
                     </button>
                 </div>
             </div>
@@ -429,31 +428,22 @@
 
     async function fetchListings() {
         try {
-            // 1. Gọi API lấy dữ liệu
             const response = await fetch('http://localhost:5050/api/listings');
             if (!response.ok) throw new Error('Network response was not ok');
 
             const data = await response.json();
 
-            // 2. Vòng lặp MAP (Đoạn này bị thiếu trong code của bạn)
             dbData = data.map(item => {
-
-                // Xử lý chuỗi JSON ảnh từ DB (Hỗ trợ cả Base64 và HTTP link)
-                let imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'; // Ảnh mặc định dự phòng
+                let imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';
 
                 try {
                     if (item.images_uploaded) {
-                        // Parse JSON nếu nó đang là chuỗi string
                         const parsedImages = typeof item.images_uploaded === 'string' ? JSON.parse(item.images_uploaded) : item.images_uploaded;
-
                         if (Array.isArray(parsedImages) && parsedImages.length > 0 && parsedImages[0]) {
                             let firstImage = parsedImages[0];
-
-                            // Kiểm tra: Nếu là chuỗi Base64 (chứa 'data:image') HOẶC là link web thật ('http')
                             if (firstImage.startsWith('data:image') || firstImage.startsWith('http')) {
                                 imageUrl = firstImage;
                             } else {
-                                // Nếu nó chỉ lưu mỗi tên file (vd: 'anh.jpg') mà máy bạn không có
                                 imageUrl = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
                             }
                         }
@@ -468,6 +458,7 @@
                 return {
                     id: item.listing_id || item.submission_id,
                     title: finalTitle,
+                    status: item.status,
                     type: item.property_type,
                     price: finalPrice,
                     area: item.area || 0,
@@ -480,7 +471,7 @@
                     image: imageUrl,
                     postedAt: new Date(item.activated_at || item.submitted_at || Date.now())
                 };
-            }); // Dấu ngoặc này đã có vòng lặp MAP tương ứng ở trên
+            });
 
             applyFilters();
         } catch (error) {
@@ -499,8 +490,11 @@
                 const isSaved = savedIds.includes(item.id);
                 const heartColorClass = isSaved ? 'icon-filled text-primary' : 'text-on-surface-variant';
 
+                // Đổi mờ đi một chút nếu tin đã hết hạn
+                const opacityClass = item.status === 'expired' ? 'opacity-60' : '';
+
                 const cardHTML = `
-                    <div class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 cursor-pointer flex flex-col relative" onclick="openModal(${item.id})">
+                    <div class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 cursor-pointer flex flex-col relative ${opacityClass}" onclick="openModal(${item.id})">
                         <div class="relative h-48 w-full overflow-hidden bg-surface-container-high">
                             <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${item.image}">
                             <button onclick="toggleSave(${item.id}, event)" class="absolute top-3 right-3 w-8 h-8 bg-surface-container-lowest/80 backdrop-blur rounded-full flex items-center justify-center hover:text-primary transition-colors z-10">
@@ -513,6 +507,7 @@
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant text-[10px] rounded font-bold uppercase tracking-wider">${getTypeLabel(item.type)}</span>
+                                ${item.status === 'expired' ? '<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant text-[10px] rounded font-bold uppercase tracking-wider">HẾT HẠN</span>' : ''}
                             </div>
                             <h3 class="text-[16px] font-semibold text-on-surface uppercase mb-2 line-clamp-2 leading-tight">${item.title}</h3>
                             <div class="flex items-baseline gap-2 mb-4 mt-auto">
@@ -648,19 +643,12 @@
 
         currentModalId = id;
 
-        // 1. ĐỔ DỮ LIỆU CŨ LÊN GIAO DIỆN
+        // 1. ĐỔ DỮ LIỆU LÊN GIAO DIỆN
         document.getElementById('modalImg').src = item.image;
         document.getElementById('modalTypeBadge').innerText = getTypeLabel(item.type);
         document.getElementById('modalTime').innerText = timeAgo(item.postedAt);
         document.getElementById('modalTitle').innerText = item.title;
         document.getElementById('modalAddress').innerText = item.address;
-
-        // Hiện số view lấy từ Backend
-        const viewCountEl = document.getElementById('modalViewCount');
-        if (viewCountEl) {
-            viewCountEl.innerText = item.viewCount || 0;
-        }
-
         document.getElementById('modalPrice').innerText = formatPrice(item.price);
         document.getElementById('modalArea').innerText = item.area + " m²";
         document.getElementById('modalBedrooms').innerText = item.bedrooms;
@@ -668,16 +656,33 @@
         document.getElementById('modalDirection').innerText = item.direction;
         document.getElementById('modalDesc').innerText = item.description;
 
+        // Hiện số view lấy từ Backend
+        const viewCountEl = document.getElementById('modalViewCount');
+        if (viewCountEl) {
+            viewCountEl.innerText = item.viewCount || 0;
+        }
+
+        // KIỂM TRA TRẠNG THÁI ĐỂ KHÓA/MỞ NÚT YÊU CẦU XEM NHÀ
+        const reqBtn = document.getElementById('requestViewBtn');
+        if (item.status === 'expired') {
+            reqBtn.disabled = true;
+            reqBtn.className = "w-full py-3 bg-surface-container-high text-on-surface-variant rounded-xl text-[15px] font-bold cursor-not-allowed flex items-center justify-center gap-2";
+            reqBtn.innerHTML = '<span class="material-symbols-outlined">block</span> Tin đã hết hạn';
+        } else {
+            reqBtn.disabled = false;
+            reqBtn.className = "w-full py-3 bg-primary text-white rounded-xl text-[15px] font-bold hover:bg-primary-container transition-colors flex items-center justify-center gap-2 shadow-sm";
+            reqBtn.innerHTML = '<span class="material-symbols-outlined">calendar_month</span> Yêu cầu xem nhà';
+        }
+
         document.getElementById('propertyModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
 
         // 2. BẮN API TĂNG VIEW (Chạy ngầm)
         fetch(`http://localhost:5050/api/listings/${id}/view`, {
-            method: 'POST' // Phải là POST giống backend đã viết
+            method: 'POST'
         })
             .then(response => {
                 if(response.ok) {
-                    // Nếu Backend báo thành công, tự động cộng 1 vào số hiển thị trên màn hình
                     item.viewCount = (item.viewCount || 0) + 1;
                     if (viewCountEl) viewCountEl.innerText = item.viewCount;
                 }
@@ -691,10 +696,35 @@
         currentModalId = null;
     }
 
-    const modalRequestViewBtn = document.getElementById('modalRequestViewBtn');
-    if(modalRequestViewBtn) {
-        modalRequestViewBtn.onclick = () => {
-            alert("Yêu cầu xem nhà đã được gửi! Hệ thống sẽ phân công môi giới liên hệ lại cho bạn sớm nhất.");
+    // ==========================================
+    // API GỬI YÊU CẦU XEM NHÀ (TÍCH HỢP GỌI THẬT)
+    // ==========================================
+    const requestViewBtn = document.getElementById('requestViewBtn');
+    if(requestViewBtn) {
+        requestViewBtn.onclick = async () => {
+            if(!currentModalId || !token) return;
+
+            try {
+                // Gọi API backend phân công môi giới tự động (API: POST /api/listings/:id/request-view)
+                const res = await fetch(`http://localhost:5050/api/listings/${currentModalId}/request-view`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    alert("Yêu cầu xem nhà đã được gửi thành công!\nHệ thống đã tự động phân công môi giới liên hệ lại cho bạn sớm nhất.");
+                    closeModal();
+                } else {
+                    const data = await res.json();
+                    alert(data.message || "Không thể gửi yêu cầu xem nhà vào lúc này.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi kết nối máy chủ! Vui lòng thử lại sau.");
+            }
         };
     }
 
