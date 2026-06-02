@@ -243,17 +243,35 @@
                     const tr = document.createElement('tr');
                     tr.className = 'bg-surface-container-lowest hover:bg-surface-container-low transition-colors group';
                     const submittedAt = it.submitted_at ? new Date(it.submitted_at).toLocaleString() : '-';
-                    const statusLabel = (it.status === 'surveyed') ? 'Hoàn tất' : (it.status === 'cancelled' ? 'Đã hủy' : 'Chờ xử lý');
+                    let statusLabel = 'Chờ khảo sát';
+                    let statusColorClass = 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]';
+                    if (it.status === 'surveyed') {
+                        statusLabel = 'Đã khảo sát đạt';
+                        statusColorClass = 'bg-[#D1FAE5] text-[#065F46] border-[#10B981]';
+                    } else if (it.status === 'cancelled' || it.status === 'rejected') {
+                        statusLabel = 'Từ chối';
+                        statusColorClass = 'bg-error-container text-on-error-container border-error';
+                    }
+                    let actionsHtml = '';
+                    if (it.status === 'surveyed' || it.status === 'cancelled' || it.status === 'rejected') {
+                        actionsHtml = `
+                            <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
+                            <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
+                            <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
+                        `;
+                    }
                     tr.innerHTML = `
 <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">${it.request_code}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface">${(it.owner && it.owner.full_name) || '-'}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface-variant truncate max-w-[200px]">${it.address || '-'}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface-variant">${submittedAt}</td>
-<td class="p-md"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${it.status==='cancelled' ? 'bg-error-container text-on-error-container' : it.status==='surveyed' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEF3C7] text-[#92400E]'} border border-[#FDE68A]">${statusLabel}</span></td>
+<td class="p-md"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusColorClass}">${statusLabel}</span></td>
 <td class="p-md text-right space-x-sm">
-                    <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
-                    <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
-                    <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
+                    ${actionsHtml}
 </td>
                     `;
                     tbody.appendChild(tr);

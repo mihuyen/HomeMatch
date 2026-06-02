@@ -237,6 +237,9 @@
       const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
       const calendarUrl = generateGoogleCalendarLink(a, prop);
 
+      const subStatus = prop && prop.submission && prop.submission.status;
+      const isSurveyDone = subStatus === 'surveyed' || subStatus === 'cancelled' || subStatus === 'rejected';
+
       const item = document.createElement('div');
       item.className = 'p-md md:p-lg bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden mb-4';
       item.innerHTML = `
@@ -271,10 +274,12 @@
             <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
             Thêm vào Google Calendar
           </a>
-          <a href="saleSurvey.html?submissionId=${submissionId}&appointmentId=${a.appointment_id}" class="px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center gap-sm">
-            <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
-            Nhập kết quả khảo sát
-          </a>
+          ${!isSurveyDone ? `
+            <a href="saleSurvey.html?submissionId=${submissionId}&appointmentId=${a.appointment_id}" class="px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center gap-sm">
+              <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+              Nhập kết quả khảo sát
+            </a>
+          ` : ''}
         </div>
       `;
       list.appendChild(item);
