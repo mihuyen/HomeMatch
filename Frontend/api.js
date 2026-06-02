@@ -290,6 +290,48 @@ async function createBrokerAppointment(payload) {
     });
 }
 
+// Admin API helpers
+async function getAdminAssignments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.property_type) query.set('property_type', params.property_type);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/admin/assignments${suffix}`);
+}
+
+async function getAdminSalesAgents() {
+    return apiCall('/admin/sales-agents');
+}
+
+async function assignSurveyor(submissionId, assignedSalesId) {
+    return apiCall(`/admin/assignments/${submissionId}`, {
+        method: 'POST',
+        body: JSON.stringify({ assignedSalesId })
+    });
+}
+
+async function getAdminBrokerAssignments(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.limit) query.set('limit', params.limit);
+    if (params.offset) query.set('offset', params.offset);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/admin/broker-assignments${suffix}`);
+}
+
+async function getAdminBrokers() {
+    return apiCall('/admin/brokers');
+}
+
+async function assignAdminBroker(assignmentId, assignedBrokerId) {
+    return apiCall(`/admin/broker-assignments/${assignmentId}`, {
+        method: 'POST',
+        body: JSON.stringify({ assignedBrokerId })
+    });
+}
+
 // Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
 async function requireLogin() {
     if (!getToken()) {
