@@ -6,8 +6,8 @@ const pool = mysql.createPool({
     host: '127.0.0.1',
     port: 3306,
     user: 'root',
-    password: 'Quan@134',
-    database: 'property_schema',
+    password: '100420',
+    database: 'homematch',
     waitForConnections: true,
     connectionLimit: 10
 });
