@@ -490,16 +490,17 @@
         const priceStr = formatCurrency(item.agreed_price);
 
         let statusBadge = '';
-        if (item.status === 'Đã duyệt') {
-          statusBadge = '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Đã duyệt</span>';
-        } else if (item.status === 'Từ chối') {
-          statusBadge = '<span class="inline-block bg-red-100 text-red-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Từ chối</span>';
+        if (item.status === 'Đã phê duyệt' || item.status === 'Đã duyệt') {
+          statusBadge = '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Đã phê duyệt</span>';
+        } else if (item.status === 'Yêu cầu kiểm tra lại' || item.status === 'Từ chối') {
+          statusBadge = '<span class="inline-block bg-red-100 text-red-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Yêu cầu kiểm tra lại</span>';
         } else {
-          statusBadge = '<span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Chờ duyệt</span>';
+          statusBadge = '<span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Chờ kiểm duyệt</span>';
         }
 
-        const btnText = (item.status === 'Đã duyệt' || item.status === 'Từ chối') ? 'Xem chi tiết' : 'Kiểm duyệt';
-        const btnClass = (item.status === 'Đã duyệt' || item.status === 'Từ chối')
+        const isFinalized = (item.status === 'Đã phê duyệt' || item.status === 'Đã duyệt' || item.status === 'Yêu cầu kiểm tra lại' || item.status === 'Từ chối');
+        const btnText = isFinalized ? 'Xem chi tiết' : 'Kiểm duyệt';
+        const btnClass = isFinalized
           ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
           : 'bg-[#4059aa] text-white border-[#4059aa] hover:bg-[#2e4381]';
 
@@ -558,18 +559,18 @@
       document.getElementById('modal-lease-term').textContent = `${selectedContract.lease_term_months || 0} tháng`;
 
       const statusBadge = document.getElementById('modal-contract-status-badge');
-      if (selectedContract.status === 'Đã duyệt') {
+      if (selectedContract.status === 'Đã phê duyệt' || selectedContract.status === 'Đã duyệt') {
         statusBadge.textContent = 'ĐÃ PHÊ DUYỆT';
         statusBadge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-emerald-100 text-emerald-800 py-1 px-2.5 rounded-lg';
-      } else if (selectedContract.status === 'Từ chối') {
-        statusBadge.textContent = 'ĐÃ TỪ CHỐI';
+      } else if (selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối') {
+        statusBadge.textContent = 'YÊU CẦU KIỂM TRA LẠI';
         statusBadge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-red-100 text-red-800 py-1 px-2.5 rounded-lg';
       } else {
         statusBadge.textContent = 'ĐANG CHỜ DUYỆT';
         statusBadge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-amber-100 text-amber-800 py-1 px-2.5 rounded-lg';
       }
 
-      const isApproved = selectedContract.status === 'Đã duyệt' || selectedContract.status === 'Từ chối';
+      const isFinalized = selectedContract.status === 'Đã phê duyệt' || selectedContract.status === 'Đã duyệt' || selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối';
 
       // Fill Inputs
       const agreedPrice = Number(selectedContract.agreed_price) || 0;
@@ -586,40 +587,40 @@
       document.getElementById('input-rejection-reason').value = selectedContract.rejection_reason || '';
 
       // Enable/disable based on approval status
-      document.getElementById('input-approved-price').disabled = isApproved;
-      document.getElementById('input-reviewer-notes').disabled = isApproved;
-      document.getElementById('input-rejection-reason').disabled = isApproved;
+      document.getElementById('input-approved-price').disabled = isFinalized;
+      document.getElementById('input-reviewer-notes').disabled = isFinalized;
+      document.getElementById('input-rejection-reason').disabled = isFinalized;
 
       // Handle radios
       const radios = document.querySelectorAll('input[name="audit-status-option"]');
       radios.forEach(r => {
-        r.disabled = isApproved;
-        if (selectedContract.status === 'Từ chối' && r.value === 'từ chối') {
+        r.disabled = isFinalized;
+        if ((selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối') && r.value === 'từ chối') {
           r.checked = true;
-        } else if (selectedContract.status === 'Đã duyệt' && r.value === 'duyệt') {
+        } else if ((selectedContract.status === 'Đã phê duyệt' || selectedContract.status === 'Đã duyệt') && r.value === 'duyệt') {
           r.checked = true;
-        } else if (!isApproved && r.value === 'duyệt') {
+        } else if (!isFinalized && r.value === 'duyệt') {
           r.checked = true;
         }
       });
 
       // Show/hide rejection reason based on radio and selected status
-      if (selectedContract.status === 'Từ chối') {
+      if (selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối') {
         toggleRejectionReason(true);
       } else {
-        toggleRejectionReason(!isApproved && document.querySelector('input[name="audit-status-option"]:checked').value === 'từ chối');
+        toggleRejectionReason(!isFinalized && document.querySelector('input[name="audit-status-option"]:checked').value === 'từ chối');
       }
 
       // Hide or show the action button
       const submitBtn = document.getElementById('btn-submit-audit');
-      if (isApproved) {
+      if (isFinalized) {
         submitBtn.classList.add('hidden');
       } else {
         submitBtn.classList.remove('hidden');
       }
 
       // Reset radio and visibility
-      if (!isApproved) {
+      if (!isFinalized) {
         document.querySelector('input[name="audit-status-option"][value="duyệt"]').checked = true;
         toggleRejectionReason(false);
       }

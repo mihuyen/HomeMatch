@@ -97,6 +97,44 @@ router.get('/assignments/:id/appointments', requireAuth, requireRole('broker', '
     }
 });
 
+// GET /api/broker/assignments/:id/contract
+// Lấy thông tin hợp đồng hiện tại và lý do từ chối (nếu có) của phân công này
+router.get('/assignments/:id/contract', requireAuth, requireRole('broker', 'manager'), async (req, res) => {
+    try {
+        const brokerId = req.user.user_id;
+        const assignmentId = req.params.id;
+
+        // 1. Get assignment to find the tenant_id
+        const [assignments] = await db.query(
+            `SELECT tenant_id FROM staff_assignments WHERE assignment_id = ? AND sale_broker_id = ? LIMIT 1`,
+            [assignmentId, brokerId]
+        );
+        if (assignments.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy phân công' });
+        }
+        const tenantId = assignments[0].tenant_id;
+
+        // 2. Get the latest contract and its rejection reason (if any)
+        const [contracts] = await db.query(
+            `SELECT rc.*, rca.rejection_reason 
+             FROM RENTAL_CONTRACTS rc
+             LEFT JOIN RENTAL_CONTRACT_APPROVALS rca ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = 'từ chối'
+             WHERE rc.tenant_id = ? AND rc.broker_id = ?
+             ORDER BY rc.rental_contract_id DESC LIMIT 1`,
+            [tenantId, brokerId]
+        );
+
+        if (contracts.length === 0) {
+            return res.json({ contract: null });
+        }
+
+        res.json({ contract: contracts[0] });
+    } catch (err) {
+        console.error('get contract for assignment error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
 // GET /api/broker/appointments
 // Danh sách lịch hẹn của broker
 router.get('/appointments', requireAuth, requireRole('broker', 'manager'), async (req, res) => {
@@ -175,22 +213,39 @@ router.post('/contracts', requireAuth, requireRole('broker', 'manager'), async (
 
         await connection.beginTransaction();
 
-        // 1. Update appointment status & result note if provided
-        if (appointmentId) {
-            await connection.query(
-                `UPDATE appointments SET status = 'hoàn tất', result_note = ? WHERE appointment_id = ?`,
-                [resultNote || 'Chốt giao dịch thành công', Number(appointmentId)]
-            );
-        }
-
-        // 2. Insert RENTAL_CONTRACTS
-        const [contractResult] = await connection.query(
-            `INSERT INTO RENTAL_CONTRACTS (listing_id, tenant_id, broker_id, agreed_price, lease_term_months, status, signed_at, contract_scan_url)
-             VALUES (?, ?, ?, ?, ?, 'chờ duyệt', NOW(), ?)`,
-            [parsedListingId, parsedTenantId, brokerId, parsedPrice, parsedDuration, contractScanUrl || null]
+        // 1. Update appointment status & result note if provided (temporarily done later since we need rentalContractId)
+        // 2. Insert or Update RENTAL_CONTRACTS
+        const [existingContracts] = await connection.query(
+            `SELECT rental_contract_id FROM RENTAL_CONTRACTS 
+             WHERE tenant_id = ? AND broker_id = ? AND status = 'Yêu cầu kiểm tra lại' LIMIT 1`,
+            [parsedTenantId, brokerId]
         );
 
-        const rentalContractId = contractResult.insertId;
+        let rentalContractId;
+        if (existingContracts.length > 0) {
+            rentalContractId = existingContracts[0].rental_contract_id;
+            await connection.query(
+                `UPDATE RENTAL_CONTRACTS 
+                 SET listing_id = ?, agreed_price = ?, lease_term_months = ?, status = 'Chờ kiểm duyệt', signed_at = NOW(), contract_scan_url = ?
+                 WHERE rental_contract_id = ?`,
+                [parsedListingId, parsedPrice, parsedDuration, contractScanUrl || null, rentalContractId]
+            );
+        } else {
+            const [contractResult] = await connection.query(
+                `INSERT INTO RENTAL_CONTRACTS (listing_id, tenant_id, broker_id, agreed_price, lease_term_months, status, signed_at, contract_scan_url)
+                 VALUES (?, ?, ?, ?, ?, 'Chờ kiểm duyệt', NOW(), ?)`,
+                [parsedListingId, parsedTenantId, brokerId, parsedPrice, parsedDuration, contractScanUrl || null]
+            );
+            rentalContractId = contractResult.insertId;
+        }
+
+        // 1b. Link appointment if provided
+        if (appointmentId) {
+            await connection.query(
+                `UPDATE appointments SET status = 'hoàn tất', result_note = ?, rental_contract_id = ? WHERE appointment_id = ?`,
+                [resultNote || 'Chốt giao dịch thành công', rentalContractId, Number(appointmentId)]
+            );
+        }
 
         // 3. Insert RENTAL_CONTRACT_APPROVALS
         await connection.query(
@@ -199,9 +254,9 @@ router.post('/contracts', requireAuth, requireRole('broker', 'manager'), async (
             [rentalContractId, brokerId, parsedPrice, parsedPrice * 0.1] // Assume 10% commission
         );
 
-        // 4. Update STAFF_ASSIGNMENTS status to completed (hoàn tất)
+        // 4. Update STAFF_ASSIGNMENTS status to completed (đang hoàn thiện)
         await connection.query(
-            `UPDATE STAFF_ASSIGNMENTS SET status = 'hoàn tất' WHERE assignment_id = ?`,
+            `UPDATE STAFF_ASSIGNMENTS SET status = 'đang hoàn thiện' WHERE assignment_id = ?`,
             [parsedAssignmentId]
         );
 
@@ -259,7 +314,7 @@ router.get('/dashboard-stats', requireAuth, requireRole('broker', 'manager'), as
         const [contractsRows] = await db.query(
             `SELECT COUNT(*) AS total
              FROM RENTAL_CONTRACTS
-             WHERE broker_id = ? AND status = 'Đã duyệt'`,
+             WHERE broker_id = ? AND status IN ('Đã phê duyệt', 'Đã duyệt')`,
             [brokerId]
         );
         const closedDeals = Number(contractsRows[0].total);
@@ -285,7 +340,7 @@ router.get('/dashboard-stats', requireAuth, requireRole('broker', 'manager'), as
         const sysTotalAssignments = Number(sysAssignRows[0].total);
 
         const [sysContractsRows] = await db.query(
-            `SELECT COUNT(*) AS total FROM RENTAL_CONTRACTS WHERE status = 'Đã duyệt'`
+            `SELECT COUNT(*) AS total FROM RENTAL_CONTRACTS WHERE status IN ('Đã phê duyệt', 'Đã duyệt')`
         );
         const sysClosedDeals = Number(sysContractsRows[0].total);
 
@@ -389,7 +444,7 @@ router.get('/commission-notifications', requireAuth, requireRole('broker', 'mana
              INNER JOIN RENTAL_CONTRACTS rc ON rc.rental_contract_id = rca.rental_contract_id
              LEFT JOIN property_listings pl ON pl.listing_id = rc.listing_id
              LEFT JOIN users u_tenant ON u_tenant.user_id = rc.tenant_id
-             WHERE rc.broker_id = ? AND rca.status = 'duyệt'
+             WHERE rc.broker_id = ? AND rca.status IN ('duyệt', 'Đã phê duyệt', 'Đã duyệt') AND rc.status IN ('Đã phê duyệt', 'Đã duyệt')
              ORDER BY rca.approved_at DESC
              LIMIT 10`,
             [brokerId]

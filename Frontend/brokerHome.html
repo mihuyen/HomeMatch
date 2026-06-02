@@ -293,11 +293,11 @@
             }).length;
             const activeCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc');
+                return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc') || s.includes('kiểm tra') || s.includes('yêu cầu');
             }).length;
             const doneCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done');
+                return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('chốt') || s.includes('completed');
             }).length;
 
             document.getElementById('miniTotalCount').innerText = totalCount;
@@ -324,9 +324,9 @@
                     if (selectedStatusFilter === 'pending') {
                         return s.includes('chờ') || s.includes('phân công lại');
                     } else if (selectedStatusFilter === 'active') {
-                        return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc');
+                        return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc') || s.includes('kiểm tra') || s.includes('yêu cầu');
                     } else if (selectedStatusFilter === 'done') {
-                        return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('completed');
+                        return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('completed') || s.includes('chốt');
                     }
                     return true;
                 });
@@ -352,12 +352,14 @@
                 let badgeHtml = '';
                 const normalizedStatus = statusText.toLowerCase().trim();
                 
-                if (normalizedStatus.includes('thành') || normalizedStatus.includes('tất') || normalizedStatus.includes('done') || normalizedStatus.includes('completed')) {
-                    badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Đã hoàn thành</span>`;
+                if (normalizedStatus.includes('thành') || normalizedStatus.includes('tất') || normalizedStatus.includes('done') || normalizedStatus.includes('completed') || normalizedStatus.includes('chốt')) {
+                    badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Đã chốt</span>`;
                 } else if (normalizedStatus.includes('chờ') || normalizedStatus.includes('pending')) {
                     badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Chờ xử lý</span>`;
                 } else if (normalizedStatus.includes('hoàn thiện') || normalizedStatus.includes('đang')) {
                     badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Đang hoàn thiện</span>`;
+                } else if (normalizedStatus.includes('yêu cầu') || normalizedStatus.includes('kiểm tra')) {
+                    badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">Cần kiểm tra lại</span>`;
                 } else {
                     badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200">${statusText}</span>`;
                 }
@@ -492,6 +494,10 @@
                 }
             });
 
+            await refreshDashboard();
+        });
+
+        async function refreshDashboard() {
             try {
                 const [assignData, aptData, stats] = await Promise.all([
                     listBrokerAssignments().catch(() => ({ items: [] })),
@@ -550,7 +556,7 @@
             } catch (err) {
                 console.error(err);
             }
-        });
+        }
 
         async function loadCommissionNotifications() {
             const container = document.getElementById('commissionNotificationsContainer');
@@ -559,7 +565,7 @@
 
             try {
                 const response = await getBrokerCommissionNotifications();
-                const items = response.items || [];
+                const items = Array.isArray(response) ? response : (response.items || []);
                 
                 if (countBadge) {
                     countBadge.innerText = items.length;
@@ -576,8 +582,9 @@
                 }
 
                 container.innerHTML = items.map(item => {
-                    const dateStr = new Date(item.paid_at).toLocaleDateString('vi-VN');
-                    const commissionStr = Number(item.approved_commission).toLocaleString('vi-VN') + ' đ';
+                    const dateValue = item.approved_at || item.paid_at;
+                    const dateStr = dateValue ? new Date(dateValue).toLocaleDateString('vi-VN') : '-';
+                    const commissionStr = Number(item.approved_commission || 0).toLocaleString('vi-VN') + ' đ';
                     return `
                     <div class="p-3 bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-100 rounded-2xl transition-all duration-300 flex items-start gap-2.5 shadow-sm">
                         <div class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-emerald-500/20">
@@ -588,7 +595,8 @@
                                 <h4 class="text-xs font-bold text-emerald-800 truncate">Nhận hoa hồng thuê</h4>
                                 <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">${dateStr}</span>
                             </div>
-                            <p class="text-[10px] text-secondary truncate mb-1">Hợp đồng được kế toán duyệt thành công.</p>
+                            <p class="text-[10px] text-secondary truncate mb-0.5">Hợp đồng #${String(item.rental_contract_id).padStart(5, '0')} đã được duyệt.</p>
+                            <p class="text-[10px] text-secondary truncate mb-1">Khách: ${item.tenant_name || 'N/A'} | BĐS: ${item.listing_title || 'N/A'}</p>
                             <div class="text-xs font-extrabold text-emerald-600 flex items-center gap-1">
                                 <span>Hoa hồng: ${commissionStr}</span>
                             </div>
@@ -606,6 +614,9 @@
             const upcoming = window.upcomingAppointmentsList || [];
             const apt = upcoming[index];
             if (!apt) return;
+
+            window.currentEditingApt = apt; // cache this globally
+            toggleEditMode(false); // always start in view mode
 
             const modal = document.getElementById('appointmentDetailModal');
             if (!modal) return;
@@ -628,6 +639,105 @@
                 modal.classList.remove('opacity-0');
                 modal.querySelector('div').classList.remove('scale-95');
             }, 10);
+        }
+
+        function toggleEditMode(enabled) {
+            const viewTime = document.getElementById('modalAptTime');
+            const editTime = document.getElementById('editAptTime');
+            const viewLocContainer = document.getElementById('modalAptLocationContainer');
+            const editLoc = document.getElementById('editAptLocation');
+            const viewNotes = document.getElementById('modalAptNotes');
+            const editNotes = document.getElementById('editAptNotes');
+
+            const btnEdit = document.getElementById('btnEditApt');
+            const btnClose = document.getElementById('btnCloseApt');
+            const btnCancel = document.getElementById('btnCancelEditApt');
+            const btnSave = document.getElementById('btnSaveApt');
+
+            if (enabled) {
+                // Populate edit fields from cached appointment
+                if (window.currentEditingApt) {
+                    const d = new Date(window.currentEditingApt.scheduled_time);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const hours = String(d.getHours()).padStart(2, '0');
+                    const minutes = String(d.getMinutes()).padStart(2, '0');
+                    editTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                    editLoc.value = window.currentEditingApt.location || '';
+                    editNotes.value = window.currentEditingApt.result_note || '';
+                }
+
+                // Hide view elements
+                viewTime.classList.add('hidden');
+                viewLocContainer.classList.add('hidden');
+                viewNotes.classList.add('hidden');
+                btnEdit.classList.add('hidden');
+                btnClose.classList.add('hidden');
+
+                // Show edit elements
+                editTime.classList.remove('hidden');
+                editLoc.classList.remove('hidden');
+                editNotes.classList.remove('hidden');
+                btnCancel.classList.remove('hidden');
+                btnSave.classList.remove('hidden');
+            } else {
+                // Hide edit elements
+                editTime.classList.add('hidden');
+                editLoc.classList.add('hidden');
+                editNotes.classList.add('hidden');
+                btnCancel.classList.add('hidden');
+                btnSave.classList.add('hidden');
+
+                // Show view elements
+                viewTime.classList.remove('hidden');
+                viewLocContainer.classList.remove('hidden');
+                viewNotes.classList.remove('hidden');
+                btnEdit.classList.remove('hidden');
+                btnClose.classList.remove('hidden');
+            }
+        }
+
+        async function saveAppointmentChanges() {
+            const editTime = document.getElementById('editAptTime').value;
+            const editLoc = document.getElementById('editAptLocation').value.trim();
+            const editNotes = document.getElementById('editAptNotes').value.trim();
+
+            // 1. Hệ thống kiểm tra dữ liệu mới (Frontend Validation)
+            if (!editTime) {
+                alert('Vui lòng chọn thời gian hẹn.');
+                return;
+            }
+            if (!editLoc) {
+                alert('Vui lòng nhập địa điểm hẹn.');
+                return;
+            }
+
+            const btnSave = document.getElementById('btnSaveApt');
+            btnSave.disabled = true;
+            btnSave.innerText = 'Đang lưu...';
+
+            try {
+                // 2. Hệ thống lưu thay đổi (API Call)
+                await updateAppointment(window.currentEditingApt.appointment_id, {
+                    scheduledTime: editTime,
+                    location: editLoc,
+                    note: editNotes
+                });
+
+                alert('Cập nhật thông tin lịch hẹn thành công!');
+                closeAppointmentModal();
+                
+                // Refresh dashboard dynamically
+                await refreshDashboard();
+            } catch (err) {
+                console.error(err);
+                alert('Có lỗi xảy ra: ' + err.message);
+            } finally {
+                btnSave.disabled = false;
+                btnSave.innerText = 'Lưu thay đổi';
+            }
         }
 
         function closeAppointmentModal() {
@@ -682,26 +792,38 @@
                     <div class="flex flex-col gap-1">
                         <p class="text-xs text-secondary font-medium">Thời gian</p>
                         <p id="modalAptTime" class="text-xs font-semibold text-on-surface">-</p>
+                        <input type="datetime-local" id="editAptTime" class="hidden w-full bg-slate-50 border border-outline-variant text-on-surface rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <p class="text-xs text-secondary font-medium">Địa điểm hẹn</p>
-                    <div class="flex items-start gap-1.5 text-xs text-on-surface">
+                    <div id="modalAptLocationContainer" class="flex items-start gap-1.5 text-xs text-on-surface">
                         <span class="material-symbols-outlined text-secondary text-[16px] mt-0.5">location_on</span>
                         <p id="modalAptLocation" class="leading-relaxed font-semibold">-</p>
                     </div>
+                    <input type="text" id="editAptLocation" class="hidden w-full bg-slate-50 border border-outline-variant text-on-surface rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <p class="text-xs text-secondary font-medium">Ghi chú / Kết quả</p>
                     <p id="modalAptNotes" class="text-xs text-on-surface bg-slate-50 p-3 rounded-xl border border-outline-variant/40 italic">-</p>
+                    <textarea id="editAptNotes" rows="3" class="hidden w-full bg-slate-50 border border-outline-variant text-on-surface rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"></textarea>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3">
-                <button onclick="closeAppointmentModal()" class="px-6 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/95 transition-colors active:scale-95 text-[14px]">
+            <div class="flex justify-end gap-3" id="modalActions">
+                <button id="btnEditApt" onclick="toggleEditMode(true)" class="px-6 py-2 bg-secondary text-primary font-semibold border border-outline-variant rounded-xl hover:bg-slate-100 transition-colors active:scale-95 text-[14px]">
+                    Chỉnh sửa
+                </button>
+                <button id="btnCloseApt" onclick="closeAppointmentModal()" class="px-6 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/95 transition-colors active:scale-95 text-[14px]">
                     Đóng
+                </button>
+                <button id="btnCancelEditApt" onclick="toggleEditMode(false)" class="hidden px-6 py-2 bg-secondary text-primary font-semibold border border-outline-variant rounded-xl hover:bg-slate-100 transition-colors active:scale-95 text-[14px]">
+                    Hủy
+                </button>
+                <button id="btnSaveApt" onclick="saveAppointmentChanges()" class="hidden px-6 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/95 transition-colors active:scale-95 text-[14px]">
+                    Lưu thay đổi
                 </button>
             </div>
         </div>
