@@ -321,7 +321,18 @@ async function createBrokerAppointment(payload) {
 
 async function getBrokerCommissionNotifications() {
     return apiCall('/broker/commission-notifications');
-} // <-- Đã sửa lỗi thiếu dấu ngoặc tại đây
+}
+
+async function getAppointmentDetail(appointmentId) {
+    return apiCall(`/appointments/${appointmentId}`);
+}
+
+async function updateAppointment(appointmentId, payload) {
+    return apiCall(`/appointments/${appointmentId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
 
 // =====================================
 // ADMIN / IT API

@@ -159,6 +159,15 @@
             <form id="contractForm" class="grid grid-cols-12 gap-gutter items-start">
                 <!-- Form Section -->
                 <div class="col-span-12 lg:col-span-8 space-y-gutter">
+                    <!-- Warning Rejection Card (Hidden by default) -->
+                    <div id="rejectionWarningCard" class="hidden p-lg bg-red-50 border border-red-200 rounded-xl flex gap-md items-start text-red-800">
+                        <span class="material-symbols-outlined text-red-655 text-red-600 mt-1">warning</span>
+                        <div>
+                            <h4 class="text-label-md font-label-md font-bold text-red-800 mb-1">Yêu cầu chỉnh sửa hợp đồng</h4>
+                            <p class="text-body-sm font-body-sm text-red-700 leading-relaxed font-medium" id="rejectionReasonText">-</p>
+                        </div>
+                    </div>
+
                     <!-- Section 1: Property & Tenant Info -->
                     <section class="glass-card rounded-xl p-lg space-y-4">
                         <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
@@ -474,7 +483,6 @@
             }
 
             let tenantId = null;
-
             // 1. Fetch Assignment Detail
             try {
                 const data = await getBrokerAssignmentDetail(assignmentId);
@@ -485,12 +493,41 @@
                 }
                 tenantId = data.tenant_id;
                 document.getElementById('txtTenantName').value = data.tenant_name || `Khách hàng #${tenantId}`;
+
+                // 2. Fetch existing contract (if any) and populate if status is 'Yêu cầu kiểm tra lại'
+                try {
+                    const contractResp = await apiCall(`/broker/assignments/${assignmentId}/contract`);
+                    if (contractResp && contractResp.contract) {
+                        const contract = contractResp.contract;
+                        if (contract.status === 'Yêu cầu kiểm tra lại') {
+                            const warningCard = document.getElementById('rejectionWarningCard');
+                            const reasonText = document.getElementById('rejectionReasonText');
+                            if (warningCard && reasonText) {
+                                reasonText.innerText = contract.rejection_reason || 'Không có lý do chi tiết từ kế toán.';
+                                warningCard.classList.remove('hidden');
+                            }
+
+                            // Pre-fill fields
+                            document.getElementById('numAgreedPrice').value = contract.agreed_price;
+                            document.getElementById('numLeaseTerm').value = contract.lease_term_months;
+                            document.getElementById('txtContractScanUrl').value = contract.contract_scan_url;
+
+                            // Pre-populate upload preview if there is a scan url
+                            if (contract.contract_scan_url) {
+                                const fileName = contract.contract_scan_url.split('/').pop();
+                                document.getElementById('previewFileName').innerText = fileName;
+                                document.getElementById('uploadPreview').classList.remove('hidden');
+                                document.getElementById('uploadContainer').classList.add('hidden');
+                            }
+                        }
+                    }
+                } catch (contractErr) {
+                    console.error('Error fetching existing contract:', contractErr);
+                }
             } catch (err) {
                 console.error(err);
                 alert('Không tải được thông tin phân công.');
             }
-
-
             // 3. Realtime Totals calculation
             const agreedPriceInput = document.getElementById('numAgreedPrice');
             const leaseTermInput = document.getElementById('numLeaseTerm');

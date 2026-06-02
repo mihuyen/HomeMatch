@@ -241,8 +241,8 @@ router.get('/contracts/pending', requireAuth, requireRole('accountant', 'manager
              LEFT JOIN property_listings pl ON pl.listing_id = rc.listing_id
              LEFT JOIN users u_tenant ON u_tenant.user_id = rc.tenant_id
              LEFT JOIN users u_broker ON u_broker.user_id = rc.broker_id
-             LEFT JOIN RENTAL_CONTRACT_APPROVALS rca ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = (CASE WHEN rc.status = 'Đã duyệt' THEN 'duyệt' ELSE 'từ chối' END)
-             WHERE rc.status IN ('chờ duyệt', 'Đã duyệt', 'Từ chối')
+             LEFT JOIN RENTAL_CONTRACT_APPROVALS rca ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = (CASE WHEN rc.status IN ('Đã phê duyệt', 'Đã duyệt') THEN 'duyệt' ELSE 'từ chối' END)
+             WHERE rc.status IN ('Chờ kiểm duyệt', 'Đã phê duyệt', 'Yêu cầu kiểm tra lại', 'chờ duyệt', 'Đã duyệt', 'Từ chối')
              ORDER BY rc.signed_at DESC, rc.rental_contract_id DESC`
         );
 
@@ -257,22 +257,22 @@ router.get('/contracts/pending', requireAuth, requireRole('accountant', 'manager
 // Lấy các thông số thống kê hợp đồng cho kế toán
 router.get('/contracts/stats', requireAuth, requireRole('accountant', 'manager'), async (req, res) => {
     try {
-        const [pendingRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'chờ duyệt'");
-        const [approvedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'Đã duyệt'");
-        const [rejectedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status = 'Từ chối'");
+        const [pendingRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status IN ('Chờ kiểm duyệt', 'chờ duyệt')");
+        const [approvedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status IN ('Đã phê duyệt', 'Đã duyệt')");
+        const [rejectedRows] = await db.query("SELECT COUNT(*) AS count FROM RENTAL_CONTRACTS WHERE status IN ('Yêu cầu kiểm tra lại', 'Từ chối')");
         const [sumPriceRows] = await db.query(
             `SELECT SUM(IFNULL(rca.approved_price, rc.agreed_price)) AS total 
              FROM RENTAL_CONTRACTS rc 
              LEFT JOIN RENTAL_CONTRACT_APPROVALS rca 
                ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = 'duyệt'
-             WHERE rc.status = 'Đã duyệt'`
+             WHERE rc.status IN ('Đã phê duyệt', 'Đã duyệt')`
         );
         const [sumCommissionRows] = await db.query(
             `SELECT SUM(IFNULL(rca.approved_commission, rc.agreed_price * 0.1)) AS total 
              FROM RENTAL_CONTRACTS rc 
              LEFT JOIN RENTAL_CONTRACT_APPROVALS rca 
                ON rca.rental_contract_id = rc.rental_contract_id AND rca.status = 'duyệt'
-             WHERE rc.status = 'Đã duyệt'`
+             WHERE rc.status IN ('Đã phê duyệt', 'Đã duyệt')`
         );
 
         const pendingCount = Number(pendingRows[0]?.count || 0);
@@ -325,9 +325,9 @@ router.post('/contracts/approve', requireAuth, requireRole('accountant', 'manage
     try {
         await connection.beginTransaction();
 
-        // 1. Kiểm tra xem hợp đồng này có tồn tại và đang ở trạng thái 'chờ duyệt' không
+        // 1. Kiểm tra xem hợp đồng này có tồn tại và đang ở trạng thái 'Chờ kiểm duyệt' không
         const [contracts] = await connection.query(
-            `SELECT * FROM RENTAL_CONTRACTS WHERE rental_contract_id = ? AND status = 'chờ duyệt' LIMIT 1`,
+            `SELECT * FROM RENTAL_CONTRACTS WHERE rental_contract_id = ? AND status IN ('Chờ kiểm duyệt', 'chờ duyệt') LIMIT 1`,
             [rental_contract_id]
         );
 
@@ -355,10 +355,19 @@ router.post('/contracts/approve', requireAuth, requireRole('accountant', 'manage
         );
 
         // 3. Cập nhật lại trạng thái hợp đồng RENTAL_CONTRACTS
-        const finalStatus = status === 'duyệt' ? 'Đã duyệt' : 'Từ chối';
+        const finalStatus = status === 'duyệt' ? 'Đã phê duyệt' : 'Yêu cầu kiểm tra lại';
         await connection.query(
             `UPDATE RENTAL_CONTRACTS SET status = ? WHERE rental_contract_id = ?`,
             [finalStatus, rental_contract_id]
+        );
+
+        // 3b. Cập nhật lại trạng thái phân công (staff_assignments)
+        const finalAssignmentStatus = status === 'duyệt' ? 'Đã chốt' : 'yêu cầu kiểm tra lại';
+        await connection.query(
+            `UPDATE staff_assignments 
+             SET status = ? 
+             WHERE tenant_id = ? AND sale_broker_id = ?`,
+            [finalAssignmentStatus, contract.tenant_id, contract.broker_id]
         );
 
         // 4. Nếu được duyệt, cập nhật trạng thái bất động sản thành 'rented'
