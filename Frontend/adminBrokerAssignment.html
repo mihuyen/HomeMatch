@@ -122,8 +122,8 @@
                     <select id="filter-status"
                         class="w-full rounded-xl border-slate-200 text-sm font-medium text-on-surface focus:border-primary focus:ring-primary py-2.5 px-3">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="pending">Chờ xử lý</option>
-                        <option value="active">Đang hoàn thiện</option>
+                        <option value="system_assigned">Hệ thống đã phân công</option>
+                        <option value="reassigned">Đã phân công lại</option>
                         <option value="completed">Hoàn tất</option>
                     </select>
                 </div>
@@ -297,8 +297,8 @@
                 document.getElementById('btn-confirm-reassign').addEventListener('click', performReassignment);
                 document.getElementById('btn-apply-suggestion').addEventListener('click', applySystemSuggestion);
 
-                // Explicitly set dropdown to pending to prevent browser caching input value
-                document.getElementById('filter-status').value = 'pending';
+                // Explicitly set dropdown to system_assigned to prevent browser caching input value
+                document.getElementById('filter-status').value = 'system_assigned';
 
                 // Initial Load
                 loadAssignmentsData();
@@ -364,13 +364,15 @@
                     const dateStr = row.assigned_at ? new Date(row.assigned_at).toLocaleDateString('vi-VN') : '-';
                     const suggestedName = suggestedBroker ? suggestedBroker.full_name : 'Hệ thống đang tính toán...';
 
-                    const displayStatus = row.assignment_status || 'CHỜ XỬ LÝ';
+                    const displayStatus = row.assignment_status || 'HỆ THỐNG ĐÃ PHÂN CÔNG';
                     let badgeClass = 'bg-blue-50 text-blue-700 border border-blue-200/50';
 
                     if (displayStatus === 'HOÀN TẤT' || displayStatus === 'ĐÃ HOÀN THÀNH') {
-                        badgeClass = 'bg-green-50 text-green-700 border border-green-200/50';
-                    } else if (displayStatus === 'ĐANG HOÀN THIỆN') {
-                        badgeClass = 'bg-indigo-50 text-indigo-700 border border-indigo-200/50';
+                        badgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200/50';
+                    } else if (displayStatus === 'ĐÃ PHÂN CÔNG LẠI') {
+                        badgeClass = 'bg-amber-50 text-amber-700 border border-amber-200/50';
+                    } else if (displayStatus === 'HỆ THỐNG ĐÃ PHÂN CÔNG') {
+                        badgeClass = 'bg-blue-50 text-blue-700 border border-blue-200/50';
                     }
 
                     tr.innerHTML = `
@@ -405,11 +407,24 @@
                                     <span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
                                     Đã hoàn thành
                                 </span>
-                            ` : `
-                                <button onclick="openReassignModal(${row.assignment_id})" class="inline-flex items-center justify-center font-bold text-xs bg-slate-50 text-primary border border-slate-200 rounded-xl px-4 py-2 hover:bg-primary hover:text-white transition-all shadow-sm">
-                                    Sửa phân công
-                                </button>
-                            `}
+                            ` : (() => {
+                                const assignedTime = row.assigned_at ? new Date(row.assigned_at).getTime() : Date.now();
+                                const isEditable = (Date.now() - assignedTime) <= 24 * 60 * 60 * 1000;
+                                if (isEditable) {
+                                    return `
+                                        <button onclick="openReassignModal(${row.assignment_id})" class="inline-flex items-center justify-center font-bold text-xs bg-slate-50 text-primary border border-slate-200 rounded-xl px-4 py-2 hover:bg-primary hover:text-white transition-all shadow-sm">
+                                            Sửa phân công
+                                        </button>
+                                    `;
+                                } else {
+                                    return `
+                                        <span class="inline-flex items-center gap-1 text-slate-500 font-bold text-xs bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 cursor-not-allowed" title="Đã quá 24 giờ kể từ thời điểm gửi yêu cầu">
+                                            <span class="material-symbols-outlined text-[16px]">lock</span>
+                                            Đã khóa (Quá 24h)
+                                        </span>
+                                    `;
+                                }
+                            })()}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -481,7 +496,7 @@
 
         // Clear filter utility
         function clearFilters() {
-            document.getElementById('filter-status').value = 'pending';
+            document.getElementById('filter-status').value = 'system_assigned';
             offset = 0;
             loadAssignmentsData();
         }
@@ -495,15 +510,15 @@
             document.getElementById('modal-req-title').textContent = selectedAssignment.tenant_name;
             document.getElementById('modal-req-address').textContent = selectedAssignment.notes || 'Yêu cầu xem nhà';
 
-            const displayStatus = selectedAssignment.assignment_status || 'CHỜ XỬ LÝ';
+            const displayStatus = selectedAssignment.assignment_status || 'HỆ THỐNG ĐÃ PHÂN CÔNG';
             const reqStatusEl = document.getElementById('modal-req-status');
             reqStatusEl.textContent = displayStatus;
             if (displayStatus === 'HOÀN TẤT' || displayStatus === 'ĐÃ HOÀN THÀNH') {
-                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-[#dcfce7] text-[#14532d] py-1 px-2.5 rounded-lg';
-            } else if (displayStatus === 'ĐANG HOÀN THIỆN') {
-                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-indigo-100 text-indigo-800 py-1 px-2.5 rounded-lg';
+                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-emerald-100 text-emerald-800 py-1 px-2.5 rounded-lg';
+            } else if (displayStatus === 'ĐÃ PHÂN CÔNG LẠI') {
+                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-amber-100 text-amber-800 py-1 px-2.5 rounded-lg';
             } else {
-                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-[#dbe1ff] text-[#00144b] py-1 px-2.5 rounded-lg';
+                reqStatusEl.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-blue-100 text-blue-800 py-1 px-2.5 rounded-lg';
             }
 
             chosenBrokerId = selectedAssignment.sale_broker_id;
@@ -540,15 +555,10 @@
                 const activeAssignedCount = b.active_count;
                 const isSuggested = suggestedBroker && suggestedBroker.user_id === b.user_id;
                 
-                const rowDiv = document.createElement('div');
-                rowDiv.className = `flex items-center justify-between p-3.5 border rounded-2xl hover:border-primary cursor-pointer transition-all ${isSuggested ? 'bg-emerald-50/30 border-emerald-200' : 'border-slate-100'}`;
+                const rowLabel = document.createElement('label');
+                rowLabel.className = `flex items-center justify-between p-3.5 border rounded-2xl hover:border-primary cursor-pointer transition-all ${isSuggested ? 'bg-emerald-50/30 border-emerald-200' : 'border-slate-100'}`;
                 
-                // On click select radio
-                rowDiv.addEventListener('click', () => {
-                    document.getElementById(`radio-broker-${b.user_id}`).checked = true;
-                });
-
-                rowDiv.innerHTML = `
+                rowLabel.innerHTML = `
                     <div class="flex items-center gap-3">
                         <input type="radio" name="reassign-broker-option" id="radio-broker-${b.user_id}" value="${b.user_id}" ${selectedAssignment.sale_broker_id === b.user_id ? 'checked' : ''} class="w-4.5 h-4.5 text-primary border-slate-300 focus:ring-primary">
                         <div class="flex flex-col">
@@ -568,7 +578,7 @@
                         </div>
                     </div>
                 `;
-                staffListContainer.appendChild(rowDiv);
+                staffListContainer.appendChild(rowLabel);
             });
         }
 

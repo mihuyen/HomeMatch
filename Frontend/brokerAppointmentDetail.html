@@ -131,24 +131,8 @@
 </head>
 <body class="bg-[#F8FAFC] text-on-surface flex flex-col min-h-screen">
     <!-- TopNavBar -->
-    <nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
-        <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
-            <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3"
-                onclick="window.location.href='brokerHome.html'"><span
-                class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span><span
-                class="">HomeMatch</span></div>
-            <div class="hidden md:flex gap-10 h-full items-center"><a
-                class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
-                href="brokerHome.html">Trang chủ</a></div>
-            <div class="flex items-center gap-6"><button
-                class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95"
-                onclick="localStorage.removeItem('token'); window.location.href='login.html';">Đăng xuất</button><button
-                class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all"><img
-                    alt="User profile avatar" class="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY"></button>
-            </div>
-        </div>
-    </nav>
+    <div id="broker-sidebar"></div>
+    <script src="brokerSidebar.js"></script>
 
     <!-- Main Content Grid -->
     <main class="max-w-[1440px] w-full mx-auto px-6 md:px-12 py-8 mt-0 flex-1">
@@ -376,8 +360,8 @@
             }
         }
 
-        async function searchLocation(query) {
-            if (!query) return;
+        async function searchLocation(query, isFallback = false) {
+            if (!query) return false;
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=vi`);
                 if (res.ok) {
@@ -388,11 +372,35 @@
                         map.setView(latlng, 15);
                         marker.setLatLng(latlng);
                         updateCircle(latlng);
+                        return true;
                     }
                 }
             } catch (err) {
                 console.error('Geocoding error:', err);
             }
+
+            if (!isFallback) {
+                // Try splitting by comma
+                if (query.includes(',')) {
+                    const parts = query.split(',');
+                    if (parts.length > 1) {
+                        const fallbackQuery = parts.slice(1).join(',').trim();
+                        const success = await searchLocation(fallbackQuery, true);
+                        if (success) return true;
+                    }
+                }
+                
+                // Try splitting by space and removing first half of the words
+                const words = query.split(/\s+/);
+                if (words.length > 3) {
+                    const fallbackQuery = words.slice(Math.floor(words.length / 2)).join(' ').trim();
+                    const success = await searchLocation(fallbackQuery, true);
+                    if (success) return true;
+                }
+
+                alert('Không tìm thấy địa điểm này trên bản đồ. Bản đồ sẽ giữ nguyên vị trí, bạn có thể click chọn hoặc kéo thả điểm định vị (hình tròn xanh) để xác định điểm hẹn.');
+            }
+            return false;
         }
 
         document.addEventListener('DOMContentLoaded', async () => {

@@ -112,23 +112,8 @@
 
 <body class="text-on-surface">
     <!-- TopNavBar -->
-    <header class="flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-50 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline">
-        <div class="flex items-center gap-xl">
-            <span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed cursor-pointer" onclick="window.location.href='brokerHome.html'">HomeMatch</span>
-        </div>
-        <nav class="hidden md:flex items-center gap-xl">
-            <a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors text-body-md font-medium" href="brokerHome.html">Trang chủ</a>
-        </nav>
-        <div class="flex items-center gap-md">
-            <button class="material-symbols-outlined text-secondary hover:bg-surface-container-low p-2 rounded-full transition-all duration-200">notifications</button>
-            <div class="flex items-center gap-sm pl-md border-l border-outline-variant">
-                <div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-highest">
-                    <img alt="User profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtoyN6Ro4G-nZDsTJEBtMoOugQFTjhPASDkioszoskoAnNfa36YJu68J_GZyufLKxKWHt06cbd8hfKranzFBe2qqYmDXAaOtENjpXbYpQDAn6kyq5eMOYjLZJup0Pb9cl4hcBlG5Nf3L6deza-nu4mE46X132frgycMD-qOWDUj96Ch_PxWzwOI69YfqcqICtygwYwAo1GcML9Z-wiNdZ9iaA15K0bwUmo159DfBY9nBmcbjDk6GhZlURu1FpCQ_3hEqvRg9jssUyR">
-                </div>
-                <button class="material-symbols-outlined text-secondary hover:text-error transition-colors" onclick="localStorage.removeItem('token'); window.location.href='login.html';">logout</button>
-            </div>
-        </div>
-    </header>
+    <div id="broker-sidebar"></div>
+    <script src="brokerSidebar.js"></script>
     <div class="flex">
         <!-- Main Content (Expanded) -->
         <main class="flex-1 p-margin-desktop max-w-[1280px] mx-auto w-full">
@@ -434,6 +419,11 @@
             // 1. Fetch Assignment Detail
             try {
                 const data = await getBrokerAssignmentDetail(assignmentId);
+                if (data.appointment_count === 0) {
+                    alert('Không cho phép chốt giao dịch trong khi chưa tạo lịch hẹn. Bạn sẽ được chuyển hướng quay lại.');
+                    window.location.href = `brokerAssignDetail.html?assignmentId=${assignmentId}`;
+                    return;
+                }
                 tenantId = data.tenant_id;
                 document.getElementById('txtTenantName').value = data.tenant_name || `Khách hàng #${tenantId}`;
             } catch (err) {
@@ -467,9 +457,14 @@
             form.onsubmit = async (e) => {
                 e.preventDefault();
 
+                const contractScanUrl = document.getElementById('txtContractScanUrl').value.trim();
+                if (!contractScanUrl) {
+                    alert('Vui lòng tải file scan hoặc ảnh chụp hợp đồng lên hệ thống trước khi chốt giao dịch.');
+                    return;
+                }
+
                 const agreedPrice = Number(agreedPriceInput.value);
                 const leaseTermMonths = Number(leaseTermInput.value);
-                const contractScanUrl = document.getElementById('txtContractScanUrl').value.trim();
 
                 const btnSubmit = document.getElementById('btnSubmit');
                 const origContent = btnSubmit.innerHTML;
@@ -496,7 +491,7 @@
                     const response = await createBrokerContract(payload);
                     alert(response.message || 'Chốt giao dịch và lập hợp đồng thuê thành công!');
                     
-                    window.location.href = `brokerAssignDetail.html?assignmentId=${assignmentId}`;
+                    window.location.href = 'brokerHome.html';
                 } catch (err) {
                     console.error(err);
                     alert(err.message || 'Có lỗi xảy ra khi chốt giao dịch.');

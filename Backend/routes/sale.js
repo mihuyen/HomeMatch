@@ -607,6 +607,7 @@ router.get('/contracts/:submissionId/summary', requireAuth, requireRole('sale', 
             contract_code: contract.contract_code,
             contract_type: contract.contract_type,
             images_uploaded: contract.images_uploaded,
+            contract_scan_url: contract.contract_scan_url,
             status: contract.status,
             signed_at: contract.signed_at,
             owner: {
