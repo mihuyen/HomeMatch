@@ -319,7 +319,7 @@ router.get('/contracts/:submissionId/legal-response', requireAuth, requireRole('
 // Danh sách lịch khảo sát của sale hiện tại
 router.get('/appointments', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const { status, search, from, to, limit = 30, offset = 0 } = req.query;
+        const { submissionId, status, search, from, to, limit = 30, offset = 0 } = req.query;
         const saleId = req.user.user_id;
 
         const conditions = [
@@ -327,6 +327,11 @@ router.get('/appointments', requireAuth, requireRole('sale', 'agent', 'manager')
             "ap.appointment_type = 'khảo sát'"
         ];
         const params = [saleId];
+
+        if (submissionId) {
+            conditions.push('ap.submission_id = ?');
+            params.push(Number(submissionId));
+        }
 
         if (status) {
             conditions.push('ap.status = ?');

@@ -159,6 +159,7 @@ async function listSaleAssignments(params = {}) {
 
 async function listSaleAppointments(params = {}) {
     const query = new URLSearchParams();
+    if (params.submissionId) query.set('submissionId', params.submissionId);
     if (params.status) query.set('status', params.status);
     if (params.search) query.set('search', params.search);
     if (params.from) query.set('from', params.from);
