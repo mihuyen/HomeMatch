@@ -83,25 +83,8 @@
 </head>
 <body class="bg-[#F8FAFC] text-on-surface flex flex-col h-screen overflow-hidden">
     <!-- Top Navigation Bar -->
-    <nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
-        <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
-            <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3" onclick="window.location.href='brokerHome.html'">
-                <span class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span>
-                <span class="">HomeMatch</span>
-            </div>
-            <div class="hidden md:flex gap-10 h-full items-center">
-                <a class="text-primary border-b-2 border-primary pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="brokerHome.html">Trang chủ</a>
-            </div>
-            <div class="flex items-center gap-6">
-                <button class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95" onclick="localStorage.removeItem('token'); window.location.href='login.html';">
-                    Đăng xuất
-                </button>
-                <button class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all">
-                    <img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY">
-                </button>
-            </div>
-        </div>
-    </nav>
+    <div id="broker-sidebar"></div>
+    <script src="brokerSidebar.js"></script>
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-y-auto w-full">
@@ -160,12 +143,7 @@
                             <span class="material-symbols-outlined text-2xl">key</span>
                         </div>
                     </div>
-                    <div class="w-full">
-                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
-                            <div class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 0%" id="statDealsProgress"></div>
-                        </div>
-                        <span class="text-[10px] text-secondary font-medium">Tiến trình mục tiêu tháng</span>
-                    </div>
+                    <!-- Removed goal progress bar -->
                     <!-- SOTA Sparkline SVG -->
                     <svg class="absolute bottom-0 left-0 w-full h-10 opacity-15 text-emerald-600 pointer-events-none" viewBox="0 0 100 20" preserveAspectRatio="none">
                         <path d="M0,18 Q20,15 40,12 T80,4 T100,1" fill="none" stroke="currentColor" stroke-width="2" />
@@ -275,6 +253,20 @@
                             <div class="p-2 text-secondary text-sm">Đang tải...</div>
                         </div>
                     </div>
+
+                    <!-- Commission Notifications Widget -->
+                    <div class="bg-white border border-outline-variant/60 shadow-sm rounded-3xl p-6">
+                        <div class="flex justify-between items-center mb-4 border-b border-surface-variant pb-3">
+                            <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[20px]">notifications_active</span>
+                                Thông báo hoa hồng
+                            </h3>
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full" id="commissionNotifyCount">0</span>
+                        </div>
+                        <div id="commissionNotificationsContainer" class="flex flex-col gap-4 max-h-[300px] overflow-y-auto custom-scrollbar">
+                            <div class="p-2 text-secondary text-sm text-center">Không có thông báo hoa hồng mới.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -297,11 +289,11 @@
             const totalCount = cachedCustomers.length;
             const pendingCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('chờ') || s.includes('đang xử lý') || s.includes('phân công lại');
+                return s.includes('chờ') || s.includes('phân công lại');
             }).length;
             const activeCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('hoàn thiện') || s.includes('thực hiện') || s.includes('chăm sóc');
+                return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc');
             }).length;
             const doneCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
@@ -330,9 +322,9 @@
                 filtered = filtered.filter(item => {
                     const s = String(item.status || '').toLowerCase().trim();
                     if (selectedStatusFilter === 'pending') {
-                        return s.includes('chờ') || s.includes('đang xử lý') || s.includes('phân công lại');
+                        return s.includes('chờ') || s.includes('phân công lại');
                     } else if (selectedStatusFilter === 'active') {
-                        return s.includes('hoàn thiện') || s.includes('đang thực hiện') || s.includes('đang chăm sóc');
+                        return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc');
                     } else if (selectedStatusFilter === 'done') {
                         return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('completed');
                     }
@@ -395,7 +387,21 @@
 
         function renderUpcomingAppointments(items) {
             if (!upcomingContainer) return;
-            const upcoming = items.filter(a => !['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes((a.status || '').toLowerCase()));
+            const now = new Date();
+            const upcoming = items.filter(a => {
+                // Exclude past appointments
+                if (new Date(a.scheduled_time) < now) return false;
+                
+                // Exclude closed appointments
+                const status = (a.status || '').toLowerCase();
+                if (['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes(status)) return false;
+                
+                // Exclude appointments of successfully finalized assignments
+                const assignStatus = (a.assignment_status || '').toLowerCase();
+                if (['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes(assignStatus)) return false;
+                
+                return true;
+            });
             
             window.upcomingAppointmentsList = upcoming;
 
@@ -518,12 +524,8 @@
 
                     // 2. Closed Deals (Month)
                     const statDealsValue = document.getElementById('statDealsValue');
-                    const statDealsProgress = document.getElementById('statDealsProgress');
                     if (statDealsValue) {
                         statDealsValue.innerText = stats.closedDeals.toString().padStart(2, '0');
-                    }
-                    if (statDealsProgress) {
-                        statDealsProgress.style.width = `${Math.min(Math.max(stats.brokerConversionRate, 0), 100)}%`;
                     }
 
                     // 3. Conversion Rate
@@ -544,10 +546,61 @@
                         `;
                     }
                 }
+                await loadCommissionNotifications();
             } catch (err) {
                 console.error(err);
             }
         });
+
+        async function loadCommissionNotifications() {
+            const container = document.getElementById('commissionNotificationsContainer');
+            const countBadge = document.getElementById('commissionNotifyCount');
+            if (!container) return;
+
+            try {
+                const response = await getBrokerCommissionNotifications();
+                const items = response.items || [];
+                
+                if (countBadge) {
+                    countBadge.innerText = items.length;
+                    if (items.length === 0) {
+                        countBadge.classList.add('hidden');
+                    } else {
+                        countBadge.classList.remove('hidden');
+                    }
+                }
+
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="py-4 text-center text-secondary text-xs">Không có thông báo hoa hồng mới.</div>';
+                    return;
+                }
+
+                container.innerHTML = items.map(item => {
+                    const dateStr = new Date(item.paid_at).toLocaleDateString('vi-VN');
+                    const commissionStr = Number(item.approved_commission).toLocaleString('vi-VN') + ' đ';
+                    return `
+                    <div class="p-3 bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-100 rounded-2xl transition-all duration-300 flex items-start gap-2.5 shadow-sm">
+                        <div class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-emerald-500/20">
+                            <span class="material-symbols-outlined text-[16px] fill-icon">payments</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start gap-2 mb-0.5">
+                                <h4 class="text-xs font-bold text-emerald-800 truncate">Nhận hoa hồng thuê</h4>
+                                <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">${dateStr}</span>
+                            </div>
+                            <p class="text-[10px] text-secondary truncate mb-1">Hợp đồng được kế toán duyệt thành công.</p>
+                            <div class="text-xs font-extrabold text-emerald-600 flex items-center gap-1">
+                                <span>Hoa hồng: ${commissionStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading commission notifications:', err);
+                container.innerHTML = '<div class="py-4 text-center text-error text-xs">Không thể tải thông báo hoa hồng.</div>';
+            }
+        }
 
         function showAppointmentModalByIndex(index) {
             const upcoming = window.upcomingAppointmentsList || [];

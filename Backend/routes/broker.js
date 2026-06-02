@@ -52,7 +52,8 @@ router.get('/assignments/:id', requireAuth, requireRole('broker', 'manager'), as
                     sa.assigned_at,
                     u.full_name AS tenant_name,
                     u.phone AS tenant_phone,
-                    u.email AS tenant_email
+                    u.email AS tenant_email,
+                    (SELECT COUNT(*) FROM appointments WHERE assignment_id = sa.assignment_id) AS appointment_count
              FROM staff_assignments sa
              LEFT JOIN users u ON u.user_id = sa.tenant_id
              WHERE sa.sale_broker_id = ? AND sa.assignment_id = ?`,
@@ -113,6 +114,7 @@ router.get('/appointments', requireAuth, requireRole('broker', 'manager'), async
                     ap.result_note,
                     ap.created_at,
                     sa.tenant_id,
+                    sa.status AS assignment_status,
                     u.full_name AS tenant_name
              FROM appointments ap
              INNER JOIN staff_assignments sa ON sa.assignment_id = ap.assignment_id
@@ -156,6 +158,19 @@ router.post('/contracts', requireAuth, requireRole('broker', 'manager'), async (
 
         if (isNaN(parsedDuration) || parsedDuration <= 0) {
             return res.status(400).json({ message: 'Thời hạn hợp đồng không hợp lệ' });
+        }
+
+        if (!contractScanUrl || typeof contractScanUrl !== 'string' || contractScanUrl.trim() === '') {
+            return res.status(400).json({ message: 'Vui lòng tải file scan/ảnh hợp đồng lên hệ thống trước khi chốt giao dịch.' });
+        }
+
+        // Check if there is at least one appointment created for this assignment
+        const [existingAppointments] = await connection.query(
+            `SELECT appointment_id FROM appointments WHERE assignment_id = ? LIMIT 1`,
+            [parsedAssignmentId]
+        );
+        if (existingAppointments.length === 0) {
+            return res.status(400).json({ message: 'Không thể chốt giao dịch khi chưa tạo lịch hẹn nào.' });
         }
 
         await connection.beginTransaction();
@@ -353,6 +368,37 @@ router.post('/contracts/upload-scan', requireAuth, requireRole('broker', 'manage
     } catch (err) {
         console.error('broker upload contract scan error:', err);
         res.status(500).json({ message: 'Lỗi server upload: ' + err.message });
+    }
+});
+
+// GET /api/broker/commission-notifications
+// Lấy danh sách thông báo hoa hồng sau khi được kế toán phê duyệt
+router.get('/commission-notifications', requireAuth, requireRole('broker', 'manager'), async (req, res) => {
+    try {
+        const brokerId = req.user.user_id;
+
+        const [rows] = await db.query(
+            `SELECT rca.rental_contract_id,
+                    rca.approved_price,
+                    rca.approved_commission,
+                    rca.approved_at,
+                    rc.tenant_id,
+                    u_tenant.full_name AS tenant_name,
+                    pl.title AS listing_title
+             FROM RENTAL_CONTRACT_APPROVALS rca
+             INNER JOIN RENTAL_CONTRACTS rc ON rc.rental_contract_id = rca.rental_contract_id
+             LEFT JOIN property_listings pl ON pl.listing_id = rc.listing_id
+             LEFT JOIN users u_tenant ON u_tenant.user_id = rc.tenant_id
+             WHERE rc.broker_id = ? AND rca.status = 'duyệt'
+             ORDER BY rca.approved_at DESC
+             LIMIT 10`,
+            [brokerId]
+        );
+
+        res.json(rows);
+    } catch (err) {
+        console.error('broker commission notifications error:', err);
+        res.status(500).json({ message: 'Lỗi server: ' + err.message });
     }
 });
 
