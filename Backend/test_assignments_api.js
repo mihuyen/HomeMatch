@@ -1,54 +1,57 @@
-const db = require('/Users/socnhi/Documents/HomeMatch/Backend/db.js');
+const http = require('http');
 
-async function test() {
-    try {
-        console.log('--- STARTING VERIFICATION TEST ---');
+const options = {
+    hostname: 'localhost',
+    port: 5050,
+    path: '/api/admin/assignments?status=pending',
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+};
 
-        // Check listings in DB
-        const [allListings] = await db.query("SELECT listing_id, status FROM property_listings");
-        console.log('All listings in DB:', allListings);
+// Disable require login check or pass a valid admin token. Since we are querying locally, let's bypass auth if we run it as a test or login first.
+// Wait, we can just use the auth token of 'admin@homematch.com'!
+// Let's first log in and get the token.
+const loginData = JSON.stringify({
+    email: 'admin@homematch.com',
+    password: 'admin123'
+});
 
-        if (allListings.length === 0) {
-            console.log('No listings found in DB. Creating a dummy listing for testing...');
-            // Need a submission first
-            const [ownerRows] = await db.query("SELECT user_id FROM users WHERE role = 'owner' LIMIT 1");
-            let ownerId = ownerRows[0]?.user_id;
-            if (!ownerId) {
-                const [insOwner] = await db.query("INSERT INTO users (full_name, email, phone, role) VALUES ('Test Owner', 'owner_test@test.com', '0111111111', 'owner')");
-                ownerId = insOwner.insertId;
-            }
-            const [insSub] = await db.query(
-                `INSERT INTO property_submissions (owner_id, property_type, area, proposed_price, address, status)
-                 VALUES (?, 'apartment', 50, 5000000, 'Test Address', 'approved')`,
-                [ownerId]
-            );
-            const submissionId = insSub.insertId;
-            const [insList] = await db.query(
-                `INSERT INTO property_listings (submission_id, title, description, price_display, status)
-                 VALUES (?, 'Test Listing Title', 'Test Description', '5 triệu', 'active')`,
-                [submissionId]
-            );
-            console.log('Created dummy listing ID:', insList.insertId);
-            allListings.push({ listing_id: insList.insertId, status: 'active' });
-        }
+const loginOptions = {
+    hostname: 'localhost',
+    port: 5050,
+    path: '/api/auth/login',
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': loginData.length
+    }
+};
 
-        const listingId = allListings[0].listing_id;
-        console.log(`Using listing ID: ${listingId}`);
+const reqLogin = http.request(loginOptions, (resLogin) => {
+    let body = '';
+    resLogin.on('data', chunk => body += chunk);
+    resLogin.on('end', () => {
+        try {
+            const data = JSON.parse(body);
+            const token = data.token;
+            console.log('LOGGED IN! Token:', token);
 
-        // Helper to perform HTTP requests
-        const http = require('http');
-        const makeRequest = (options, postData = null) => {
-            return new Promise((resolve, reject) => {
-                const req = http.request(options, (res) => {
-                    let body = '';
-                    res.on('data', chunk => body += chunk);
-                    res.on('end', () => {
-                        resolve({
-                            statusCode: res.statusCode,
-                            headers: res.headers,
-                            body: body ? JSON.parse(body) : null
-                        });
-                    });
+            // Now query assignments
+            const opt = {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            const req = http.request(opt, (res) => {
+                let resBody = '';
+                res.on('data', chunk => resBody += chunk);
+                res.on('end', () => {
+                    console.log('ASSIGNMENTS BODY:', resBody);
+                    process.exit(0);
                 });
                 req.on('error', e => reject(e));
                 if (postData) {

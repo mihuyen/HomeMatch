@@ -31,30 +31,92 @@
       theme: {
         extend: {
           "colors": {
-            "primary": "#1E3A8A",
+            "surface-variant": "#e3e1e9",
+            "surface": "#faf8ff",
+            "outline-variant": "#c5c5d3",
+            "surface-dim": "#dad9e1",
+            "surface-container": "#eeedf4",
+            "on-tertiary-fixed-variant": "#773205",
+            "surface-bright": "#faf8ff",
+            "surface-tint": "#4059aa",
+            "on-secondary-container": "#54647a",
+            "on-error-container": "#93000a",
+            "on-secondary-fixed": "#0b1c30",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#ffdbcb",
+            "outline": "#757682",
+            "tertiary-container": "#6e2c00",
+            "inverse-primary": "#b6c4ff",
             "primary-container": "#1e3a8a",
-            "surface": "#ffffff",
-            "on-surface": "#0f172a",
-            "on-surface-variant": "#475569",
-            "outline-variant": "#e2e8f0",
-            "background": "#f8fafc"
+            "primary": "#00236f",
+            "error-container": "#ffdad6",
+            "on-primary-fixed": "#00164e",
+            "inverse-surface": "#2f3036",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb691",
+            "on-surface": "#1a1b21",
+            "secondary-fixed": "#d3e4fe",
+            "background": "#faf8ff",
+            "on-surface-variant": "#444651",
+            "on-error": "#ffffff",
+            "primary-fixed": "#dce1ff",
+            "secondary": "#505f76",
+            "tertiary": "#4b1c00",
+            "on-primary": "#ffffff",
+            "surface-container-low": "#f4f3fa",
+            "on-tertiary-container": "#f39461",
+            "on-tertiary": "#ffffff",
+            "surface-container-highest": "#e3e1e9",
+            "on-secondary-fixed-variant": "#38485d",
+            "on-primary-container": "#90a8ff",
+            "on-background": "#1a1b21",
+            "on-primary-fixed-variant": "#264191",
+            "secondary-fixed-dim": "#b7c8e1",
+            "on-tertiary-fixed": "#341100",
+            "surface-container-high": "#e9e7ef",
+            "inverse-on-surface": "#f1f0f7",
+            "primary-fixed-dim": "#b6c4ff",
+            "secondary-container": "#d0e1fb",
+            "error": "#ba1a1a"
           },
           "borderRadius": {
-            "DEFAULT": "12px",
-            "lg": "16px",
-            "xl": "24px",
-            "full": "9999px"
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
           },
           "spacing": {
+            "gutter": "24px",
             "xl": "32px",
-            "sm": "8px",
-            "xs": "4px",
             "margin-mobile": "16px",
-            "lg": "24px",
-            "base": "8px",
+            "sm": "8px",
             "md": "16px",
+            "base": "8px",
             "margin-desktop": "32px",
-            "gutter": "24px"
+            "lg": "24px",
+            "xs": "4px"
+          },
+          "fontFamily": {
+            "label-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-xl": ["Inter"]
+          },
+          "fontSize": {
+            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-xl-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+            "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
           }
         }
       }
@@ -69,29 +131,18 @@
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
-  <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
+  <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0 bg-background">
     <div class="mb-xl">
-      <div class="flex items-center gap-sm text-primary mb-sm"></div>
-      <h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 2: Nộp hồ sơ đính kèm</h1>
-      <p class="font-body-lg text-body-lg text-on-surface-variant"></p>
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="px-2.5 py-0.5 bg-blue-50 text-primary border border-blue-100 rounded-full text-[11px] font-bold uppercase tracking-wider">Khởi tạo giao dịch</span>
+        <span class="text-xs text-slate-400 font-semibold">•</span>
+        <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">HomeMatch Wizard</span>
+      </div>
+      <h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">Tạo Hợp đồng - Bước 2: Nộp hồ sơ đính kèm</h1>
     </div>
 
-  <main class="flex-1 flex flex-col min-w-0">
-    <div class="flex-1 p-6 md:p-10">
-      <div class="w-full max-w-[860px] mx-auto flex flex-col min-h-full">
-
-        <!-- Header -->
-        <div class="mb-8">
-          <div class="flex items-center gap-2 mb-1.5">
-            <span class="px-2.5 py-0.5 bg-blue-50 text-primary border border-blue-100 rounded-full text-[11px] font-bold uppercase tracking-wider">Khởi tạo giao dịch</span>
-            <span class="text-xs text-slate-400 font-semibold">•</span>
-            <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">HomeMatch Wizard</span>
-          </div>
-          <h1 class="text-2xl md:text-3xl font-black tracking-tight text-on-surface">Tạo Hợp đồng - Bước 2: Nộp hồ sơ đính kèm</h1>
-        </div>
-
-        <!-- Wizard Steps Stepper -->
-        <div class="grid grid-cols-2 gap-4 p-3 bg-white rounded-lg border border-outline-variant shadow-sm mb-8">
+    <!-- Wizard Steps Stepper -->
+    <div class="grid grid-cols-2 gap-4 p-3 bg-white rounded-lg border border-outline-variant shadow-sm mb-8">
           <div class="flex items-center gap-3 p-3 bg-slate-50 rounded border border-slate-100 opacity-70">
             <div class="w-9 h-9 flex items-center justify-center rounded-full bg-emerald-500 text-white font-bold text-sm">
               <span class="material-symbols-outlined text-[18px]">check</span>

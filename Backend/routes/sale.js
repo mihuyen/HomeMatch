@@ -28,7 +28,7 @@ function toSearchableText(value) {
 function mapSurveyToSubmissionStatus(surveyStatus) {
     const text = toSearchableText(surveyStatus);
     if (text.includes('draft') || text.includes('nháp')) return null;
-    if (text.includes('khong dat') || text.includes('fail') || text.includes('reject')) return 'rejected';
+    if (text.includes('khong dat') || text.includes('fail') || text.includes('reject')) return 'cancelled';
     if (text.includes('dat') || text.includes('pass') || text.includes('complete') || text.includes('hoan tat')) return 'surveyed';
     return 'surveyed';
 }
@@ -319,7 +319,7 @@ router.get('/contracts/:submissionId/legal-response', requireAuth, requireRole('
 // Danh sách lịch khảo sát của sale hiện tại
 router.get('/appointments', requireAuth, requireRole('sale', 'agent', 'manager'), async (req, res) => {
     try {
-        const { status, search, from, to, limit = 30, offset = 0 } = req.query;
+        const { submissionId, status, search, from, to, limit = 30, offset = 0 } = req.query;
         const saleId = req.user.user_id;
 
         const conditions = [
@@ -327,6 +327,11 @@ router.get('/appointments', requireAuth, requireRole('sale', 'agent', 'manager')
             "ap.appointment_type = 'khảo sát'"
         ];
         const params = [saleId];
+
+        if (submissionId) {
+            conditions.push('ap.submission_id = ?');
+            params.push(Number(submissionId));
+        }
 
         if (status) {
             conditions.push('ap.status = ?');
@@ -910,8 +915,10 @@ router.post('/surveys', requireAuth, requireRole('sale', 'agent', 'manager'), as
         } = req.body;
 
         const parsedSubmissionId = Number(submissionId);
-        const parsedAppointmentId = Number(appointmentId);
+        let parsedAppointmentId = Number(appointmentId);
         const submissionStatus = mapSurveyToSubmissionStatus(surveyStatus);
+
+        const isDraft = String(surveyStatus).toLowerCase().includes('draft') || String(surveyStatus).toLowerCase().includes('nháp');
 
         if (!Number.isInteger(parsedSubmissionId)) {
             return res.status(400).json({ message: 'submissionId không hợp lệ' });
@@ -926,10 +933,43 @@ router.post('/surveys', requireAuth, requireRole('sale', 'agent', 'manager'), as
             return res.status(404).json({ message: 'Không tìm thấy hồ sơ được phân công cho sale hiện tại' });
         }
 
-        if (!Number.isInteger(parsedAppointmentId)) {
-            return res.status(400).json({ message: 'appointmentId là bắt buộc và phải hợp lệ' });
+        parsedAppointmentId = Number(appointmentId);
+        if (!parsedAppointmentId || Number.isNaN(parsedAppointmentId) || parsedAppointmentId === 0) {
+            const [latestAppt] = await db.query(
+                `SELECT appointment_id 
+                 FROM appointments 
+                 WHERE submission_id = ? AND appointment_type = 'khảo sát' 
+                 ORDER BY appointment_id DESC LIMIT 1`,
+                [parsedSubmissionId]
+            );
+            if (latestAppt && latestAppt.length > 0) {
+                parsedAppointmentId = latestAppt[0].appointment_id;
+            } else {
+                return res.status(400).json({ message: 'Không tìm thấy lịch hẹn khảo sát nào được tạo cho hồ sơ này. Vui lòng tạo lịch hẹn khảo sát trước.' });
+            }
         }
 
+        if (!isDraft) {
+            // Validation for final submission
+            const images = Array.isArray(imageChecklist) ? imageChecklist :
+                           (typeof imageChecklist === 'string' ? (()=>{
+                               try { return JSON.parse(imageChecklist); }
+                               catch(e) { return imageChecklist.split(',').map(item => item.trim()).filter(Boolean); }
+                           })() : []);
+            if (images.length < 3) {
+                return res.status(400).json({ message: 'Vui lòng tải lên ít nhất 3 ảnh thực tế (mặt tiền, phòng khách, sổ đỏ)' });
+            }
+
+            let legal = legalChecklist;
+            if (typeof legal === 'string') {
+                try { legal = JSON.parse(legal); } catch (e) {}
+            }
+            if (!legal || !legal.legal_deed || !legal.legal_dispute || !legal.legal_id_match) {
+                return res.status(400).json({ message: 'Vui lòng điền đầy đủ checklist phần Pháp lý' });
+            }
+        }
+
+        console.log('SURVEY SUBMIT DEBUG:', { parsedAppointmentId, parsedSubmissionId, saleId });
         const [appointmentRows] = await db.query(
             `SELECT ap.appointment_id
              FROM appointments ap

@@ -788,11 +788,11 @@
                         if (text.includes('hủy') || text.includes('từ chối')) {
                                 return 'bg-error-container/50 text-on-error-container border border-error-container';
                         }
-                        if (text.includes('khảo sát') || text.includes('hoạt động') || text.includes('phê duyệt')) {
-                                return 'bg-[#F0FDF4] text-[#15803D] border border-[#DCFCE7]';
-                        }
                         if (text.includes('chờ') || text.includes('draft') || text.includes('nháp')) {
                                 return 'bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7]';
+                        }
+                        if (text.includes('khảo sát') || text.includes('hoạt động') || text.includes('phê duyệt')) {
+                                return 'bg-[#F0FDF4] text-[#15803D] border border-[#DCFCE7]';
                         }
                         return 'bg-secondary-container/50 text-primary-container border border-secondary-container';
                 }
@@ -1185,6 +1185,9 @@
                                 modal.classList.add('hidden');
                         }, 300);
                 }
+
+                window.openAppointmentModal = openAppointmentModal;
+                window.closeAppointmentModal = closeAppointmentModal;
 
                 // Close modal when clicking outside
                 window.addEventListener('click', (e) => {

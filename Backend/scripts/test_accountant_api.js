@@ -31,7 +31,7 @@ async function runTests() {
     console.log('1. Attempting login as accountant...');
     const loginRes = await makeRequest({
         hostname: 'localhost',
-        port: 5000,
+        port: 5050,
         path: '/api/auth/login',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -52,7 +52,7 @@ async function runTests() {
     console.log('\n2. Fetching initial expired contracts...');
     let expiredRes = await makeRequest({
         hostname: 'localhost',
-        port: 5000,
+        port: 5050,
         path: '/api/accountant/contracts/expired',
         method: 'GET',
         headers: { 
@@ -79,7 +79,7 @@ async function runTests() {
     console.log('\n3. Processing refund via POST /api/accountant/returns...');
     const refundRes = await makeRequest({
         hostname: 'localhost',
-        port: 5000,
+        port: 5050,
         path: '/api/accountant/returns',
         method: 'POST',
         headers: {
@@ -104,7 +104,7 @@ async function runTests() {
     console.log('\n4. Fetching expired contracts again...');
     expiredRes = await makeRequest({
         hostname: 'localhost',
-        port: 5000,
+        port: 5050,
         path: '/api/accountant/contracts/expired',
         method: 'GET',
         headers: { 
