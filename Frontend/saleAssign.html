@@ -252,18 +252,11 @@
                         statusLabel = 'Từ chối';
                         statusColorClass = 'bg-error-container text-on-error-container border-error';
                     }
-                    let actionsHtml = '';
-                    if (it.status === 'surveyed' || it.status === 'cancelled' || it.status === 'rejected') {
-                        actionsHtml = `
-                            <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
-                        `;
-                    } else {
-                        actionsHtml = `
-                            <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
-                            <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
-                            <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
-                        `;
-                    }
+                    let actionsHtml = `
+                        <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
+                        <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
+                        <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
+                    `;
                     tr.innerHTML = `
 <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">${it.request_code}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface">${(it.owner && it.owner.full_name) || '-'}</td>
