@@ -170,19 +170,22 @@
   try{
     const prop = await getConsignment(submissionId);
     if(prop){
+      const sub = prop.submission || {};
+      const owner = prop.owner || {};
+      const code = sub.submission_id ? `KG-${String(sub.submission_id).padStart(5, '0')}` : '-';
       propCard.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
           <div class="flex flex-col gap-xs">
             <p class="font-label-sm text-label-sm text-secondary">Mã yêu cầu</p>
-            <p class="font-body-md text-body-md font-semibold text-on-surface">${prop.request_code || ''}</p>
+            <p class="font-body-md text-body-md font-semibold text-on-surface">${code}</p>
           </div>
           <div class="flex flex-col gap-xs">
             <p class="font-label-sm text-label-sm text-secondary">Chủ nhà</p>
-            <p class="font-body-md text-body-md font-semibold text-on-surface">${(prop.owner && prop.owner.full_name) || '-'}</p>
+            <p class="font-body-md text-body-md font-semibold text-on-surface">${owner.full_name || '-'}</p>
           </div>
           <div class="flex flex-col gap-xs">
             <p class="font-label-sm text-label-sm text-secondary">Địa chỉ</p>
-            <p class="font-body-md text-body-md font-semibold text-on-surface">${prop.address || '-'}</p>
+            <p class="font-body-md text-body-md font-semibold text-on-surface">${sub.address || '-'}</p>
           </div>
         </div>
       `;
@@ -221,7 +224,7 @@
           <div class="text-left md:text-right flex flex-col gap-xs">
             <p class="font-label-sm text-label-sm text-secondary">Trạng thái</p>
             <span class="inline-block px-3 py-1 bg-primary/10 text-primary font-label-sm text-label-sm rounded-full w-fit md:ml-auto">
-              ${a.status || 'Đã lên lịch'}
+              ${a.status === 'hoàn tất' ? 'Hoàn tất' : (a.status || 'Đã lên lịch')}
             </span>
             <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">${a.result_note || a.notes || ''}</p>
           </div>
