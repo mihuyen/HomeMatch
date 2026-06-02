@@ -94,7 +94,34 @@ async function runTest() {
             await db.query("UPDATE users SET token = ?, token_expires_at = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE user_id = ?", [token, brokerId]);
         }
         
-        console.log('Firing POST /api/broker/contracts API request...');
+        // 5a. Test missing contractScanUrl validation
+        console.log('5a. Testing missing contractScanUrl validation...');
+        const failResponse = await postRequest(`${BASE_URL}/broker/contracts`, {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }, {
+            assignmentId,
+            tenantId,
+            agreedPrice: 150000000,
+            leaseTermMonths: 12,
+            listingId: 1,
+            appointmentId,
+            resultNote: 'Thương lượng thành công, khách chốt thuê 150tr/tháng.'
+        });
+
+        const failData = await failResponse.json();
+        console.log('Validation API Response status:', failResponse.status);
+        console.log('Validation API Response body:', failData);
+
+        if (failResponse.status !== 400) {
+            throw new Error(`API validation failed! Expected 400, got ${failResponse.status}`);
+        }
+        if (!failData.message || !failData.message.includes('Vui lòng tải file scan/ảnh hợp đồng')) {
+            throw new Error(`API validation message mismatch! Got: ${failData.message}`);
+        }
+        console.log('Missing contractScanUrl check passed (returned 400 Bad Request).');
+
+        console.log('5b. Executing contract submission transaction with valid contractScanUrl...');
         const response = await postRequest(`${BASE_URL}/broker/contracts`, {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`

@@ -381,6 +381,13 @@ router.post('/contracts/approve', requireAuth, requireRole('accountant', 'manage
                     );
                 }
             }
+
+            // Ghi nhận hoa hồng chi trả cho Broker để tăng tổng doanh thu
+            await connection.query(
+                `INSERT INTO broker_payments (broker_id, amount, payment_method, status, paid_at)
+                 VALUES (?, ?, 'bank_transfer', 'đã chi trả', NOW())`,
+                [contract.broker_id, calculatedCommission]
+            );
         }
 
         await connection.commit();

@@ -122,35 +122,12 @@
 
 <body class="bg-surface text-on-surface font-body min-h-screen">
   <!-- TopNavBar -->
-  <nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
-    <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
-      <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3"
-        onclick="window.location.href='brokerHome.html'"><span
-          class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span><span
-          class="">HomeMatch</span></div>
-      <div class="hidden md:flex gap-10 h-full items-center"><a
-          class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer"
-          href="brokerHome.html">Trang chủ</a></div>
-      <div class="flex items-center gap-6"><button
-          class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95"
-          onclick="localStorage.removeItem('token'); window.location.href='login.html';">Đăng xuất</button><button
-          class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all"><img
-            alt="User profile avatar" class="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0rZ_SzxMGwBC_GiTpZdcco5CS9iuQESKbeUTuiHhiMJxNRt340TnfBU0Dr6m1FzTFprD7k7MIigXvXWoK0ZdmHuW7XZKerj5crP-BBX7jFxXbDDDgP5DUbZhjqsjK_F8i3XISMc78pPBaBgNEb4CyxyXyriNbW28w7TMhtkyZUT--mAWXXtr1Jcf-yr2KNDIrZ64p97pN0hp8iC70V6mLO94Pp9nMmB0Z5ntxOv7q2CUD8OZKRGdIhst2NlijOVNDCx3dsZMUg02C"></button>
-      </div>
-    </div>
-  </nav>
+  <div id="broker-sidebar"></div>
+  <script src="brokerSidebar.js"></script>
   <main class="max-w-7xl mx-auto px-6 py-8 mt-0">
     <!-- Header & Breadcrumbs Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div>
-        <nav class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
-          <a class="hover:text-primary transition-colors" href="#">Trang chủ&nbsp;</a>
-          <span class="material-symbols-outlined text-xs">chevron_right</span>
-          <a class="hover:text-primary transition-colors" href="#">Phân công</a>
-          <span class="material-symbols-outlined text-xs">chevron_right</span>
-          <span class="text-primary font-semibold">Chi tiết</span>
-        </nav>
         <h1 class="text-3xl font-headline font-extrabold text-on-primary-container tracking-tight">Chi tiết Phân công
         </h1>
       </div>
@@ -319,7 +296,7 @@
                   <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_add_on</span>
                   Tạo lịch hẹn
                 </button>
-                <button onclick="window.location.href='brokerContract.html?assignmentId=${assignmentId}'"
+                <button onclick="if (${data.appointment_count || 0} === 0) { alert('Không cho phép chốt giao dịch trong khi chưa tạo lịch hẹn. Vui lòng tạo lịch hẹn trước.'); } else { window.location.href='brokerContract.html?assignmentId=${assignmentId}'; }"
                   class="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-emerald-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all hover:bg-emerald-700">
                   <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">handshake</span>
                   Chốt giao dịch
