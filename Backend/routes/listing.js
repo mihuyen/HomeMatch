@@ -174,4 +174,36 @@ router.post('/:listingId/request-view', requireAuth, requireRole('tenant'), asyn
     }
 });
 
+// API: Lấy danh sách bất động sản đang hiển thị
+router.get('/', async (req, res) => {
+    try {
+        // 1. CHẠY LỆNH NÀY TRƯỚC ĐỂ TỰ ĐỘNG CHUYỂN TRẠNG THÁI TIN QUÁ HẠN
+        await db.query(`
+            UPDATE property_listings 
+            SET status = 'expired' 
+            WHERE status = 'active' AND expired_at < NOW()
+        `);
+
+        // 2. LẤY DANH SÁCH (Bao gồm cả tin đang hiển thị và tin vừa hết hạn)
+        const query = `
+            SELECT
+                pl.listing_id, pl.title, pl.description, pl.price_display, 
+                pl.activated_at, pl.expired_at, pl.view_count, pl.status, 
+                ps.submission_id, ps.owner_id, ps.property_type, ps.area, 
+                ps.direction, ps.num_bedrooms, ps.num_bathrooms, ps.address, 
+                ps.images_uploaded, ps.proposed_price
+            FROM property_listings pl
+            JOIN property_submissions ps ON pl.submission_id = ps.submission_id
+            WHERE pl.status IN ('active', 'expired')
+            ORDER BY pl.activated_at DESC
+        `;
+
+        const [rows] = await db.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error("Lỗi khi lấy danh sách BĐS:", err);
+        res.status(500).json({ message: 'Lỗi server khi lấy dữ liệu' });
+    }
+});
+
 module.exports = router;
