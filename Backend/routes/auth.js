@@ -83,6 +83,28 @@ router.post('/register', async (req, res) => {
             return res.status(409).json({ message: 'Email này đã được đăng ký' });
         }
 
+        // Kiểm tra phone đã tồn tại
+        if (phone) {
+            const [existingPhone] = await db.query(
+                'SELECT user_id FROM users WHERE phone = ?',
+                [phone]
+            );
+            if (existingPhone.length > 0) {
+                return res.status(409).json({ message: 'Số điện thoại này đã được đăng ký' });
+            }
+        }
+
+        // Kiểm tra id_card đã tồn tại
+        if (id_card) {
+            const [existingIdCard] = await db.query(
+                'SELECT user_id FROM users WHERE id_card = ?',
+                [id_card]
+            );
+            if (existingIdCard.length > 0) {
+                return res.status(409).json({ message: 'CCCD này đã được đăng ký' });
+            }
+        }
+
         // Băm mật khẩu
         const password_hash = await bcrypt.hash(password, 10);
 

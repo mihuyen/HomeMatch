@@ -8,12 +8,13 @@ const VALID_ROLES_FOR_ASSIGNMENT = ['sale', 'agent'];
 
 const STATUS_LABELS = {
     draft: 'Bản nháp',
-    pending: 'Chờ xử lý',
-    surveyed: 'Đã khảo sát',
+    pending: 'Chờ khảo sát',
+    assigned: 'Chờ khảo sát',
+    surveyed: 'Đã khảo sát đạt',
     approved: 'Đã phê duyệt',
     active: 'Đang hoạt động',
-    cancelled: 'Đã hủy',
-    rejected: 'Đã từ chối',
+    cancelled: 'Từ chối',
+    rejected: 'Từ chối',
     listed: 'Đã lên tin',
     rented: 'Đã cho thuê',
     expired: 'Hết hạn'
@@ -110,12 +111,39 @@ async function findOrCreateOwner({ fullName, phone, email, idCard }) {
 
     if (existingRows.length > 0) {
         const user = existingRows[0];
+        
+        if (phone) {
+            const [phoneRows] = await db.query('SELECT user_id FROM users WHERE phone = ? AND user_id != ?', [phone, user.user_id]);
+            if (phoneRows.length > 0) {
+                throw new Error('Số điện thoại đã được đăng ký bởi tài khoản khác');
+            }
+        }
+        if (idCard) {
+            const [idCardRows] = await db.query('SELECT user_id FROM users WHERE id_card = ? AND user_id != ?', [idCard, user.user_id]);
+            if (idCardRows.length > 0) {
+                throw new Error('CCCD đã được đăng ký bởi tài khoản khác');
+            }
+        }
+
         await db.query(
             'UPDATE users SET full_name = ?, phone = ?, id_card = ? WHERE user_id = ?',
             [fullName, phone || null, idCard || null, user.user_id]
         );
 
         return user.user_id;
+    }
+
+    if (phone) {
+        const [phoneRows] = await db.query('SELECT user_id FROM users WHERE phone = ?', [phone]);
+        if (phoneRows.length > 0) {
+            throw new Error('Số điện thoại đã được đăng ký bởi tài khoản khác');
+        }
+    }
+    if (idCard) {
+        const [idCardRows] = await db.query('SELECT user_id FROM users WHERE id_card = ?', [idCard]);
+        if (idCardRows.length > 0) {
+            throw new Error('CCCD đã được đăng ký bởi tài khoản khác');
+        }
     }
 
     const [result] = await db.query(
@@ -414,13 +442,22 @@ async function getOwnerTrackingDetail(ownerId, submissionId) {
             at: ap.scheduled_time || ap.created_at,
             note: ap.location || ap.result_note || null
         })),
-        ...surveyRows.map(sv => ({
-            type: 'survey',
-            title: 'Cập nhật khảo sát',
-            status: sv.survey_status || 'done',
-            at: sv.completed_at,
-            note: sv.survey_notes || null
-        })),
+        ...surveyRows.map(sv => {
+            let label = 'Khảo sát đạt yêu cầu';
+            const statusStr = String(sv.survey_status || '').toLowerCase();
+            if (statusStr.includes('draft') || statusStr.includes('nháp')) {
+                label = 'Bản nháp tạm lưu';
+            } else if (statusStr.includes('không đạt') || statusStr.includes('khong dat') || statusStr.includes('fail') || statusStr.includes('reject')) {
+                label = 'Khảo sát không đạt';
+            }
+            return {
+                type: 'survey',
+                title: label,
+                status: sv.survey_status || 'done',
+                at: sv.completed_at,
+                note: sv.survey_notes || null
+            };
+        }),
         ...contractRows.map(ct => ({
             type: 'contract',
             title: 'Hợp đồng ký gửi',
@@ -543,8 +580,14 @@ router.post('/step-1', async (req, res) => {
             return res.status(400).json({ message: 'Số phòng tắm không hợp lệ' });
         }
 
-        if (!normalizedImages) {
-            return res.status(400).json({ message: 'Vui lòng tải lên ít nhất 1 ảnh bất động sản' });
+        const imgArray = Array.isArray(imagesUploaded) ? imagesUploaded :
+                       (typeof imagesUploaded === 'string' ? (()=>{
+                           try { return JSON.parse(imagesUploaded); }
+                           catch(e) { return imagesUploaded.split(',').map(item => item.trim()).filter(Boolean); }
+                       })() : []);
+
+        if (imgArray.length < 5) {
+            return res.status(400).json({ message: 'Vui lòng tải lên tối thiểu 5 ảnh minh họa' });
         }
 
         const [result] = await db.query(
@@ -575,7 +618,8 @@ router.post('/step-1', async (req, res) => {
         });
     } catch (err) {
         console.error('consignment step-1 error:', err);
-        res.status(500).json({ message: 'Lỗi server: ' + err.message });
+        const status = (err.message.includes('đăng ký bởi tài khoản khác') || err.message.includes('đã được đăng ký')) ? 400 : 500;
+        res.status(status).json({ message: err.message });
     }
 });
 
@@ -655,6 +699,16 @@ router.post('/:submissionId/step-3', async (req, res) => {
         }
 
         const normalizedImages = parseImages(imagesUploaded);
+
+        const imgArray = Array.isArray(imagesUploaded) ? imagesUploaded :
+                       (typeof imagesUploaded === 'string' ? (()=>{
+                           try { return JSON.parse(imagesUploaded); }
+                           catch(e) { return imagesUploaded.split(',').map(item => item.trim()).filter(Boolean); }
+                       })() : []);
+
+        if (imgArray.length < 5) {
+            return res.status(400).json({ message: 'Vui lòng tải lên tối thiểu 5 ảnh minh họa' });
+        }
 
         await db.query(
             `UPDATE property_submissions

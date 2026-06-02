@@ -450,6 +450,11 @@
                 .map(item => item.trim())
                 .filter(Boolean);
 
+            if (imagesUploaded.length < 5) {
+                alert('Vui lòng tải lên tối thiểu 5 ảnh minh họa.');
+                return;
+            }
+
             try {
                 const result = await createConsignmentStep1({
                     fullName,
