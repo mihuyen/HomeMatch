@@ -1,12 +1,20 @@
-<!DOCTYPE html><html class="light" lang="vi" style=""><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>HomeMatch - Yêu cầu được Phân công</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
+<!DOCTYPE html>
+<html class="light" lang="vi" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>HomeMatch - Yêu cầu được Phân công</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -103,162 +111,197 @@
             }
         }
     </script>
-<style>
+    <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+
         .material-symbols-outlined.fill {
             font-variation-settings: 'FILL' 1;
         }
-        
+
         /* Custom scrollbar for tables */
         .custom-scrollbar::-webkit-scrollbar {
             height: 8px;
             width: 8px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f0f7; 
+            background: #f1f0f7;
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #c5c5d3; 
+            background: #c5c5d3;
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #757682; 
+            background: #757682;
         }
     </style>
 </head>
+
 <body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
-<!-- SideNavBar (Desktop) -->
-<div id="sale-sidebar"></div>
-<script src="saleSidebar.js"></script>
-<!-- Main Content Area -->
-<main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
-<!-- Page Canvas -->
-<div class="flex-1 overflow-auto custom-scrollbar">
-<!-- Page Header -->
-<div class="mb-lg">
-<h2 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">Yêu cầu được Phân công</h2>
-<p class="font-body-md text-body-md text-on-surface-variant">Quản lý và xử lý các yêu cầu ký gửi bất động sản được phân công.</p>
-</div>
-<!-- Filter Tabs -->
-<div class="mb-lg flex space-x-md border-b border-outline-variant overflow-x-auto custom-scrollbar pb-[1px]">
-<button class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-sm whitespace-nowrap px-sm">Tất cả</button>
-<button class="font-label-md text-label-md text-on-secondary-container hover:bg-surface-container-low transition-colors pb-sm whitespace-nowrap px-sm">Chờ xử lý</button>
-<button class="font-label-md text-label-md text-on-secondary-container hover:bg-surface-container-low transition-colors pb-sm whitespace-nowrap px-sm">Đã khảo sát</button>
-<button class="font-label-md text-label-md text-on-secondary-container hover:bg-surface-container-low transition-colors pb-sm whitespace-nowrap px-sm">Đã hủy</button>
-</div>
-<!-- Data Table Card -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col">
-<!-- Table Header/Toolbar (Optional search/filter can go here) -->
-<div class="p-md border-b border-outline-variant bg-surface-bright flex justify-between items-center">
-<span id="assign-count" class="font-label-md text-label-md text-on-surface font-semibold">-- Requests Found</span>
-<div class="flex items-center space-x-sm">
-<button class="flex items-center space-x-xs text-secondary hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-sm">filter_list</span>
-<span class="font-label-sm text-label-sm">Filter</span>
-</button>
-</div>
-</div>
-<!-- Table Container -->
-<div class="overflow-x-auto custom-scrollbar">
-<table class="w-full text-left min-w-[800px] border-collapse">
-<thead>
-<tr class="bg-surface border-b border-outline-variant">
-<th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Mã yêu cầu</th>
-<th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Chủ sở hữu</th>
-<th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Địa chỉ</th>
-<th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Ngày gửi</th>
-<th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Trạng thái</th>
-<th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold text-right">Thao tác</th>
-</tr>
-</thead>
-<tbody id="assign-tbody" class="divide-y divide-outline-variant">
-<!-- Dynamic rows will be injected here -->
-</tbody>
-</table>
-</div>
-<!-- Pagination Footer -->
-<div class="p-md border-t border-outline-variant bg-surface flex justify-between items-center">
-<span id="assign-page-summary" class="font-body-sm text-body-sm text-on-surface-variant">Showing 0 to 0 of 0 entries</span>
-<div class="flex space-x-sm">
-<button class="p-xs rounded border border-outline text-secondary disabled:opacity-50" disabled="">
-<span class="material-symbols-outlined text-sm">chevron_left</span>
-</button>
-<button class="px-2 py-1 rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm">1</button>
-<button class="px-2 py-1 rounded text-secondary hover:bg-surface-container-low font-label-sm text-label-sm">2</button>
-<button class="px-2 py-1 rounded text-secondary hover:bg-surface-container-low font-label-sm text-label-sm">3</button>
-<button class="p-xs rounded border border-outline text-secondary hover:bg-surface-container-low">
-<span class="material-symbols-outlined text-sm">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-</main>
+    <!-- SideNavBar (Desktop) -->
+    <div id="sale-sidebar"></div>
+    <script src="saleSidebar.js"></script>
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
+        <!-- Page Canvas -->
+        <div class="flex-1 overflow-auto custom-scrollbar">
+            <!-- Page Header -->
+            <div class="mb-lg">
+                <h2
+                    class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">
+                    Yêu cầu được Phân công</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">Quản lý và xử lý các yêu cầu ký gửi bất
+                    động sản được phân công.</p>
+            </div>
+            <!-- Filter Tabs -->
+            <div
+                class="mb-lg flex space-x-md border-b border-outline-variant overflow-x-auto custom-scrollbar pb-[1px]">
+                <button
+                    class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-sm whitespace-nowrap px-sm">Tất
+                    cả</button>
+                <button
+                    class="font-label-md text-label-md text-on-secondary-container hover:bg-surface-container-low transition-colors pb-sm whitespace-nowrap px-sm">Chờ
+                    xử lý</button>
+                <button
+                    class="font-label-md text-label-md text-on-secondary-container hover:bg-surface-container-low transition-colors pb-sm whitespace-nowrap px-sm">Đã
+                    khảo sát</button>
+                <button
+                    class="font-label-md text-label-md text-on-secondary-container hover:bg-surface-container-low transition-colors pb-sm whitespace-nowrap px-sm">Đã
+                    hủy</button>
+            </div>
+            <!-- Data Table Card -->
+            <div
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+                <!-- Table Header/Toolbar (Optional search/filter can go here) -->
+                <div class="p-md border-b border-outline-variant bg-surface-bright flex justify-between items-center">
+                    <span id="assign-count" class="font-label-md text-label-md text-on-surface font-semibold">--
+                        Requests Found</span>
+                    <div class="flex items-center space-x-sm">
+                        <button
+                            class="flex items-center space-x-xs text-secondary hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-sm">filter_list</span>
+                            <span class="font-label-sm text-label-sm">Filter</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Table Container -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left min-w-[800px] border-collapse">
+                        <thead>
+                            <tr class="bg-surface border-b border-outline-variant">
+                                <th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Mã
+                                    yêu cầu</th>
+                                <th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Chủ
+                                    sở hữu</th>
+                                <th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Địa
+                                    chỉ</th>
+                                <th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Ngày
+                                    gửi</th>
+                                <th class="p-md font-label-md text-label-md text-on-surface-variant font-semibold">Trạng
+                                    thái</th>
+                                <th
+                                    class="p-md font-label-md text-label-md text-on-surface-variant font-semibold text-right">
+                                    Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assign-tbody" class="divide-y divide-outline-variant">
+                            <!-- Dynamic rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination Footer -->
+                <div class="p-md border-t border-outline-variant bg-surface flex justify-between items-center">
+                    <span id="assign-page-summary" class="font-body-sm text-body-sm text-on-surface-variant">Showing 0
+                        to 0 of 0 entries</span>
+                    <div class="flex space-x-sm">
+                        <button class="p-xs rounded border border-outline text-secondary disabled:opacity-50"
+                            disabled="">
+                            <span class="material-symbols-outlined text-sm">chevron_left</span>
+                        </button>
+                        <button
+                            class="px-2 py-1 rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm">1</button>
+                        <button
+                            class="px-2 py-1 rounded text-secondary hover:bg-surface-container-low font-label-sm text-label-sm">2</button>
+                        <button
+                            class="px-2 py-1 rounded text-secondary hover:bg-surface-container-low font-label-sm text-label-sm">3</button>
+                        <button
+                            class="p-xs rounded border border-outline text-secondary hover:bg-surface-container-low">
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
 
-</body></html>
+</body>
+
+</html>
 <script src="api.js"></script>
 <script>
-    (async function(){
-        let currentStatus = '';
-        let currentSearch = '';
+        (async function () {
+            let currentStatus = '';
+            let currentSearch = '';
 
-        function getTabButtons(){
-            return Array.from(document.querySelectorAll('div.mb-lg.flex.space-x-md.border-b button'));
-        }
+            function getTabButtons() {
+                return Array.from(document.querySelectorAll('div.mb-lg.flex.space-x-md.border-b button'));
+            }
 
-        function setActiveTab(activeIndex){
-            getTabButtons().forEach((btn, index)=>{
-                const isActive = index === activeIndex;
-                btn.classList.toggle('text-primary', isActive);
-                btn.classList.toggle('font-bold', isActive);
-                btn.classList.toggle('border-b-2', isActive);
-                btn.classList.toggle('border-primary', isActive);
-                btn.classList.toggle('text-on-secondary-container', !isActive);
-                btn.classList.toggle('hover:bg-surface-container-low', !isActive);
-            });
-        }
-
-        try{
-            await requireLogin();
-        }catch(e){
-            console.error('requireLogin failed', e);
-            return;
-        }
-        async function loadAssignments(){
-            try{
-                const data = await listSaleAssignments({
-                    limit: 50,
-                    status: currentStatus || undefined,
-                    search: currentSearch || undefined
+            function setActiveTab(activeIndex) {
+                getTabButtons().forEach((btn, index) => {
+                    const isActive = index === activeIndex;
+                    btn.classList.toggle('text-primary', isActive);
+                    btn.classList.toggle('font-bold', isActive);
+                    btn.classList.toggle('border-b-2', isActive);
+                    btn.classList.toggle('border-primary', isActive);
+                    btn.classList.toggle('text-on-secondary-container', !isActive);
+                    btn.classList.toggle('hover:bg-surface-container-low', !isActive);
                 });
-                const items = data.items || [];
-                document.getElementById('assign-count').textContent = `${items.length} Requests Found`;
-                const tbody = document.getElementById('assign-tbody');
-                tbody.innerHTML = '';
-                for(const it of items){
-                    const tr = document.createElement('tr');
-                    tr.className = 'bg-surface-container-lowest hover:bg-surface-container-low transition-colors group';
-                    const submittedAt = it.submitted_at ? new Date(it.submitted_at).toLocaleString() : '-';
-                    let statusLabel = 'Chờ khảo sát';
-                    let statusColorClass = 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]';
-                    if (it.status === 'surveyed') {
-                        statusLabel = 'Đã khảo sát đạt';
-                        statusColorClass = 'bg-[#D1FAE5] text-[#065F46] border-[#10B981]';
-                    } else if (it.status === 'cancelled' || it.status === 'rejected') {
-                        statusLabel = 'Từ chối';
-                        statusColorClass = 'bg-error-container text-on-error-container border-error';
-                    }
-                    const hasAppointment = it.latest_appointment ? 'true' : 'false';
-                    let actionsHtml = `
+            }
+
+            try {
+                await requireLogin();
+            } catch (e) {
+                console.error('requireLogin failed', e);
+                return;
+            }
+            async function loadAssignments() {
+                try {
+                    const data = await listSaleAssignments({
+                        limit: 50,
+                        status: currentStatus || undefined,
+                        search: currentSearch || undefined
+                    });
+                    const items = data.items || [];
+                    document.getElementById('assign-count').textContent = `${items.length} Requests Found`;
+                    const tbody = document.getElementById('assign-tbody');
+                    tbody.innerHTML = '';
+                    for (const it of items) {
+                        const tr = document.createElement('tr');
+                        tr.className = 'bg-surface-container-lowest hover:bg-surface-container-low transition-colors group';
+                        const submittedAt = it.submitted_at ? new Date(it.submitted_at).toLocaleString() : '-';
+                        let statusLabel = 'Chờ khảo sát';
+                        let statusColorClass = 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]';
+                        if (it.status === 'surveyed') {
+                            statusLabel = 'Đã khảo sát đạt';
+                            statusColorClass = 'bg-[#D1FAE5] text-[#065F46] border-[#10B981]';
+                        } else if (it.status === 'cancelled' || it.status === 'rejected') {
+                            statusLabel = 'Từ chối';
+                            statusColorClass = 'bg-error-container text-on-error-container border-error';
+                        }
+                        const hasAppointment = it.latest_appointment ? 'true' : 'false';
+                        let actionsHtml = `
                         <button data-submission="${it.submission_id}" class="create-appointment inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Tạo lịch hẹn</button>
                         <a href="saleAppointments.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" class="view-appointments inline-block font-label-sm text-label-sm text-secondary border border-outline px-3 py-1.5 rounded hover:bg-surface-variant transition-colors">Xem lịch hẹn</a>
                         <a href="saleSurvey.html?submissionId=${it.submission_id}" data-submission="${it.submission_id}" data-has-appointment="${hasAppointment}" class="enter-result inline-block font-label-sm text-label-sm text-on-primary bg-primary px-3 py-1.5 rounded hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors">Nhập kết quả</a>
                     `;
-                    tr.innerHTML = `
+                        tr.innerHTML = `
 <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">${it.request_code}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface">${(it.owner && it.owner.full_name) || '-'}</td>
 <td class="p-md font-body-sm text-body-sm text-on-surface-variant truncate max-w-[200px]">${it.address || '-'}</td>
@@ -268,69 +311,69 @@
                     ${actionsHtml}
 </td>
                     `;
-                    tbody.appendChild(tr);
+                        tbody.appendChild(tr);
+                    }
+
+                    const total = Number(data.total || items.length);
+                    const visibleFrom = total > 0 ? 1 : 0;
+                    const visibleTo = items.length;
+                    document.getElementById('assign-page-summary').textContent = `Showing ${visibleFrom} to ${visibleTo} of ${total} entries`;
+
+                    // attach handlers
+                    document.querySelectorAll('.view-appointments').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            const id = e.currentTarget.dataset.submission;
+                            window.location.href = `saleMeet.html?submissionId=${id}`;
+                        });
+                    });
+                    document.querySelectorAll('.enter-result').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            e.preventDefault();
+                            const id = e.currentTarget.dataset.submission;
+                            const hasAppt = e.currentTarget.dataset.hasAppointment === 'true';
+                            if (!hasAppt) {
+                                alert('Vui lòng tạo lịch hẹn khảo sát trước khi nhập kết quả.');
+                                return;
+                            }
+                            window.location.href = `saleSurvey.html?submissionId=${id}`;
+                        });
+                    });
+                    document.querySelectorAll('.create-appointment').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            const id = e.currentTarget.dataset.submission;
+                            // open saleMeet with create flag
+                            window.location.href = `saleMeet.html?submissionId=${id}&create=1`;
+                        });
+                    });
+
+                } catch (err) {
+                    console.error('loadAssignments error', err);
+                    document.getElementById('assign-count').textContent = 'Lỗi tải dữ liệu';
                 }
-
-                const total = Number(data.total || items.length);
-                const visibleFrom = total > 0 ? 1 : 0;
-                const visibleTo = items.length;
-                document.getElementById('assign-page-summary').textContent = `Showing ${visibleFrom} to ${visibleTo} of ${total} entries`;
-
-                // attach handlers
-                document.querySelectorAll('.view-appointments').forEach(btn=>{
-                    btn.addEventListener('click', e=>{
-                        const id = e.currentTarget.dataset.submission;
-                        window.location.href = `saleMeet.html?submissionId=${id}`;
-                    });
-                });
-                document.querySelectorAll('.enter-result').forEach(btn=>{
-                    btn.addEventListener('click', e=>{
-                        e.preventDefault();
-                        const id = e.currentTarget.dataset.submission;
-                        const hasAppt = e.currentTarget.dataset.hasAppointment === 'true';
-                        if (!hasAppt) {
-                            alert('Vui lòng tạo lịch hẹn khảo sát trước khi nhập kết quả.');
-                            return;
-                        }
-                        window.location.href = `saleSurvey.html?submissionId=${id}`;
-                    });
-                });
-                document.querySelectorAll('.create-appointment').forEach(btn=>{
-                    btn.addEventListener('click', e=>{
-                        const id = e.currentTarget.dataset.submission;
-                        // open saleMeet with create flag
-                        window.location.href = `saleMeet.html?submissionId=${id}&create=1`;
-                    });
-                });
-
-            }catch(err){
-                console.error('loadAssignments error', err);
-                document.getElementById('assign-count').textContent = 'Lỗi tải dữ liệu';
             }
-        }
 
-        const tabButtons = getTabButtons();
-        const tabStatusMap = ['', 'pending', 'surveyed', 'cancelled'];
-        tabButtons.forEach((btn, index)=>{
-            btn.addEventListener('click', async ()=>{
-                currentStatus = tabStatusMap[index] || '';
-                setActiveTab(index);
-                await loadAssignments();
+            const tabButtons = getTabButtons();
+            const tabStatusMap = ['', 'pending', 'surveyed', 'cancelled'];
+            tabButtons.forEach((btn, index) => {
+                btn.addEventListener('click', async () => {
+                    currentStatus = tabStatusMap[index] || '';
+                    setActiveTab(index);
+                    await loadAssignments();
+                });
             });
-        });
 
-        const filterButton = document.querySelector('div.p-md.border-b.border-outline-variant button');
-        if (filterButton) {
-            filterButton.addEventListener('click', async ()=>{
-                const keyword = window.prompt('Nhập từ khóa tìm kiếm theo mã hồ sơ, chủ sở hữu hoặc địa chỉ:', currentSearch);
-                if (keyword === null) return;
-                currentSearch = keyword.trim();
-                await loadAssignments();
-            });
-        }
+            const filterButton = document.querySelector('div.p-md.border-b.border-outline-variant button');
+            if (filterButton) {
+                filterButton.addEventListener('click', async () => {
+                    const keyword = window.prompt('Nhập từ khóa tìm kiếm theo mã hồ sơ, chủ sở hữu hoặc địa chỉ:', currentSearch);
+                    if (keyword === null) return;
+                    currentSearch = keyword.trim();
+                    await loadAssignments();
+                });
+            }
 
-        setActiveTab(0);
+            setActiveTab(0);
 
-        loadAssignments();
-    })();
+            loadAssignments();
+        })();
 </script>
