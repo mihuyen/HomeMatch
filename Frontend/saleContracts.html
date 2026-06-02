@@ -320,12 +320,27 @@
       }
 
       const mapPropertyType = (type) => {
-        const normalized = String(type || '').toLowerCase();
-        if (normalized === 'apartment') return 'Căn hộ';
-        if (normalized === 'house') return 'Nhà riêng';
-        if (normalized === 'villa') return 'Biệt thự';
-        if (normalized === 'ground') return 'Đất nền';
+        const normalized = String(type || '').toLowerCase().replace(/\s+/g, '');
+        if (normalized === 'nhapho' || normalized === 'house') return 'Nhà phố';
+        if (normalized === 'canho' || normalized === 'apartment') return 'Căn hộ';
+        if (normalized === 'bietthu' || normalized === 'villa') return 'Biệt thự';
+        if (normalized === 'datnen' || normalized === 'ground') return 'Đất nền';
         return type || '---';
+      };
+
+      const mapDirection = (direction) => {
+        const normalized = String(direction || '').toLowerCase().replace(/\s+/g, '');
+        const directions = {
+          'dong': 'Đông',
+          'tay': 'Tây',
+          'nam': 'Nam',
+          'bac': 'Bắc',
+          'dongbac': 'Đông Bắc',
+          'dongnam': 'Đông Nam',
+          'taybac': 'Tây Bắc',
+          'taynam': 'Tây Nam'
+        };
+        return directions[normalized] || direction || '';
       };
 
       function renderRows(items) {
@@ -344,7 +359,8 @@
 
         listBody.innerHTML = items.map(item => {
           const propertyTitle = mapPropertyType(item.property_type);
-          const propertyLocation = item.direction || item.address || '---';
+          const dirViet = item.direction ? mapDirection(item.direction) : '';
+          const propertyLocation = dirViet ? (item.address ? `${dirViet} - ${item.address}` : dirViet) : (item.address || '---');
           const ownerName = item.owner?.full_name || '---';
           const ownerPhone = item.owner?.phone || '---';
           const surveyDate = item.latest_survey?.completed_at || item.submitted_at;

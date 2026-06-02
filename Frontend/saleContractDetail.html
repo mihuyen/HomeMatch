@@ -440,12 +440,27 @@
       };
 
       const mapPropertyType = (type) => {
-        const normalized = String(type || '').toLowerCase();
-        if (normalized === 'apartment') return 'Căn hộ';
-        if (normalized === 'house') return 'Nhà riêng';
-        if (normalized === 'villa') return 'Biệt thự';
-        if (normalized === 'ground') return 'Đất nền';
+        const normalized = String(type || '').toLowerCase().replace(/\s+/g, '');
+        if (normalized === 'nhapho' || normalized === 'house') return 'Nhà phố';
+        if (normalized === 'canho' || normalized === 'apartment') return 'Căn hộ';
+        if (normalized === 'bietthu' || normalized === 'villa') return 'Biệt thự';
+        if (normalized === 'datnen' || normalized === 'ground') return 'Đất nền';
         return type || '---';
+      };
+
+      const mapDirection = (direction) => {
+        const normalized = String(direction || '').toLowerCase().replace(/\s+/g, '');
+        const directions = {
+          'dong': 'Đông',
+          'tay': 'Tây',
+          'nam': 'Nam',
+          'bac': 'Bắc',
+          'dongbac': 'Đông Bắc',
+          'dongnam': 'Đông Nam',
+          'taybac': 'Tây Bắc',
+          'taynam': 'Tây Nam'
+        };
+        return directions[normalized] || direction || '---';
       };
 
       try {
@@ -508,9 +523,9 @@
 
         // 4. Tải thông tin bất động sản
         if (data.submission) {
-          document.getElementById('prop-type').textContent = mapPropertyType(data.submission.property_type);
-          document.getElementById('prop-area').textContent = data.submission.area ? `${data.submission.area} m²` : '---';
-          document.getElementById('prop-direction').textContent = data.submission.direction || '---';
+           document.getElementById('prop-type').textContent = mapPropertyType(data.submission.property_type);
+           document.getElementById('prop-area').textContent = data.submission.area ? `${data.submission.area} m²` : '---';
+           document.getElementById('prop-direction').textContent = mapDirection(data.submission.direction);
           document.getElementById('prop-bedrooms').textContent = data.submission.num_bedrooms ? `${data.submission.num_bedrooms} phòng` : '0 phòng';
           document.getElementById('prop-bathrooms').textContent = data.submission.num_bathrooms ? `${data.submission.num_bathrooms} phòng` : '0 phòng';
           document.getElementById('prop-address').textContent = data.submission.address || '---';

@@ -500,6 +500,7 @@
 
 
 </body></html>
+<script src="api.js"></script>
 <script>
 // Client-side handler for sale survey page
 (async function(){
@@ -508,6 +509,26 @@
     const params = new URLSearchParams(window.location.search);
     const submissionId = params.get('submissionId');
     const appointmentId = params.get('appointmentId') || null;
+
+    if (!submissionId) {
+        alert('Không tìm thấy mã hồ sơ ký gửi.');
+        window.location.href = 'saleAssign.html';
+        return;
+    }
+
+    // Kiểm tra xem đã có lịch hẹn khảo sát chưa
+    try {
+        const appts = await listSaleAppointments({ submissionId: submissionId });
+        const items = appts.items || appts || [];
+        const surveyAppts = items.filter(a => a.appointment_type === 'khảo sát');
+        if (surveyAppts.length === 0) {
+            alert('Không tìm thấy lịch hẹn khảo sát nào được tạo cho hồ sơ này. Vui lòng tạo lịch hẹn khảo sát trước.');
+            window.location.href = 'saleAssign.html';
+            return;
+        }
+    } catch (e) {
+        console.error('Không thể kiểm tra lịch hẹn:', e);
+    }
 
     // Fetch and bind real database properties and owner info
     try {
