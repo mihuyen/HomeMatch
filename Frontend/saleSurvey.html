@@ -447,7 +447,7 @@
 <!-- Preview Area -->
 <div id="survey-preview-grid" class="grid grid-cols-2 md:grid-cols-4 gap-md mt-sm hidden"></div>
 </section>
-<!-- Phần 6: Đánh giá kết quả khảo sát -->
+<!-- Phần 6: Đánh giá kết quả khảo sát (Tự động) -->
 <section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-md md:p-lg flex flex-col grid-16">
 <div class="border-b border-surface-variant pb-sm">
 <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
@@ -455,17 +455,14 @@
                             Đánh giá kết quả khảo sát
                         </h2>
 </div>
-<div class="flex flex-col gap-xs">
-<label class="font-label-md text-label-md text-on-surface mb-2 font-medium">Hiện trạng ngôi nhà có đạt yêu cầu ký gửi hay không?</label>
-<div class="flex gap-2 segmented-control max-w-sm">
-<label class="flex-1 cursor-pointer">
-<input checked="" class="sr-only" name="survey_decision" type="radio" value="đạt">
-<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Đạt yêu cầu</div>
-</label>
-<label class="flex-1 cursor-pointer">
-<input class="sr-only" name="survey_decision" type="radio" value="không đạt">
-<div class="text-center py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-secondary hover:bg-surface-container-low transition-colors">Không đạt</div>
-</label>
+<div class="flex flex-col gap-sm">
+<p class="font-label-md text-label-md text-on-surface font-medium">Đánh giá hệ thống (Dựa trên checklist pháp lý):</p>
+<div id="survey-auto-result" class="p-md rounded-lg border flex items-center gap-md transition-all duration-300 bg-surface-container border-outline-variant">
+    <span id="survey-result-icon" class="material-symbols-outlined text-[28px] text-secondary">hourglass_empty</span>
+    <div>
+        <p id="survey-result-title" class="font-label-md text-label-md font-bold text-secondary">Chưa đánh giá</p>
+        <p id="survey-result-desc" class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Vui lòng điền đầy đủ thông tin và nhấn "Hoàn thành khảo sát" để hệ thống tự động đánh giá.</p>
+    </div>
 </div>
 </div>
 </section>
@@ -561,19 +558,6 @@
                 if (notesArea && latestSurvey.survey_notes) {
                     notesArea.value = latestSurvey.survey_notes;
                 }
-
-                // Populate survey decision
-                if (latestSurvey.survey_status) {
-                    const statusStr = String(latestSurvey.survey_status).toLowerCase();
-                    const decisionInputs = document.querySelectorAll('[name="survey_decision"]');
-                    decisionInputs.forEach(inp => {
-                        if (statusStr.includes('khong dat') || statusStr.includes('không đạt')) {
-                            if (inp.value === 'không đạt') inp.checked = true;
-                        } else if (statusStr.includes('dat') || statusStr.includes('đạt')) {
-                            if (inp.value === 'đạt') inp.checked = true;
-                        }
-                    });
-                }
             } else {
                 document.getElementById('draft-status-text').textContent = 'Sẵn sàng lưu bản nháp';
             }
@@ -582,6 +566,99 @@
         console.error('Không thể tải lịch sử bản nháp:', e);
         document.getElementById('draft-status-text').textContent = 'Chưa lưu bản nháp';
     }
+
+    function updateAutoEvaluation(showVisual = false) {
+        const elecInput = document.querySelector('[name="infra_elec"]:checked');
+        const waterInput = document.querySelector('[name="infra_water"]:checked');
+        const wifiInput = document.querySelector('[name="infra_wifi"]:checked');
+        const fireInput = document.querySelector('[name="infra_fire"]:checked');
+        const securityInput = document.querySelector('[name="area_security"]:checked');
+        const trafficInput = document.querySelector('[name="area_traffic"]:checked');
+        const deedInput = document.querySelector('[name="legal_deed"]:checked');
+        const disputeInput = document.querySelector('[name="legal_dispute"]:checked');
+        const idMatchInput = document.querySelector('[name="legal_id_match"]:checked');
+
+        const resultBox = document.getElementById('survey-auto-result');
+        const resultIcon = document.getElementById('survey-result-icon');
+        const resultTitle = document.getElementById('survey-result-title');
+        const resultDesc = document.getElementById('survey-result-desc');
+
+        if (!elecInput || !waterInput || !wifiInput || !fireInput || !securityInput || !trafficInput || !deedInput || !disputeInput || !idMatchInput) {
+            if (showVisual) {
+                resultBox.className = "p-md rounded-lg border flex items-center gap-md transition-all duration-300 bg-surface-container border-outline-variant";
+                resultIcon.textContent = "hourglass_empty";
+                resultIcon.className = "material-symbols-outlined text-[28px] text-secondary";
+                resultTitle.textContent = "Chưa hoàn thành checklist";
+                resultTitle.className = "font-label-md text-label-md font-bold text-secondary";
+                resultDesc.textContent = "Vui lòng hoàn thành checklist Pháp lý, Khu vực & Hạ tầng để nhận đánh giá.";
+            }
+            return null;
+        }
+
+        const isElecOk = elecInput.value === 'Ổn định';
+        const isWaterOk = waterInput.value === 'Đầy đủ';
+        const isWifiOk = wifiInput.value === 'Có';
+        const isFireOk = fireInput.value === 'Có bình chữa cháy';
+        const isSecurityOk = securityInput.value === 'Tốt' || securityInput.value === 'Bình thường';
+        const isTrafficOk = trafficInput.value === 'Thuận tiện' || trafficInput.value === 'Bình thường';
+        const isDeedOk = deedInput.value === 'Chính chủ';
+        const isDisputeOk = disputeInput.value === 'Không';
+        const isIdMatchOk = idMatchInput.value === 'Có';
+
+        const status = (isElecOk && isWaterOk && isWifiOk && isFireOk && isSecurityOk && isTrafficOk && isDeedOk && isDisputeOk && isIdMatchOk) ? 'đạt' : 'không đạt';
+
+        if (showVisual) {
+            if (status === 'đạt') {
+                resultBox.className = "p-md rounded-lg border flex items-center gap-md transition-all duration-300 bg-[#E8F5E9] border-[#A5D6A7]";
+                resultIcon.textContent = "check_circle";
+                resultIcon.className = "material-symbols-outlined text-[28px] text-[#2E7D32]";
+                resultTitle.textContent = "ĐẠT YÊU CẦU (Hệ thống tự động đánh giá)";
+                resultTitle.className = "font-label-md text-label-md font-bold text-[#2E7D32]";
+                resultDesc.textContent = "Hồ sơ đủ điều kiện pháp lý, khu vực và hạ tầng tối thiểu để tiến hành lập hợp đồng ký gửi.";
+            } else {
+                resultBox.className = "p-md rounded-lg border flex items-center gap-md transition-all duration-300 bg-[#FFEBEE] border-[#FFCDD2]";
+                resultIcon.textContent = "cancel";
+                resultIcon.className = "material-symbols-outlined text-[28px] text-[#C62828]";
+                resultTitle.textContent = "KHÔNG ĐẠT YÊU CẦU (Hệ thống tự động đánh giá)";
+                resultTitle.className = "font-label-md text-label-md font-bold text-[#C62828]";
+                
+                // Generate list of failed conditions to help the user
+                const failures = [];
+                if (!isElecOk) failures.push("Điện không ổn định");
+                if (!isWaterOk) failures.push("Nước thiếu");
+                if (!isWifiOk) failures.push("Wifi không khả dụng/yếu");
+                if (!isFireOk) failures.push("Không có bình PCCC");
+                if (!isSecurityOk) failures.push("An ninh kém");
+                if (!isTrafficOk) failures.push("Giao thông khó khăn");
+                if (!isDeedOk) failures.push("Sổ đỏ không chính chủ");
+                if (!isDisputeOk) failures.push("Có tranh chấp");
+                if (!isIdMatchOk) failures.push("CCCD không khớp sổ đỏ");
+                
+                resultDesc.textContent = `Hồ sơ không đáp ứng yêu cầu tối thiểu (${failures.join(', ')}). Vui lòng nhập lý do vào Ghi chú.`;
+            }
+        }
+        return status;
+    }
+
+    // Attach listeners to all inputs affecting evaluation
+    setTimeout(() => {
+        const selector = '[name="infra_elec"], [name="infra_water"], [name="infra_wifi"], [name="infra_fire"], [name="area_security"], [name="area_traffic"], [name^="legal_"]';
+        document.querySelectorAll(selector).forEach(inp => {
+            inp.addEventListener('change', () => {
+                const resultBox = document.getElementById('survey-auto-result');
+                const resultIcon = document.getElementById('survey-result-icon');
+                const resultTitle = document.getElementById('survey-result-title');
+                const resultDesc = document.getElementById('survey-result-desc');
+
+                resultBox.className = "p-md rounded-lg border flex items-center gap-md transition-all duration-300 bg-surface-container border-outline-variant";
+                resultIcon.textContent = "hourglass_empty";
+                resultIcon.className = "material-symbols-outlined text-[28px] text-secondary";
+                resultTitle.textContent = "Chưa đánh giá";
+                resultTitle.className = "font-label-md text-label-md font-bold text-secondary";
+                resultDesc.textContent = "Thông tin đã thay đổi. Vui lòng nhấn 'Hoàn thành khảo sát' để đánh giá lại.";
+            });
+        });
+    }, 500);
 
     function populateChecklist(data) {
         if (!data) return;
@@ -603,6 +680,7 @@
                 }
             });
         });
+        updateAutoEvaluation();
     }
 
     function populateImages(images) {
@@ -705,22 +783,6 @@
         });
     }
 
-    function collectByPrefix(prefix){
-        const data = {};
-        const inputs = document.querySelectorAll('[name]');
-        inputs.forEach(inp=>{
-            const name = inp.getAttribute('name');
-            if(!name) return;
-            if(!name.startsWith(prefix)) return;
-            if(inp.type === 'radio'){
-                if(inp.checked) data[name] = inp.nextElementSibling ? inp.nextElementSibling.textContent.trim() : inp.value;
-            } else if(inp.tagName.toLowerCase() === 'textarea' || inp.type === 'text' || inp.type === 'number'){
-                data[name] = inp.value || null;
-            }
-        });
-        return data;
-    }
-
     function collectChecklist(){
         const infra = {};
         // collect inputs whose name start with infra_
@@ -767,8 +829,7 @@
 
     btnSave && btnSave.addEventListener('click', async ()=>{
         try{
-            const decisionInput = document.querySelector('[name="survey_decision"]:checked');
-            const selectedStatus = decisionInput ? decisionInput.value : 'đạt';
+            const selectedStatus = updateAutoEvaluation() || 'đạt';
             const payload = {
                 submissionId: submissionId,
                 appointmentId: appointmentId,
@@ -794,18 +855,40 @@
 
     btnSubmit && btnSubmit.addEventListener('click', async ()=>{
         try{
-            const decisionInput = document.querySelector('[name="survey_decision"]:checked');
-            const selectedStatus = decisionInput ? decisionInput.value : 'đạt';
+            const selectedStatus = updateAutoEvaluation(true);
+            if (!selectedStatus) {
+                alert('Vui lòng hoàn thành đầy đủ các checklist trước khi hoàn thành khảo sát.');
+                return;
+            }
+
+            if (uploadedImages.length < 3) {
+                alert('Vui lòng tải lên tối thiểu 3 ảnh chụp thực tế (bao gồm mặt tiền, phòng khách, sổ đỏ).');
+                return;
+            }
+
+            const legalCheck = collectLegal();
+            if (!legalCheck.legal_deed || !legalCheck.legal_dispute || !legalCheck.legal_id_match) {
+                alert('Vui lòng hoàn thành đầy đủ tất cả các checklist phần Pháp lý.');
+                return;
+            }
+
+            if (selectedStatus === 'không đạt') {
+                const notes = document.querySelector('[name="survey_notes"]').value.trim();
+                if (!notes) {
+                    alert('Hệ thống đánh giá KHÔNG ĐẠT. Vui lòng nhập lý do từ chối vào phần Ghi chú bổ sung.');
+                    return;
+                }
+            }
 
             // Ask user to confirm final status
-            const ok = confirm(`Bạn chắc chắn muốn hoàn thành khảo sát và gửi kết quả với đánh giá là "${selectedStatus.toUpperCase()}" chứ?`);
+            const ok = confirm(`Hệ thống tự động đánh giá kết quả khảo sát là "${selectedStatus.toUpperCase()}". Bạn có chắc chắn muốn hoàn thành và gửi kết quả này chứ?`);
             if(!ok) return;
             const payload = {
                 submissionId: submissionId,
                 appointmentId: appointmentId,
                 infrastructureChecklist: collectChecklist(),
                 areaChecklist: collectArea(),
-                legalChecklist: collectLegal(),
+                legalChecklist: legalCheck,
                 imageChecklist: uploadedImages,
                 surveyNotes: document.querySelector('[name="survey_notes"]').value || null,
                 surveyStatus: selectedStatus
