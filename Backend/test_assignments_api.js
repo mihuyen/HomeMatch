@@ -2,7 +2,7 @@ const http = require('http');
 
 const options = {
     hostname: 'localhost',
-    port: 5000,
+    port: 5050,
     path: '/api/admin/assignments?status=pending',
     method: 'GET',
     headers: {
@@ -20,7 +20,7 @@ const loginData = JSON.stringify({
 
 const loginOptions = {
     hostname: 'localhost',
-    port: 5000,
+    port: 5050,
     path: '/api/auth/login',
     method: 'POST',
     headers: {

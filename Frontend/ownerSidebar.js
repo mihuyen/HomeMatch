@@ -35,7 +35,6 @@
       <span>HomeMatch</span>
     </a>
     <div class="hidden md:flex items-center gap-6">
-      <a class="nav-link text-on-surface-variant hover:text-primary transition-colors pb-1" href="home.html">Trang chủ</a>
       <a class="nav-link text-on-surface-variant hover:text-primary transition-colors pb-1" href="submission1.html">Đăng ký ký gửi</a>
       <a class="nav-link text-on-surface-variant hover:text-primary transition-colors pb-1" href="ownerSignmentTracking.html">Theo dõi ký gửi</a>
     </div>
