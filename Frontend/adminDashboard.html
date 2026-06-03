@@ -149,10 +149,6 @@
                     <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                     <span>Xuất PDF</span>
                 </button>
-                <button id="btn-open-email" class="px-4 py-2 bg-primary hover:bg-blue-900 text-white rounded-lg text-[13px] font-bold shadow-sm transition-all hover:scale-[1.02] flex items-center gap-1.5 active:scale-95">
-                    <span class="material-symbols-outlined text-[18px]">mail</span>
-                    <span>Gửi Email Báo cáo</span>
-                </button>
             </div>
         </div>
 
@@ -1031,15 +1027,18 @@
             const emailModal = document.getElementById('email-modal');
             const emailBox = document.getElementById('email-modal-box');
             
-            document.getElementById('btn-open-email').addEventListener('click', () => {
-                if (user && user.email) {
-                    document.getElementById('email-recipient').value = user.email;
-                }
-                emailModal.classList.remove('hidden');
-                setTimeout(() => {
-                    emailBox.classList.remove('scale-95', 'opacity-0');
-                }, 50);
-            });
+            const btnOpenEmail = document.getElementById('btn-open-email');
+            if (btnOpenEmail) {
+                btnOpenEmail.addEventListener('click', () => {
+                    if (user && user.email) {
+                        document.getElementById('email-recipient').value = user.email;
+                    }
+                    emailModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        emailBox.classList.remove('scale-95', 'opacity-0');
+                    }, 50);
+                });
+            }
 
             function closeEmailModal() {
                 emailBox.classList.add('scale-95', 'opacity-0');
