@@ -737,7 +737,7 @@ router.post('/:submissionId/step-3', async (req, res) => {
 
 // GET /api/consignments/owner/me/tracking
 // Danh sách theo dõi cho owner đang đăng nhập
-router.get('/owner/me/tracking', requireAuth, requireRole('owner'), async (req, res) => {
+router.get('/owner/me/tracking', requireAuth, requireRole('owner', 'tenant'), async (req, res) => {
     try {
         const { status, search, limit = 20, offset = 0 } = req.query;
         const items = await getOwnerTrackingList(req.user.user_id, { status, search, limit, offset });
@@ -754,7 +754,7 @@ router.get('/owner/me/tracking', requireAuth, requireRole('owner'), async (req, 
 
 // GET /api/consignments/owner/me/tracking/:submissionId
 // Chi tiết tiến trình 1 hồ sơ cho owner
-router.get('/owner/me/tracking/:submissionId', requireAuth, requireRole('owner'), async (req, res) => {
+router.get('/owner/me/tracking/:submissionId', requireAuth, requireRole('owner', 'tenant'), async (req, res) => {
     try {
         const submissionId = Number(req.params.submissionId);
 
@@ -927,7 +927,7 @@ router.patch('/:submissionId/status', requireAuth, async (req, res) => {
 
 // POST /api/consignments/:submissionId/extend
 // Tạo yêu cầu gia hạn hợp đồng ký gửi (Owner)
-router.post('/:submissionId/extend', requireAuth, requireRole('owner'), async (req, res) => {
+router.post('/:submissionId/extend', requireAuth, requireRole('owner', 'tenant'), async (req, res) => {
     try {
         const submissionId = Number(req.params.submissionId);
         const { extensionMonths = 12, notes } = req.body;

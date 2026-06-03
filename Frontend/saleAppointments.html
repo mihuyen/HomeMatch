@@ -119,6 +119,12 @@
           <h1 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Lịch hẹn - Thông tin căn nhà</h1>
           <p class="font-body-md text-body-md text-on-surface-variant">Chi tiết lịch hẹn và thông tin bất động sản</p>
         </div>
+        <div>
+          <a id="header-create-link" href="#" class="px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-primary-container shadow-lg shadow-primary/20 transition-all flex items-center gap-sm text-[14px]">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            Tạo lịch hẹn
+          </a>
+        </div>
       </div>
 
       <div id="property-card" class="mb-lg bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm hidden relative overflow-hidden">
@@ -160,6 +166,11 @@
   const noAppt = document.getElementById('no-appointments');
   const createLink = document.getElementById('create-link');
   createLink.href = `saleMeet.html?submissionId=${submissionId}&create=1`;
+  
+  const headerCreateLink = document.getElementById('header-create-link');
+  if (headerCreateLink) {
+    headerCreateLink.href = `saleMeet.html?submissionId=${submissionId}&create=1`;
+  }
 
   propCard.innerHTML = `<div class="text-sm text-slate-500">Đang tải thông tin...</div>`;
   propCard.classList.remove('hidden');
@@ -187,6 +198,11 @@
           </div>
         </div>
       `;
+      
+      // Hide header create button if survey is already finished
+      if (headerCreateLink && (sub.status === 'surveyed' || sub.status === 'cancelled' || sub.status === 'rejected')) {
+        headerCreateLink.classList.add('hidden');
+      }
     }
   }catch(e){ console.warn('No consignment', e); propCard.innerHTML = '<div class="text-sm text-slate-500">Không thể tải thông tin tài sản</div>'; }
 
@@ -236,6 +252,9 @@
       const mapQuery = a.location || (prop && prop.submission && prop.submission.address) || '';
       const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
       const calendarUrl = generateGoogleCalendarLink(a, prop);
+
+      const subStatus = prop && prop.submission && prop.submission.status;
+      const isSurveyDone = subStatus === 'surveyed' || subStatus === 'cancelled' || subStatus === 'rejected';
 
       const item = document.createElement('div');
       item.className = 'p-md md:p-lg bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden mb-4';

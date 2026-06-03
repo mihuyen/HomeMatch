@@ -752,8 +752,21 @@
                 const trackingDetailPane = document.getElementById('trackingDetailPane');
 
                 let trackingItems = [];
-                let selectedSubmissionId = null;
+                let selectedSubmissionId = localStorage.getItem('currentSubmissionId')
+                        ? Number(localStorage.getItem('currentSubmissionId'))
+                        : null;
                 let currentDetail = null;
+
+                function mapPropertyType(value) {
+                        const types = {
+                                'nhapho': 'Nhà phố',
+                                'canho': 'Căn hộ',
+                                'datnen': 'Đất nền',
+                                'bietthu': 'Biệt thự'
+                        };
+                        const key = String(value || '').toLowerCase().replace(/\s+/g, '');
+                        return types[key] || value || 'Chưa có loại BĐS';
+                }
 
                 function escapeHtml(value) {
                         return String(value || '')
@@ -864,7 +877,7 @@
                                         <td class="px-md py-4 font-medium text-primary">#${escapeHtml(item.request_code)}</td>
                                         <td class="px-md py-4">
                                                 <div class="text-on-surface font-medium">${escapeHtml(item.address || 'Chưa có địa chỉ')}</div>
-                                                <div class="text-on-surface-variant text-xs mt-0.5">${escapeHtml(item.property_type || 'Chưa có loại BĐS')}</div>
+                                                <div class="text-on-surface-variant text-xs mt-0.5">${escapeHtml(mapPropertyType(item.property_type))}</div>
                                         </td>
                                         <td class="px-md py-4 text-on-surface">${escapeHtml(formatMoney(item.proposed_price))}</td>
                                         <td class="px-md py-4 text-on-surface-variant">${escapeHtml(formatDate(item.submitted_at))}</td>
@@ -955,7 +968,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
                                         <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
                                                 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Loại</span>
-                                                <span class="font-body-md text-body-md font-medium text-on-surface">${escapeHtml(s.property_type || 'Chưa có')}</span>
+                                                <span class="font-body-md text-body-md font-medium text-on-surface">${escapeHtml(mapPropertyType(s.property_type))}</span>
                                         </div>
                                         <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/50">
                                                 <span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Giá đề xuất</span>
@@ -1036,6 +1049,7 @@
                                         const firstId = selectedSubmissionId || data.items[0].submission_id;
                                         const selectedExists = data.items.some(item => Number(item.submission_id) === Number(firstId));
                                         await loadDetail(selectedExists ? firstId : data.items[0].submission_id);
+                                        localStorage.removeItem('currentSubmissionId');
                                 }
                         } catch (error) {
                                 trackingTableBody.innerHTML = `

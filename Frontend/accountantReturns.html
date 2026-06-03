@@ -390,11 +390,11 @@
     }
 
     function mapPropertyType(type) {
-      const normalized = String(type || '').toLowerCase();
-      if (normalized === 'apartment') return 'Căn hộ';
-      if (normalized === 'house') return 'Nhà riêng';
-      if (normalized === 'villa') return 'Biệt thự';
-      if (normalized === 'ground') return 'Đất nền';
+      const normalized = String(type || '').toLowerCase().replace(/\s+/g, '');
+      if (normalized === 'nhapho' || normalized === 'house') return 'Nhà phố';
+      if (normalized === 'canho' || normalized === 'apartment') return 'Căn hộ';
+      if (normalized === 'bietthu' || normalized === 'villa') return 'Biệt thự';
+      if (normalized === 'datnen' || normalized === 'ground') return 'Đất nền';
       return type || 'N/A';
     }
 
