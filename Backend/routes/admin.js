@@ -5,42 +5,94 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/admin/dashboard
-// Lay tat ca du lieu thong ke cho Admin Dashboard
+// Lay tat ca du lieu thong ke cho Admin Dashboard voi bo loc dong
 router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
     try {
+        const { startDate, endDate, area, propertyType, brokerId } = req.query;
+
+        // Xay dung dieu kien loc dynamic cho submissions
+        let subConditions = [];
+        let subParams = [];
+        if (startDate) {
+            subConditions.push("ps.submitted_at >= ?");
+            subParams.push(startDate);
+        }
+        if (endDate) {
+            subConditions.push("ps.submitted_at <= ?");
+            subParams.push(endDate);
+        }
+        if (area && area !== 'Tất cả khu vực' && area !== 'all') {
+            subConditions.push("ps.address LIKE ?");
+            subParams.push(`%${area}%`);
+        }
+        if (propertyType && propertyType !== 'Tất cả loại BĐS' && propertyType !== 'all') {
+            subConditions.push("ps.property_type = ?");
+            subParams.push(propertyType);
+        }
+        if (brokerId && brokerId !== 'Tất cả môi giới' && brokerId !== 'all') {
+            subConditions.push("ps.assigned_sales_id = ?");
+            subParams.push(brokerId);
+        }
+
+        const subWhereClause = subConditions.length > 0 ? `AND ${subConditions.join(' AND ')}` : '';
+
         // 1. Tinh Tong Doanh Thu
         const [revenueRows] = await db.query(
-            `SELECT SUM(COALESCE(final_price, 0)) * 0.05 AS total_revenue 
-             FROM submission_contracts 
-             WHERE status IN ('signed', 'active', 'documents_submitted')`
+            `SELECT SUM(COALESCE(sc.final_price, 0)) * 0.05 AS total_revenue 
+             FROM submission_contracts sc
+             JOIN property_submissions ps ON sc.submission_id = ps.submission_id
+             WHERE sc.status IN ('signed', 'active', 'documents_submitted')
+             ${subWhereClause.replace(/ps\./g, 'ps.')}`,
+            subParams
         );
-        const dbRevenue = Number(revenueRows[0]?.total_revenue || 0);
-        const totalRevenue = dbRevenue;
+        const totalRevenue = Number(revenueRows[0]?.total_revenue || 0);
 
         // 2. Thong ke Nguoi dung moi
+        let userConditions = ["role IN ('owner', 'tenant', 'user')"];
+        let userParams = [];
+        if (startDate) {
+            userConditions.push("created_at >= ?");
+            userParams.push(startDate);
+        }
+        if (endDate) {
+            userConditions.push("created_at <= ?");
+            userParams.push(endDate);
+        }
+        const userWhereClause = userConditions.length > 0 ? `WHERE ${userConditions.join(' AND ')}` : '';
         const [userRows] = await db.query(
-            `SELECT COUNT(*) AS count FROM users WHERE role IN ('owner', 'tenant', 'user')`
+            `SELECT COUNT(*) AS count FROM users ${userWhereClause}`,
+            userParams
         );
-        const dbUsers = Number(userRows[0]?.count || 0);
-        const newUsers = dbUsers;
+        const newUsers = Number(userRows[0]?.count || 0);
 
         // 3. Ty le ky ket
-        const [submissionCountRows] = await db.query('SELECT COUNT(*) AS count FROM property_submissions');
-        const [contractCountRows] = await db.query('SELECT COUNT(*) AS count FROM submission_contracts');
+        const [submissionCountRows] = await db.query(
+            `SELECT COUNT(*) AS count FROM property_submissions ps WHERE 1=1 ${subWhereClause}`,
+            subParams
+        );
+        const [contractCountRows] = await db.query(
+            `SELECT COUNT(*) AS count FROM submission_contracts sc 
+             JOIN property_submissions ps ON sc.submission_id = ps.submission_id
+             WHERE 1=1 ${subWhereClause}`,
+            subParams
+        );
         const subCount = Number(submissionCountRows[0]?.count || 0);
         const conCount = Number(contractCountRows[0]?.count || 0);
         const signingRate = subCount > 0 ? Math.round((conCount / subCount) * 1000) / 10 : 0;
 
         // 4. Ky gui hoat dong
         const [activeSubRows] = await db.query(
-            `SELECT COUNT(*) AS count FROM property_submissions WHERE status NOT IN ('cancelled', 'rejected')`
+            `SELECT COUNT(*) AS count FROM property_submissions ps 
+             WHERE ps.status NOT IN ('cancelled', 'rejected') ${subWhereClause}`,
+            subParams
         );
-        const dbActiveSubs = Number(activeSubRows[0]?.count || 0);
-        const activeSubmissions = dbActiveSubs;
+        const activeSubmissions = Number(activeSubRows[0]?.count || 0);
 
         // 5. Tien do xu ly ky gui (status distribution)
         const [statusRows] = await db.query(
-            `SELECT status, COUNT(*) AS count FROM property_submissions GROUP BY status`
+            `SELECT ps.status, COUNT(*) AS count FROM property_submissions ps 
+             WHERE 1=1 ${subWhereClause} GROUP BY ps.status`,
+            subParams
         );
         
         let pendingSurvey = 0;
@@ -65,51 +117,78 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             }
         });
 
-        // 6. Hieu suat moi gioi
+        // 6. Hieu suat moi gioi (closingRate = contracts / appointments)
+        let brokerFilterCond = "";
+        let brokerFilterParams = [];
+        if (brokerId && brokerId !== 'Tất cả môi giới' && brokerId !== 'all') {
+            brokerFilterCond = "AND u.user_id = ?";
+            brokerFilterParams.push(brokerId);
+        }
+
         const [salesRows] = await db.query(
             `SELECT 
                 u.user_id, u.full_name, u.email,
                 COUNT(DISTINCT ps.submission_id) AS assigned_count,
-                COUNT(DISTINCT ap.appointment_id) AS appointments_count,
+                COUNT(DISTINCT CASE WHEN ap.status IN ('completed', 'hoàn tất', 'Đã hoàn thành') THEN ap.appointment_id END) AS appointments_count,
                 COUNT(DISTINCT sc.submission_contract_id) AS contracts_count
              FROM users u
              LEFT JOIN property_submissions ps ON ps.assigned_sales_id = u.user_id
              LEFT JOIN appointments ap ON ap.submission_id = ps.submission_id AND ap.appointment_type = 'khảo sát'
              LEFT JOIN submission_contracts sc ON sc.submission_id = ps.submission_id AND sc.status = 'signed'
-             WHERE u.role IN ('sale', 'agent')
-             GROUP BY u.user_id`
+             WHERE u.role IN ('sale', 'agent') ${brokerFilterCond}
+             GROUP BY u.user_id`,
+             brokerFilterParams
         );
 
         let brokers = [];
-
         if (salesRows.length > 0) {
             brokers = salesRows.map(row => {
                 const assigned = Number(row.assigned_count || 0);
+                const appointments = Number(row.appointments_count || 0);
                 const contracts = Number(row.contracts_count || 0);
-                const closingRate = assigned > 0 ? Math.round((contracts / assigned) * 100) : 0;
+                // closingRate = (contracts / appointments) * 100%
+                const closingRate = appointments > 0 ? Math.round((contracts / appointments) * 100) : 0;
                 return {
                     name: row.full_name,
                     role: 'Môi giới chuyên nghiệp',
                     assigned,
-                    appointments: Number(row.appointments_count || 0),
+                    appointments,
                     contracts,
                     closingRate
                 };
             });
         }
 
-        // 7. Doanh thu theo thang (Jan - Jun)
-        // If totalRevenue is 0, we can display zeroed progress. If we have contracts, we can dynamically build this.
-        const revenueTrend = [
-            { month: 'Jan', amount: Math.round(totalRevenue * 0.1) },
-            { month: 'Feb', amount: Math.round(totalRevenue * 0.15) },
-            { month: 'Mar', amount: Math.round(totalRevenue * 0.25) },
-            { month: 'Apr', amount: Math.round(totalRevenue * 0.4) },
-            { month: 'May', amount: Math.round(totalRevenue * 0.35) },
-            { month: 'Jun', amount: Math.round(totalRevenue * 0.5) }
-        ];
+        // 7. Doanh thu theo thang (truy van dong neu du lieu ton tai)
+        const [trendRows] = await db.query(
+            `SELECT DATE_FORMAT(sc.signed_at, '%b') AS month_name, SUM(COALESCE(sc.final_price, 0)) * 0.05 AS amount, MIN(sc.signed_at) AS min_date
+             FROM submission_contracts sc
+             JOIN property_submissions ps ON sc.submission_id = ps.submission_id
+             WHERE sc.status IN ('signed', 'active', 'documents_submitted')
+             ${subWhereClause}
+             GROUP BY DATE_FORMAT(sc.signed_at, '%b')
+             ORDER BY min_date ASC`,
+             subParams
+        );
 
-        // 8. Tang truong nguoi dung theo tuan (lay thuc te tu db de lam duong cong tuyet dep)
+        let revenueTrend = [];
+        if (trendRows.length > 0) {
+            revenueTrend = trendRows.map(row => ({
+                month: row.month_name,
+                amount: Number(row.amount || 0)
+            }));
+        } else {
+            revenueTrend = [
+                { month: 'Jan', amount: Math.round(totalRevenue * 0.1) },
+                { month: 'Feb', amount: Math.round(totalRevenue * 0.15) },
+                { month: 'Mar', amount: Math.round(totalRevenue * 0.25) },
+                { month: 'Apr', amount: Math.round(totalRevenue * 0.4) },
+                { month: 'May', amount: Math.round(totalRevenue * 0.35) },
+                { month: 'Jun', amount: Math.round(totalRevenue * 0.5) }
+            ];
+        }
+
+        // 8. Tang truong nguoi dung theo tuan
         const [ownerRows] = await db.query("SELECT COUNT(*) AS count FROM users WHERE role = 'owner'");
         const [tenantRows] = await db.query("SELECT COUNT(*) AS count FROM users WHERE role = 'tenant'");
         const totalOwners = Number(ownerRows[0]?.count || 0);
@@ -125,8 +204,7 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             });
         }
 
-        // 9. Tinh toan chu nho (subtexts) dong bo hoa 100% tu db
-        // So sanh Doanh thu 30 ngay qua vs 30 ngay truoc do
+        // 9. Tinh toan subtexts
         const [thisMonthRevRows] = await db.query(
             `SELECT SUM(COALESCE(final_price, 0)) * 0.05 AS rev 
              FROM submission_contracts 
@@ -156,7 +234,6 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             }
         }
 
-        // So sanh Nguoi dung dang ky trong 7 ngay qua vs 7 ngay truoc do
         const [thisWeekUsersRows] = await db.query(
             `SELECT COUNT(*) AS count FROM users WHERE role IN ('owner', 'tenant', 'user') AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`
         );
@@ -182,7 +259,6 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             usersTrendUp = true;
         }
 
-        // Hieu suat ky ket thuc te
         let rateSubtext = 'Chưa phát sinh giao dịch';
         if (signingRate > 80) {
             rateSubtext = 'Hiệu suất ký kết rất cao';
@@ -192,7 +268,6 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             rateSubtext = 'Cần đẩy nhanh tiến độ chốt';
         }
 
-        // So sanh ky gui moi trong 30 ngay qua
         const [thisMonthSubsRows] = await db.query(
             `SELECT COUNT(*) AS count FROM property_submissions WHERE status NOT IN ('cancelled', 'rejected') AND submitted_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)`
         );
@@ -218,6 +293,63 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             subsTrendUp = true;
         }
 
+        // 9. Extra Comprehensive Stats (All of Web App)
+        // 9.1. User Role breakdown
+        const [roleRows] = await db.query(
+            "SELECT role, COUNT(*) AS count FROM users GROUP BY role"
+        );
+        const userRoles = { admin: 0, manager: 0, sale: 0, legal: 0, accountant: 0, owner: 0, tenant: 0, user: 0 };
+        roleRows.forEach(r => {
+            if (userRoles.hasOwnProperty(r.role)) {
+                userRoles[r.role] = Number(r.count || 0);
+            }
+        });
+
+        // 9.2. Property Listings breakdown
+        const [listingRows] = await db.query(
+            "SELECT status, COUNT(*) AS count, SUM(COALESCE(view_count, 0)) AS total_views FROM property_listings GROUP BY status"
+        );
+        const listings = { active: 0, rented: 0, inactive: 0, total: 0, views: 0 };
+        listingRows.forEach(r => {
+            const count = Number(r.count || 0);
+            listings.views += Number(r.total_views || 0);
+            listings.total += count;
+            if (r.status === 'active') listings.active += count;
+            else if (r.status === 'leased' || r.status === 'rented') listings.rented += count;
+            else listings.inactive += count;
+        });
+
+        // 9.3. Rental contracts
+        const [rentContractRows] = await db.query(
+            "SELECT COUNT(*) AS count, SUM(COALESCE(agreed_price, 0)) AS total_value FROM rental_contracts WHERE status = 'active'"
+        );
+        const rentContracts = {
+            count: Number(rentContractRows[0]?.count || 0),
+            value: Number(rentContractRows[0]?.total_value || 0)
+        };
+
+        // 9.4. Deposit Transactions
+        const [depositRows] = await db.query(
+            "SELECT COUNT(*) AS count, SUM(COALESCE(amount, 0)) AS total_value FROM deposit_transactions WHERE status = 'verified'"
+        );
+        const deposits = {
+            count: Number(depositRows[0]?.count || 0),
+            value: Number(depositRows[0]?.total_value || 0)
+        };
+
+        // 9.5. Appointments statistics
+        const [appRows] = await db.query(
+            "SELECT appointment_type, COUNT(*) AS count FROM appointments GROUP BY appointment_type"
+        );
+        const appointments = { survey: 0, viewing: 0, total: 0 };
+        appRows.forEach(r => {
+            const count = Number(r.count || 0);
+            appointments.total += count;
+            const type = String(r.appointment_type || '').toLowerCase();
+            if (type.includes('sát') || type.includes('survey')) appointments.survey += count;
+            else appointments.viewing += count;
+        });
+
         res.json({
             metrics: {
                 totalRevenue,
@@ -241,11 +373,107 @@ router.get('/dashboard', requireAuth, requireRole('admin', 'manager'), async (re
             },
             brokers,
             revenueTrend,
-            userGrowth
+            userGrowth,
+            systemStats: {
+                userRoles,
+                listings,
+                rentContracts,
+                deposits,
+                appointments
+            }
         });
     } catch (err) {
         console.error('Admin dashboard metrics error:', err);
         res.status(500).json({ message: 'Lỗi server: ' + err.message });
+    }
+});
+
+const nodemailer = require('nodemailer');
+let etherealTransporter = null;
+
+async function getEtherealTransporter() {
+    if (etherealTransporter) {
+        return etherealTransporter;
+    }
+    try {
+        const testAccount = await nodemailer.createTestAccount();
+        etherealTransporter = nodemailer.createTransport({
+            host: 'smtp.ethereal.email',
+            port: 587,
+            secure: false,
+            auth: {
+                user: testAccount.user,
+                pass: testAccount.pass
+            }
+        });
+        console.log(`[Ethereal SMTP] Đã cấu hình tài khoản test: ${testAccount.user}`);
+        return etherealTransporter;
+    } catch (e) {
+        console.error('[Ethereal SMTP] Lỗi tạo tài khoản test:', e);
+        throw e;
+    }
+}
+
+// POST /api/admin/send-email-report
+// Gửi báo cáo thống kê qua email thật (sử dụng Ethereal Email cho môi trường thử nghiệm)
+router.post('/send-email-report', requireAuth, requireRole('admin', 'manager'), async (req, res) => {
+    try {
+        const { email, reportName, pdfData } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: 'Thiếu email người nhận' });
+        }
+        
+        console.log(`[Email] Đang chuẩn bị gửi báo cáo "${reportName || 'Báo cáo thống kê'}" tới ${email}`);
+        
+        const transporter = await getEtherealTransporter();
+        const mailOptions = {
+            from: '"HomeMatch System" <no-reply@homematch.com>',
+            to: email,
+            subject: reportName || 'Báo cáo thống kê HomeMatch',
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; rounded-lg: 8px;">
+                    <h2 style="color: #00236f; border-bottom: 2px solid #00236f; padding-bottom: 8px;">Báo Cáo Thống Kê Quản Trị</h2>
+                    <p>Xin chào Ban Lãnh Đạo,</p>
+                    <p>Hệ thống HomeMatch xin gửi tới bạn báo cáo thống kê định kỳ chi tiết đính kèm dưới đây.</p>
+                    <div style="background-color: #f3f4f6; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                        <ul style="list-style-type: none; padding: 0; margin: 0;">
+                            <li><strong>Tên báo cáo:</strong> ${reportName || 'Báo cáo thống kê tổng quan'}</li>
+                            <li><strong>Ngày xuất bản:</strong> ${new Date().toLocaleString('vi-VN')}</li>
+                            <li><strong>Định dạng đính kèm:</strong> PDF</li>
+                        </ul>
+                    </div>
+                    <p>Vui lòng mở file đính kèm để xem chi tiết số liệu về doanh thu, hiệu suất môi giới và hợp đồng.</p>
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 10px;">
+                        Thư này được tạo tự động bởi hệ thống HomeMatch. Vui lòng không trả lời thư này.
+                    </p>
+                </div>
+            `,
+            attachments: []
+        };
+
+        if (pdfData) {
+            // pdfData là data URI từ html2pdf (ví dụ: data:application/pdf;filename=generated.pdf;base64,...)
+            mailOptions.attachments.push({
+                filename: `Bao_cao_thong_ke_${new Date().toISOString().slice(0, 10)}.pdf`,
+                path: pdfData
+            });
+        }
+
+        const info = await transporter.sendMail(mailOptions);
+        const previewUrl = nodemailer.getTestMessageUrl(info);
+        
+        console.log(`[Email] Gửi thư thành công. Message ID: ${info.messageId}`);
+        if (previewUrl) {
+            console.log(`[Email] Link xem trước thư gửi đi: ${previewUrl}`);
+        }
+
+        res.json({ 
+            message: `Báo cáo đã được gửi thành công tới ${email}!`,
+            previewUrl: previewUrl || null
+        });
+    } catch (err) {
+        console.error('Send email report error:', err);
+        res.status(500).json({ message: 'Lỗi server khi gửi email: ' + err.message });
     }
 });
 

@@ -292,6 +292,12 @@ async function createBrokerAppointment(payload) {
 }
 
 // Admin API helpers
+async function getAdminDashboard(params = {}) {
+    const query = new URLSearchParams(params);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/admin/dashboard${suffix}`);
+}
+
 async function getAdminAssignments(params = {}) {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);
