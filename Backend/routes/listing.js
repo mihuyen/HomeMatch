@@ -123,5 +123,33 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: 'Lỗi server khi lấy dữ liệu' });
     }
 });
-
+// GET /api/listings/my-appointments
+// Lấy danh sách yêu cầu xem nhà và lịch hẹn của Khách thuê
+router.get('/my-appointments', requireAuth, async (req, res) => {
+    try {
+        const tenantId = req.user.user_id;
+        const query = `
+            SELECT 
+                sa.assignment_id, 
+                sa.status AS assignment_status, 
+                sa.notes AS property_info,
+                ap.appointment_id, 
+                ap.scheduled_time, 
+                ap.location, 
+                ap.status AS appointment_status,
+                u.full_name AS broker_name, 
+                u.phone AS broker_phone
+            FROM staff_assignments sa
+            LEFT JOIN appointments ap ON sa.assignment_id = ap.assignment_id
+            LEFT JOIN users u ON sa.sale_broker_id = u.user_id
+            WHERE sa.tenant_id = ?
+            ORDER BY sa.assignment_id DESC
+        `;
+        const [rows] = await db.query(query, [tenantId]);
+        res.json(rows);
+    } catch (err) {
+        console.error("Lỗi lấy lịch hẹn:", err);
+        res.status(500).json({ message: 'Lỗi server' });
+    }
+});
 module.exports = router;

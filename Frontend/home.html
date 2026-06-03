@@ -74,6 +74,7 @@
         <div class="hidden md:flex gap-8 h-full items-center">
             <a id="tab-home" class="text-primary border-b-2 border-primary pb-1 h-full flex items-center pt-1 text-[14px] font-semibold transition-all cursor-pointer" onclick="switchTab('home')">Trang chủ</a>
             <a id="tab-saved" class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer" onclick="switchTab('saved')">Tin đã lưu</a>
+            <a id="tab-appointments" class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer" onclick="switchTab('appointments')">Lịch hẹn xem nhà</a>
         </div>
         <div class="flex items-center gap-4">
 
@@ -140,6 +141,7 @@
 
     <div id="listingsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter"></div>
 
+    <div id="appointmentsContainer" class="hidden flex-col gap-4 max-w-4xl mx-auto w-full"></div>
     <div id="emptyState" class="hidden text-center py-20">
         <span class="material-symbols-outlined text-[64px] text-outline-variant mb-4">search_off</span>
         <h2 class="text-[24px] font-bold text-on-surface">Không tìm thấy kết quả</h2>
@@ -875,6 +877,152 @@
     }
 
     initPage();
+    // ==========================================
+    // LOGIC QUẢN LÝ LỊCH HẸN CHO KHÁCH THUÊ
+    // ==========================================
+
+    // Hàm gọi API lấy danh sách lịch hẹn
+    async function fetchMyAppointments() {
+        if (!token) return;
+        const container = document.getElementById('appointmentsContainer');
+        container.innerHTML = '<p class="text-center text-on-surface-variant py-10">Đang tải dữ liệu...</p>';
+
+        try {
+            const res = await fetch('http://localhost:5050/api/listings/my-appointments', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                renderAppointments(data);
+            } else {
+                container.innerHTML = '<p class="text-center text-error py-10">Không thể tải lịch hẹn.</p>';
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Hàm vẽ giao diện Lịch hẹn
+    function renderAppointments(data) {
+        const container = document.getElementById('appointmentsContainer');
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-20 bg-surface-container-lowest rounded-2xl border border-outline-variant">
+                    <span class="material-symbols-outlined text-[48px] text-outline-variant mb-4">event_busy</span>
+                    <h2 class="text-[18px] font-bold text-on-surface">Bạn chưa có yêu cầu xem nhà nào</h2>
+                    <p class="text-[14px] text-on-surface-variant mt-2">Hãy khám phá các bất động sản và đặt lịch ngay!</p>
+                </div>
+            `;
+            return;
+        }
+
+        data.forEach(item => {
+            // Xác định trạng thái
+            let statusBadge = '';
+            let timeHtml = '';
+            let locationHtml = '';
+
+            // Nếu Môi giới đã set lịch trong bảng appointments
+            if (item.scheduled_time) {
+                const isPast = new Date(item.scheduled_time) < new Date();
+                const aptStatus = (item.appointment_status || '').toLowerCase();
+
+                if (aptStatus === 'hoàn thành' || aptStatus === 'done') {
+                    statusBadge = '<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-[12px] font-bold uppercase">Đã xem nhà</span>';
+                } else if (isPast) {
+                    statusBadge = '<span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-[12px] font-bold uppercase">Đã quá hạn</span>';
+                } else {
+                    statusBadge = '<span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[12px] font-bold uppercase flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">alarm_on</span> Đã chốt lịch hẹn</span>';
+                }
+
+                const dateObj = new Date(item.scheduled_time);
+                timeHtml = `<div class="flex items-center gap-2 text-primary font-bold"><span class="material-symbols-outlined text-[18px]">event</span> ${dateObj.toLocaleDateString('vi-VN')} - ${dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}</div>`;
+                locationHtml = `<div class="flex items-center gap-2 text-on-surface-variant text-[14px] mt-1"><span class="material-symbols-outlined text-[18px]">location_on</span> ${item.location || 'Chưa cập nhật địa điểm'}</div>`;
+            }
+            // Nếu Môi giới chưa tạo lịch, mới chỉ có request
+            else {
+                statusBadge = '<span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[12px] font-bold uppercase animate-pulse">Chờ Môi giới liên hệ</span>';
+                timeHtml = `<div class="flex items-center gap-2 text-on-surface-variant italic"><span class="material-symbols-outlined text-[18px]">hourglass_empty</span> Môi giới đang sắp xếp lịch...</div>`;
+            }
+
+            // Giao diện Thẻ
+            const card = `
+                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col md:flex-row justify-between gap-6 hover:shadow-md transition-shadow">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-[12px] font-bold text-outline-variant uppercase">MÃ YÊU CẦU: #${item.assignment_id}</span>
+                            ${statusBadge}
+                        </div>
+                        <h3 class="text-[18px] font-bold text-on-surface mb-4">${item.property_info || 'Yêu cầu xem Bất động sản'}</h3>
+                        <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/50">
+                            ${timeHtml}
+                            ${locationHtml}
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-64 flex flex-col justify-center border-t md:border-t-0 md:border-l border-outline-variant pt-4 md:pt-0 md:pl-6">
+                        <p class="text-[12px] font-bold text-on-surface-variant mb-2">MÔI GIỚI PHỤ TRÁCH</p>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-[16px]">
+                                ${(item.broker_name || 'NV')[0].toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="font-bold text-on-surface text-[15px]">${item.broker_name || 'Đang cập nhật'}</div>
+                                <div class="text-[13px] text-on-surface-variant">${item.broker_phone || 'Chưa có SĐT'}</div>
+                            </div>
+                        </div>
+                        ${item.broker_phone ? `<a href="tel:${item.broker_phone}" class="w-full py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-[14px] font-bold flex items-center justify-center gap-2 transition-colors"><span class="material-symbols-outlined text-[18px]">call</span> Gọi ngay</a>` : ''}
+                    </div>
+                </div>
+            `;
+            container.innerHTML += card;
+        });
+    }
+
+    // Ghi đè hàm switchTab để tích hợp hiển thị Lịch hẹn
+    const originalSwitchTab = switchTab;
+    switchTab = function(tab) {
+        if(tab === 'appointments' && !token) {
+            showAuthPopup();
+            return;
+        }
+
+        // Cập nhật class Navbar
+        ['home', 'saved', 'appointments'].forEach(t => {
+            const el = document.getElementById(`tab-${t}`);
+            if (el) {
+                el.className = (t === tab)
+                    ? "text-primary border-b-2 border-primary pb-1 h-full flex items-center pt-1 text-[14px] font-semibold transition-all cursor-pointer"
+                    : "text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-1 transition-colors h-full flex items-center pt-1 text-[14px] font-semibold cursor-pointer";
+            }
+        });
+
+        // Xử lý bật/tắt các vùng hiển thị
+        const gridView = document.getElementById('listingsGrid');
+        const emptyView = document.getElementById('emptyState');
+        const aptView = document.getElementById('appointmentsContainer');
+        const filterBar = document.querySelector('.bg-surface\\/80'); // Thanh tìm kiếm
+
+        if (tab === 'appointments') {
+            currentTab = tab;
+            document.getElementById('pageTitle').innerText = "Quản lý Lịch hẹn";
+            document.getElementById('pageSubtitle').innerText = "Theo dõi tiến độ yêu cầu xem nhà và lịch hẹn của bạn.";
+            gridView.classList.add('hidden');
+            emptyView.classList.add('hidden');
+            filterBar.classList.add('hidden'); // Ẩn thanh filter
+            aptView.classList.remove('hidden');
+            aptView.classList.add('flex');
+
+            fetchMyAppointments(); // Gọi API ngay khi click tab
+        } else {
+            aptView.classList.add('hidden');
+            aptView.classList.remove('flex');
+            filterBar.classList.remove('hidden');
+            originalSwitchTab(tab); // Gọi hàm switchTab cũ cho home và saved
+        }
+    }
 </script>
 </body>
 </html>

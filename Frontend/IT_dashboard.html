@@ -382,11 +382,21 @@
         const kw = searchInput.value.toLowerCase();
         const st = statusFilter.value;
 
+        // ĐÃ SỬA LẠI LOGIC LỌC TÀI KHOẢN TẠI ĐÂY
         if (currentView === 'customers' || currentView === 'staff') {
             filtered = filtered.filter(u => {
-                const isStaff = staffRoles.includes(u.role);
-                return currentView === 'staff' ? isStaff : !isStaff;
+                // Đưa role về chữ viết thường để so sánh không bị lỗi (IT -> it)
+                const userRole = (u.role || '').toLowerCase();
+
+                if (currentView === 'customers') {
+                    // CHỈ LẤY CHÍNH XÁC OWNER VÀ TENANT CHO TAB KHÁCH HÀNG
+                    return userRole === 'owner' || userRole === 'tenant';
+                } else if (currentView === 'staff') {
+                    // CHỈ LẤY CÁC ROLE NỘI BỘ CHO TAB NHÂN SỰ
+                    return staffRoles.includes(userRole);
+                }
             });
+
             if (kw) filtered = filtered.filter(u => (u.full_name||'').toLowerCase().includes(kw) || (u.email||'').toLowerCase().includes(kw));
         } else {
             if (kw) filtered = filtered.filter(item => JSON.stringify(item).toLowerCase().includes(kw));
@@ -401,9 +411,13 @@
         if (currentView === 'customers' || currentView === 'staff') {
             tableHead.innerHTML = `<tr><th class="px-6 py-4">ID</th><th class="px-6 py-4">Họ và Tên</th><th class="px-6 py-4">Liên hệ</th><th class="px-6 py-4">Vai trò (Role)</th><th class="px-6 py-4 text-center">Thao tác</th></tr>`;
             filtered.forEach(u => {
+                const userRole = (u.role || '').toLowerCase();
                 let roleBadge = `<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full text-[12px] font-bold uppercase">${u.role}</span>`;
-                if(u.role === 'owner') roleBadge = `<span class="px-3 py-1 bg-[#F59E0B]/10 text-[#D97706] rounded-full text-[12px] font-bold uppercase">Chủ nhà</span>`;
-                if(staffRoles.includes(u.role)) roleBadge = `<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[12px] font-bold uppercase">${u.role}</span>`;
+
+                if(userRole === 'owner') roleBadge = `<span class="px-3 py-1 bg-[#F59E0B]/10 text-[#D97706] rounded-full text-[12px] font-bold uppercase">Chủ nhà</span>`;
+                else if(userRole === 'tenant') roleBadge = `<span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[12px] font-bold uppercase">Khách thuê</span>`;
+                else if(staffRoles.includes(userRole)) roleBadge = `<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[12px] font-bold uppercase">${u.role}</span>`;
+
                 tableBody.innerHTML += `
                     <tr class="hover:bg-surface-container/30 transition-colors">
                         <td class="px-6 py-4 font-semibold text-on-surface-variant">#${u.user_id}</td>
