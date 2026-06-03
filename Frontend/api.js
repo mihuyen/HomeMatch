@@ -337,8 +337,11 @@ async function updateAppointment(appointmentId, payload) {
 // =====================================
 // ADMIN / IT API
 // =====================================
-async function getAdminDashboard() {
-    return apiCall('/admin/dashboard');
+// Admin API helpers
+async function getAdminDashboard(params = {}) {
+    const query = new URLSearchParams(params);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/admin/dashboard${suffix}`);
 }
 
 async function getAdminAssignments(params = {}) {

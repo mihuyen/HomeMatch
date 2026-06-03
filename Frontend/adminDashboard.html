@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <!-- Chart.js CDN for interactive premium animations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Thu vien ho tro xuat Excel va PDF qua CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -126,7 +129,68 @@
     <script src="adminSidebar.js"></script>
 
     <!-- Main Content Grid -->
-    <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0">
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-8 md:px-12 py-6 md:py-8 flex flex-col min-w-0" id="report-canvas">
+        <!-- Page Header Action Toolbar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+                <span class="px-2.5 py-0.5 bg-blue-50 text-primary border border-blue-100 rounded-full text-[11px] font-bold uppercase tracking-wider">Hệ thống Nghiệp vụ</span>
+                <span class="text-xs text-slate-400 font-semibold mx-1.5">•</span>
+                <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">Management Board</span>
+                <h1 class="text-[28px] font-extrabold tracking-tight text-primary mt-1">Báo cáo Thống kê Quản trị</h1>
+                <p class="text-sm text-secondary mt-0.5">Thu thập, tổng hợp dữ liệu doanh thu, hiệu suất môi giới và hợp đồng bất động sản.</p>
+            </div>
+            <!-- Actions Block -->
+            <div class="flex items-center gap-2">
+                <button id="btn-export-excel" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[13px] font-bold shadow-sm transition-all hover:scale-[1.02] flex items-center gap-1.5 active:scale-95">
+                    <span class="material-symbols-outlined text-[18px]">table_view</span>
+                    <span>Xuất Excel</span>
+                </button>
+                <button id="btn-export-pdf" class="px-4 py-2 bg-[#dc2626] hover:bg-red-700 text-white rounded-lg text-[13px] font-bold shadow-sm transition-all hover:scale-[1.02] flex items-center gap-1.5 active:scale-95">
+                    <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                    <span>Xuất PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Filter Panel -->
+        <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="space-y-1.5 md:col-span-4">
+                    <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wider block">Khoảng thời gian</label>
+                    <div class="flex gap-2 items-center">
+                        <input id="filter-start-date" class="w-full bg-slate-50 border border-outline-variant rounded-lg text-[13px] py-2 px-3 focus:border-primary focus:ring-primary font-medium text-slate-700" type="date">
+                        <span class="text-secondary text-xs font-semibold">đến</span>
+                        <input id="filter-end-date" class="w-full bg-slate-50 border border-outline-variant rounded-lg text-[13px] py-2 px-3 focus:border-primary focus:ring-primary font-medium text-slate-700" type="date">
+                    </div>
+                </div>
+                <div class="space-y-1.5 md:col-span-3">
+                    <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wider block">Loại hình BĐS</label>
+                    <select id="filter-property-type" class="w-full bg-slate-50 border border-outline-variant rounded-lg text-[13px] py-2 px-3 focus:border-primary focus:ring-primary font-medium text-slate-700">
+                        <option value="">Tất cả loại hình BĐS</option>
+                        <option value="nhapho">Nhà phố</option>
+                        <option value="canho">Căn hộ</option>
+                        <option value="bietthu">Biệt thự</option>
+                        <option value="datnen">Đất nền</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5 md:col-span-3">
+                    <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wider block">Môi giới phụ trách</label>
+                    <select id="filter-broker" class="w-full bg-slate-50 border border-outline-variant rounded-lg text-[13px] py-2 px-3 focus:border-primary focus:ring-primary font-medium text-slate-700">
+                        <option value="">Tất cả môi giới</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 md:col-span-2">
+                    <button id="btn-apply-filters" class="flex-1 bg-primary hover:bg-blue-900 text-white py-2 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">assessment</span>
+                        <span>Tạo báo cáo</span>
+                    </button>
+                    <button id="btn-reset-filters" class="p-2 border border-outline-variant rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center text-slate-500 active:scale-95" title="Đặt lại bộ lọc">
+                        <span class="material-symbols-outlined text-[18px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Overview Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <!-- Card 1: Tổng doanh thu -->
@@ -332,12 +396,192 @@
                 <canvas id="growthChart"></canvas>
             </div>
         </div>
+
+        <!-- Comprehensive System Stats Section -->
+        <div id="system-stats-section" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm mt-8 flex flex-col">
+            <div class="mb-6 flex justify-between items-start">
+                <div>
+                    <h3 class="font-headline-md text-on-surface">Thông số quản trị toàn diện hệ thống</h3>
+                    <p class="text-sm text-on-surface-variant">Dữ liệu tổng hợp từ các phân hệ: Bất động sản, Hợp đồng thuê, Tài chính đặt cọc, Lịch hẹn và Nhân sự</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Group 1: Tin đăng BĐS -->
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-blue-700 font-bold text-xs uppercase mb-3">
+                            <span class="material-symbols-outlined text-[18px]">domain</span>
+                            <span>Phân hệ BĐS & Tin đăng</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Tổng tin đăng:</span>
+                                <span id="sys-listings-total" class="font-bold text-slate-800">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Đang hoạt động:</span>
+                                <span id="sys-listings-active" class="font-bold text-green-600">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Đã chốt thuê:</span>
+                                <span id="sys-listings-rented" class="font-bold text-blue-600">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-200 pt-3 mt-3 flex justify-between items-center text-xs text-slate-500 font-medium">
+                        <span>Lượt xem tin đăng:</span>
+                        <span id="sys-listings-views" class="font-bold text-slate-700">- lượt</span>
+                    </div>
+                </div>
+
+                <!-- Group 2: Hợp đồng & Đặt cọc -->
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-emerald-700 font-bold text-xs uppercase mb-3">
+                            <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                            <span>Hợp đồng & Tài chính</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Hợp đồng thuê đã ký:</span>
+                                <span id="sys-rentals-count" class="font-bold text-slate-800">- HĐ</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Tổng giá trị thuê:</span>
+                                <span id="sys-rentals-value" class="font-bold text-emerald-600">- đ</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Giao dịch đặt cọc:</span>
+                                <span id="sys-deposits-count" class="font-bold text-slate-800">- GD</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-200 pt-3 mt-3 flex justify-between items-center text-xs text-slate-500 font-medium">
+                        <span>Tiền cọc đã khớp:</span>
+                        <span id="sys-deposits-value" class="font-bold text-slate-700">- đ</span>
+                    </div>
+                </div>
+
+                <!-- Group 3: Phân hệ Lịch hẹn -->
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-orange-700 font-bold text-xs uppercase mb-3">
+                            <span class="material-symbols-outlined text-[18px]">event_available</span>
+                            <span>Lịch hẹn & Tác vụ</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Tổng lịch hẹn:</span>
+                                <span id="sys-appointments-total" class="font-bold text-slate-800">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Lịch khảo sát:</span>
+                                <span id="sys-appointments-survey" class="font-bold text-orange-600">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Lịch dẫn khách:</span>
+                                <span id="sys-appointments-viewing" class="font-bold text-slate-800">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-200 pt-3 mt-3 flex justify-between items-center text-xs text-slate-500 font-medium">
+                        <span>Tác vụ lịch hẹn:</span>
+                        <span class="font-bold text-slate-700">Đã cập nhật</span>
+                    </div>
+                </div>
+
+                <!-- Group 4: Cơ cấu Thành viên -->
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-purple-700 font-bold text-xs uppercase mb-3">
+                            <span class="material-symbols-outlined text-[18px]">badge</span>
+                            <span>Cơ cấu thành viên</span>
+                        </div>
+                        <div class="space-y-1 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Chủ nhà / Khách thuê:</span>
+                                <span class="font-bold text-slate-800"><span id="sys-users-owner">-</span> / <span id="sys-users-tenant">-</span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Môi giới hoạt động:</span>
+                                <span id="sys-users-sale" class="font-bold text-purple-600">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Ban quản lý (Lãnh đạo):</span>
+                                <span id="sys-users-mgr" class="font-bold text-slate-800">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Kế toán / Pháp lý:</span>
+                                <span class="font-bold text-slate-800"><span id="sys-users-acc">-</span> / <span id="sys-users-legal">-</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-200 pt-2 mt-2 flex justify-between items-center text-xs text-slate-500 font-medium font-medium">
+                        <span>Tổng tài khoản web:</span>
+                        <span id="sys-users-total" class="font-bold text-slate-700">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <!-- MODAL: Gửi báo cáo qua email -->
+    <div id="email-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <!-- Backdrop with blur -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" id="email-modal-backdrop"></div>
+        
+        <!-- Modal Content Box -->
+        <div class="relative bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col border border-slate-200" id="email-modal-box">
+            <!-- Modal Header -->
+            <div class="bg-primary px-6 py-4 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">mail</span>
+                    <h3 class="text-[16px] font-bold">Gửi Báo cáo Thống kê</h3>
+                </div>
+                <button id="btn-close-email" class="text-white/80 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-secondary">Hệ thống sẽ chuyển báo cáo thống kê dạng PDF đến địa chỉ hòm thư điện tử dưới đây:</p>
+                <div class="space-y-1.5">
+                    <label for="email-recipient" class="block text-xs font-bold text-slate-700 uppercase">Email người nhận *</label>
+                    <input type="email" id="email-recipient" class="block w-full rounded-lg border-outline-variant py-2.5 px-3.5 focus:border-primary focus:ring-primary text-[14px] font-medium" placeholder="nhap-email@gmail.com" required>
+                </div>
+                <div class="space-y-1.5">
+                    <label for="email-subject" class="block text-xs font-bold text-slate-700 uppercase">Tiêu đề email</label>
+                    <input type="text" id="email-subject" class="block w-full rounded-lg border-outline-variant py-2.5 px-3.5 focus:border-primary focus:ring-primary text-[14px] font-medium text-slate-500" value="[HomeMatch] Báo cáo Thống kê Quản trị định kỳ" readonly>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3 bg-slate-50/50">
+                <button id="btn-cancel-email" class="px-4 py-2 border border-outline-variant text-secondary rounded-lg font-semibold hover:bg-slate-50 active:scale-95 transition-all text-[13px]">
+                    Hủy bỏ
+                </button>
+                <button id="btn-submit-email" class="px-5 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-blue-900 active:scale-95 transition-all flex items-center gap-1.5 text-[13px]">
+                    <span class="material-symbols-outlined text-[18px]">send</span>
+                    <span>Xác nhận & Gửi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3"></div>
 
     <script src="api.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             let user;
+            let currentData = null;
+            let revChart = null;
+            let progChart = null;
+            let gwChart = null;
+
             try {
                 user = await requireLogin();
                 if (user && user.role !== 'admin' && user.role !== 'manager') {
@@ -350,248 +594,537 @@
                 return;
             }
 
+            // Toast helper
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+                const icon = type === 'success' ? 'check_circle' : 'error';
+                
+                toast.className = `flex items-center gap-3 text-white px-5 py-3 rounded-lg shadow-xl ${bgColor} transition-all duration-300 translate-x-12 opacity-0 font-semibold text-[13px]`;
+                toast.innerHTML = `
+                    <span class="material-symbols-outlined text-[18px]">${icon}</span>
+                    <span>${message}</span>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => toast.classList.remove('translate-x-12', 'opacity-0'), 50);
+                setTimeout(() => {
+                    toast.classList.add('translate-x-12', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
             function formatCurrency(val) {
                 return new Intl.NumberFormat('vi-VN').format(val) + ' đ';
             }
 
-            try {
-                // Fetch dynamic metrics from backend API
-                const data = await getAdminDashboard();
-                const metrics = data.metrics || {};
-                const progress = data.progress || {};
-                const brokers = data.brokers || [];
-                const revenueTrend = data.revenueTrend || [];
-                const userGrowth = data.userGrowth || [];
-
-                // Bind Summary Cards
-                document.getElementById('metric-revenue').textContent = formatCurrency(metrics.totalRevenue);
-                document.getElementById('metric-users').textContent = new Intl.NumberFormat('vi-VN').format(metrics.newUsers);
-                document.getElementById('metric-rate').textContent = metrics.signingRate + '%';
-                document.getElementById('metric-active').textContent = metrics.activeSubmissions;
-
-                // Bind dynamic subtexts
-                const subRevText = document.getElementById('sub-revenue-text');
-                const subRevIcon = document.getElementById('sub-revenue-icon');
-                const subRevContainer = document.getElementById('sub-revenue-container');
-                subRevText.textContent = metrics.revenueSubtext;
-                if (metrics.revenueSubtext === 'Chưa phát sinh doanh thu') {
-                    subRevContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
-                    subRevIcon.textContent = 'info';
-                    subRevIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
-                } else {
-                    subRevContainer.className = metrics.revenueTrendUp 
-                        ? 'mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600' 
-                        : 'mt-4 flex items-center gap-1.5 text-xs font-bold text-error';
-                    subRevIcon.textContent = metrics.revenueTrendUp ? 'trending_up' : 'trending_down';
-                    subRevIcon.className = 'material-symbols-outlined text-[16px]';
+            // Load Brokers dynamic list into Filter dropdown
+            async function loadFilterBrokers() {
+                try {
+                    const data = await apiCall('/admin/sales-agents');
+                    const select = document.getElementById('filter-broker');
+                    const agents = data.salesAgents || [];
+                    agents.forEach(agent => {
+                        const opt = document.createElement('option');
+                        opt.value = agent.user_id;
+                        opt.textContent = agent.full_name;
+                        select.appendChild(opt);
+                    });
+                } catch (e) {
+                    console.error('Không thể nạp danh sách môi giới lọc:', e);
                 }
-
-                const subUsersText = document.getElementById('sub-users-text');
-                const subUsersIcon = document.getElementById('sub-users-icon');
-                const subUsersContainer = document.getElementById('sub-users-container');
-                subUsersText.textContent = metrics.usersSubtext;
-                if (metrics.usersSubtext.includes('Không có') || metrics.usersSubtext.includes('Tổng cộng')) {
-                    subUsersContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
-                    subUsersIcon.textContent = 'info';
-                    subUsersIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
-                } else {
-                    subUsersContainer.className = metrics.usersTrendUp 
-                        ? 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-green-600' 
-                        : 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-error';
-                    subUsersIcon.textContent = metrics.usersTrendUp ? 'trending_up' : 'trending_down';
-                    subUsersIcon.className = 'material-symbols-outlined text-[16px]';
-                }
-
-                const subRateText = document.getElementById('sub-rate-text');
-                const subRateDot = document.getElementById('sub-rate-dot');
-                const subRateContainer = document.getElementById('sub-rate-container');
-                subRateText.textContent = metrics.rateSubtext;
-                if (metrics.signingRate === 0) {
-                    subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
-                    subRateDot.className = 'w-2 h-2 rounded-full bg-secondary inline-block';
-                } else if (metrics.signingRate > 80) {
-                    subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-green-600';
-                    subRateDot.className = 'w-2 h-2 rounded-full bg-green-600 inline-block';
-                } else {
-                    subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#78350f]';
-                    subRateDot.className = 'w-2 h-2 rounded-full bg-[#f59e0b] inline-block';
-                }
-
-                const subActiveText = document.getElementById('sub-active-text');
-                const subActiveIcon = document.getElementById('sub-active-icon');
-                const subActiveContainer = document.getElementById('sub-active-container');
-                subActiveText.textContent = metrics.subsSubtext;
-                if (metrics.subsSubtext.includes('Chưa có') || metrics.subsSubtext.includes('Tổng cộng')) {
-                    subActiveContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
-                    subActiveIcon.textContent = 'info';
-                    subActiveIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
-                } else {
-                    subActiveContainer.className = metrics.subsTrendUp 
-                        ? 'mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600' 
-                        : 'mt-4 flex items-center gap-1.5 text-xs font-bold text-error';
-                    subActiveIcon.textContent = metrics.subsTrendUp ? 'trending_up' : 'trending_down';
-                    subActiveIcon.className = 'material-symbols-outlined text-[16px]';
-                }
-
-                // Bind Progress Labels
-                const totalProgress = progress.pendingSurvey + progress.surveyed + progress.contracted + progress.listed + progress.cancelled;
-                document.getElementById('progress-total').textContent = totalProgress;
-                document.getElementById('lbl-pending-survey').textContent = progress.pendingSurvey;
-                document.getElementById('lbl-surveyed').textContent = progress.surveyed;
-                document.getElementById('lbl-contracted').textContent = progress.contracted;
-                document.getElementById('lbl-listed').textContent = progress.listed;
-                document.getElementById('lbl-cancelled').textContent = progress.cancelled;
-
-                // Render Progress Doughnut Chart
-                const progressCtx = document.getElementById('progressChart').getContext('2d');
-                new Chart(progressCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Chờ khảo sát', 'Đã khảo sát', 'Đã ký hợp đồng', 'Đang niêm yết', 'Đã hủy/Hết hạn'],
-                        datasets: [{
-                            data: [progress.pendingSurvey, progress.surveyed, progress.contracted, progress.listed, progress.cancelled],
-                            backgroundColor: ['#2563eb', '#f59e0b', '#16a34a', '#4f46e5', '#ba1a1a'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff',
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        cutout: '75%',
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { enabled: true }
-                        }
-                    }
-                });
-
-                // Render Revenue Trend Line Chart
-                const revCtx = document.getElementById('revenueChart').getContext('2d');
-                new Chart(revCtx, {
-                    type: 'line',
-                    data: {
-                        labels: revenueTrend.map(t => t.month),
-                        datasets: [{
-                            label: 'Doanh thu hoa hồng',
-                            data: revenueTrend.map(t => t.amount),
-                            borderColor: '#00236f',
-                            backgroundColor: 'rgba(0, 35, 111, 0.04)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 3,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#00236f'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            y: {
-                                grid: { drawBorder: false },
-                                ticks: {
-                                    callback: function(value) {
-                                        return value >= 1000000000 
-                                            ? (value / 1000000000).toFixed(1) + 'B đ' 
-                                            : (value / 1000000).toFixed(0) + 'M đ';
-                                    }
-                                }
-                            },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-
-                // Bind Broker Performance Table
-                const tbody = document.getElementById('brokers-tbody');
-                tbody.innerHTML = '';
-                
-                // standard avatar fallbacks matching dynamic profiles
-                const avatars = [
-                    'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=120',
-                    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120',
-                    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=120'
-                ];
-
-                brokers.forEach((b, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-surface-container-low transition-colors';
-                    const avatarUrl = avatars[idx % avatars.length];
-                    const initials = b.name ? b.name.split(' ').pop().substring(0, 2).toUpperCase() : 'BR';
-                    const closingColor = b.closingRate >= 80 ? 'bg-green-600' : (b.closingRate >= 60 ? 'bg-[#00236f]' : 'bg-error');
-
-                    tr.innerHTML = `
-                        <td class="p-4 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-primary-container/10 flex items-center justify-center shrink-0">
-                                <img src="${avatarUrl}" class="w-full h-full object-cover" onerror="this.outerHTML='<span class=\'font-bold text-xs\'>${initials}</span>'">
-                            </div>
-                            <div>
-                                <p class="font-bold text-on-surface text-sm">${b.name}</p>
-                                <p class="text-xs text-secondary">${b.role}</p>
-                            </div>
-                        </td>
-                        <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.assigned}</td>
-                        <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.appointments}</td>
-                        <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.contracts}</td>
-                        <td class="p-4">
-                            <div class="flex items-center gap-3 min-w-[150px]">
-                                <div class="flex-1 bg-surface-container rounded-full h-2 overflow-hidden">
-                                    <div class="${closingColor} h-full" style="width: ${b.closingRate}%"></div>
-                                </div>
-                                <span class="font-bold text-xs text-secondary shrink-0">${b.closingRate}% Tỷ lệ chốt</span>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                // Render User Growth Line Chart
-                const growthCtx = document.getElementById('growthChart').getContext('2d');
-                new Chart(growthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: userGrowth.map(g => g.week),
-                        datasets: [
-                            {
-                                label: 'Chủ nhà',
-                                data: userGrowth.map(g => g.owners),
-                                borderColor: '#00236f',
-                                borderDash: [5, 5],
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.3,
-                                pointRadius: 3
-                            },
-                            {
-                                label: 'Khách thuê',
-                                data: userGrowth.map(g => g.tenants),
-                                borderColor: '#b6c4ff',
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.3,
-                                pointRadius: 3
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            y: { grid: { drawBorder: false } },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-
-            } catch (error) {
-                console.error('Tải dữ liệu báo cáo thất bại:', error);
             }
+
+            // Main function to fetch and render dashboard data
+            async function loadDashboardData() {
+                const startDate = document.getElementById('filter-start-date').value;
+                const endDate = document.getElementById('filter-end-date').value;
+                const propertyType = document.getElementById('filter-property-type').value;
+                const brokerId = document.getElementById('filter-broker').value;
+
+                const params = new URLSearchParams();
+                if (startDate) params.append('startDate', startDate);
+                if (endDate) params.append('endDate', endDate);
+                if (propertyType) params.append('propertyType', propertyType);
+                if (brokerId) params.append('brokerId', brokerId);
+
+                try {
+                    const data = await apiCall(`/admin/dashboard?${params.toString()}`);
+                    currentData = data;
+                    const metrics = data.metrics || {};
+                    const progress = data.progress || {};
+                    const brokers = data.brokers || [];
+                    const revenueTrend = data.revenueTrend || [];
+                    const userGrowth = data.userGrowth || [];
+
+                    // Bind Summary Cards
+                    document.getElementById('metric-revenue').textContent = formatCurrency(metrics.totalRevenue);
+                    document.getElementById('metric-users').textContent = new Intl.NumberFormat('vi-VN').format(metrics.newUsers);
+                    document.getElementById('metric-rate').textContent = metrics.signingRate + '%';
+                    document.getElementById('metric-active').textContent = metrics.activeSubmissions;
+
+                    // Bind subtexts
+                    const subRevText = document.getElementById('sub-revenue-text');
+                    const subRevIcon = document.getElementById('sub-revenue-icon');
+                    const subRevContainer = document.getElementById('sub-revenue-container');
+                    subRevText.textContent = metrics.revenueSubtext;
+                    if (metrics.revenueSubtext === 'Chưa phát sinh doanh thu') {
+                        subRevContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                        subRevIcon.textContent = 'info';
+                        subRevIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
+                    } else {
+                        subRevContainer.className = metrics.revenueTrendUp 
+                            ? 'mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600' 
+                            : 'mt-4 flex items-center gap-1.5 text-xs font-bold text-error';
+                        subRevIcon.textContent = metrics.revenueTrendUp ? 'trending_up' : 'trending_down';
+                        subRevIcon.className = 'material-symbols-outlined text-[16px]';
+                    }
+
+                    const subUsersText = document.getElementById('sub-users-text');
+                    const subUsersIcon = document.getElementById('sub-users-icon');
+                    const subUsersContainer = document.getElementById('sub-users-container');
+                    subUsersText.textContent = metrics.usersSubtext;
+                    if (metrics.usersSubtext.includes('Không có') || metrics.usersSubtext.includes('Tổng cộng')) {
+                        subUsersContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                        subUsersIcon.textContent = 'info';
+                        subUsersIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
+                    } else {
+                        subUsersContainer.className = metrics.usersTrendUp 
+                            ? 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-green-600' 
+                            : 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-error';
+                        subUsersIcon.textContent = metrics.usersTrendUp ? 'trending_up' : 'trending_down';
+                        subUsersIcon.className = 'material-symbols-outlined text-[16px]';
+                    }
+
+                    const subRateText = document.getElementById('sub-rate-text');
+                    const subRateDot = document.getElementById('sub-rate-dot');
+                    const subRateContainer = document.getElementById('sub-rate-container');
+                    subRateText.textContent = metrics.rateSubtext;
+                    if (metrics.signingRate === 0) {
+                        subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                        subRateDot.className = 'w-2 h-2 rounded-full bg-secondary inline-block';
+                    } else if (metrics.signingRate > 80) {
+                        subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-green-600';
+                        subRateDot.className = 'w-2 h-2 rounded-full bg-green-600 inline-block';
+                    } else {
+                        subRateContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#78350f]';
+                        subRateDot.className = 'w-2 h-2 rounded-full bg-[#f59e0b] inline-block';
+                    }
+
+                    const subActiveText = document.getElementById('sub-active-text');
+                    const subActiveIcon = document.getElementById('sub-active-icon');
+                    const subActiveContainer = document.getElementById('sub-active-container');
+                    subActiveText.textContent = metrics.subsSubtext;
+                    if (metrics.subsSubtext.includes('Chưa có') || metrics.subsSubtext.includes('Tổng cộng')) {
+                        subActiveContainer.className = 'mt-4 flex items-center gap-1.5 text-xs font-semibold text-secondary';
+                        subActiveIcon.textContent = 'info';
+                        subActiveIcon.className = 'material-symbols-outlined text-[16px] text-secondary';
+                    } else {
+                        subActiveContainer.className = metrics.subsTrendUp 
+                            ? 'mt-4 flex items-center gap-1.5 text-xs font-bold text-green-600' 
+                            : 'mt-4 flex items-center gap-1.5 text-xs font-bold text-error';
+                        subActiveIcon.textContent = metrics.subsTrendUp ? 'trending_up' : 'trending_down';
+                        subActiveIcon.className = 'material-symbols-outlined text-[16px]';
+                    }
+
+                    // Bind progress doughnut stats
+                    const totalProgress = progress.pendingSurvey + progress.surveyed + progress.contracted + progress.listed + progress.cancelled;
+                    document.getElementById('progress-total').textContent = totalProgress;
+                    document.getElementById('lbl-pending-survey').textContent = progress.pendingSurvey;
+                    document.getElementById('lbl-surveyed').textContent = progress.surveyed;
+                    document.getElementById('lbl-contracted').textContent = progress.contracted;
+                    document.getElementById('lbl-listed').textContent = progress.listed;
+                    document.getElementById('lbl-cancelled').textContent = progress.cancelled;
+
+                    // Render doughnut
+                    if (progChart) progChart.destroy();
+                    const progressCtx = document.getElementById('progressChart').getContext('2d');
+                    progChart = new Chart(progressCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Chờ khảo sát', 'Đã khảo sát', 'Đã ký hợp đồng', 'Đang niêm yết', 'Đã hủy/Hết hạn'],
+                            datasets: [{
+                                data: [progress.pendingSurvey, progress.surveyed, progress.contracted, progress.listed, progress.cancelled],
+                                backgroundColor: ['#2563eb', '#f59e0b', '#16a34a', '#4f46e5', '#ba1a1a'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff',
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            cutout: '75%',
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: { enabled: true }
+                            }
+                        }
+                    });
+
+                    // Render Revenue Line Chart
+                    if (revChart) revChart.destroy();
+                    const revCtx = document.getElementById('revenueChart').getContext('2d');
+                    revChart = new Chart(revCtx, {
+                        type: 'line',
+                        data: {
+                            labels: revenueTrend.map(t => t.month),
+                            datasets: [{
+                                label: 'Doanh thu hoa hồng',
+                                data: revenueTrend.map(t => t.amount),
+                                borderColor: '#00236f',
+                                backgroundColor: 'rgba(0, 35, 111, 0.04)',
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 3,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#00236f'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    grid: { drawBorder: false },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value >= 1000000000 
+                                                ? (value / 1000000000).toFixed(1) + 'B đ' 
+                                                : (value / 1000000).toFixed(0) + 'M đ';
+                                        }
+                                    }
+                                },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+
+                    // Render Brokers table
+                    const tbody = document.getElementById('brokers-tbody');
+                    tbody.innerHTML = '';
+                    const avatars = [
+                        'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=120',
+                        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120',
+                        'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=120'
+                    ];
+
+                    brokers.forEach((b, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-surface-container-low transition-colors';
+                        const avatarUrl = avatars[idx % avatars.length];
+                        const initials = b.name ? b.name.split(' ').pop().substring(0, 2).toUpperCase() : 'BR';
+                        const closingColor = b.closingRate >= 80 ? 'bg-green-600' : (b.closingRate >= 60 ? 'bg-[#00236f]' : 'bg-error');
+
+                        tr.innerHTML = `
+                            <td class="p-4 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-primary-container/10 flex items-center justify-center shrink-0">
+                                    <img src="${avatarUrl}" class="w-full h-full object-cover" onerror="this.outerHTML='<span class=\'font-bold text-xs\'>${initials}</span>'">
+                                </div>
+                                <div>
+                                    <p class="font-bold text-on-surface text-sm">${b.name}</p>
+                                    <p class="text-xs text-secondary">${b.role}</p>
+                                </div>
+                            </td>
+                            <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.assigned}</td>
+                            <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.appointments}</td>
+                            <td class="p-4 font-body-sm text-body-sm text-on-surface-variant font-medium">${b.contracts}</td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-3 min-w-[150px]">
+                                    <div class="flex-1 bg-surface-container rounded-full h-2 overflow-hidden">
+                                        <div class="${closingColor} h-full" style="width: ${b.closingRate}%"></div>
+                                    </div>
+                                    <span class="font-bold text-xs text-secondary shrink-0">${b.closingRate}% Tỷ lệ chốt</span>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    // Render User Growth Chart
+                    if (gwChart) gwChart.destroy();
+                    const growthCtx = document.getElementById('growthChart').getContext('2d');
+                    gwChart = new Chart(growthCtx, {
+                        type: 'line',
+                        data: {
+                            labels: userGrowth.map(g => g.week),
+                            datasets: [
+                                {
+                                    label: 'Chủ nhà',
+                                    data: userGrowth.map(g => g.owners),
+                                    borderColor: '#00236f',
+                                    borderDash: [5, 5],
+                                    borderWidth: 2,
+                                    fill: false,
+                                    tension: 0.3,
+                                    pointRadius: 3
+                                },
+                                {
+                                    label: 'Khách thuê',
+                                    data: userGrowth.map(g => g.tenants),
+                                    borderColor: '#b6c4ff',
+                                    borderWidth: 2,
+                                    fill: false,
+                                    tension: 0.3,
+                                    pointRadius: 3
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: { grid: { drawBorder: false } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+
+                    // Bind Comprehensive System Stats
+                    const stats = data.systemStats || {};
+                    const listings = stats.listings || {};
+                    const rentContracts = stats.rentContracts || {};
+                    const deposits = stats.deposits || {};
+                    const appointments = stats.appointments || {};
+                    const roles = stats.userRoles || {};
+
+                    document.getElementById('sys-listings-total').textContent = listings.total || 0;
+                    document.getElementById('sys-listings-active').textContent = listings.active || 0;
+                    document.getElementById('sys-listings-rented').textContent = listings.rented || 0;
+                    document.getElementById('sys-listings-views').textContent = new Intl.NumberFormat('vi-VN').format(listings.views || 0) + ' lượt';
+
+                    document.getElementById('sys-rentals-count').textContent = (rentContracts.count || 0) + ' HĐ';
+                    document.getElementById('sys-rentals-value').textContent = formatCurrency(rentContracts.value || 0);
+                    document.getElementById('sys-deposits-count').textContent = (deposits.count || 0) + ' GD';
+                    document.getElementById('sys-deposits-value').textContent = formatCurrency(deposits.value || 0);
+
+                    document.getElementById('sys-appointments-total').textContent = appointments.total || 0;
+                    document.getElementById('sys-appointments-survey').textContent = appointments.survey || 0;
+                    document.getElementById('sys-appointments-viewing').textContent = appointments.viewing || 0;
+
+                    document.getElementById('sys-users-owner').textContent = roles.owner || 0;
+                    document.getElementById('sys-users-tenant').textContent = roles.tenant || 0;
+                    document.getElementById('sys-users-sale').textContent = roles.sale || 0;
+                    document.getElementById('sys-users-mgr').textContent = (roles.manager || 0) + (roles.admin || 0);
+                    document.getElementById('sys-users-acc').textContent = roles.accountant || 0;
+                    document.getElementById('sys-users-legal').textContent = roles.legal || 0;
+                    
+                    const totalUsers = Object.values(roles).reduce((a, b) => a + b, 0);
+                    document.getElementById('sys-users-total').textContent = totalUsers || 0;
+
+                } catch (error) {
+                    console.error('Tải dữ liệu báo cáo thất bại:', error);
+                    showToast('Có lỗi xảy ra khi tải dữ liệu báo cáo.', 'error');
+                }
+            }
+
+            // EXCEL EXPORT
+            document.getElementById('btn-export-excel').addEventListener('click', () => {
+                if (!currentData) return;
+                try {
+                    const wb = XLSX.utils.book_new();
+
+                    // Sheet 1: Metrics
+                    const metricsData = [
+                        { "Chỉ số thống kê": "Tổng doanh thu hoa hồng", "Giá trị": currentData.metrics.totalRevenue + " đ" },
+                        { "Chỉ số thống kê": "Người dùng đăng ký mới", "Giá trị": currentData.metrics.newUsers },
+                        { "Chỉ số thống kê": "Tỷ lệ ký kết hợp đồng", "Giá trị": currentData.metrics.signingRate + "%" },
+                        { "Chỉ số thống kê": "Ký gửi đang hoạt động", "Giá trị": currentData.metrics.activeSubmissions }
+                    ];
+                    const wsMetrics = XLSX.utils.json_to_sheet(metricsData);
+                    XLSX.utils.book_append_sheet(wb, wsMetrics, "Tổng quan");
+
+                    // Sheet 2: Brokers Performance
+                    const brokersData = currentData.brokers.map(b => ({
+                        "Họ và Tên": b.name,
+                        "Vai trò": b.role,
+                        "Yêu cầu được phân công": b.assigned,
+                        "Lịch hẹn khảo sát đã thực hiện": b.appointments,
+                        "Hợp đồng chốt thành công": b.contracts,
+                        "Tỷ lệ chốt đơn (%)": b.closingRate + "%"
+                    }));
+                    const wsBrokers = XLSX.utils.json_to_sheet(brokersData);
+                    XLSX.utils.book_append_sheet(wb, wsBrokers, "Hiệu suất môi giới");
+
+                    // Sheet 3: System Stats
+                    const sysStats = currentData.systemStats || {};
+                    const roleData = sysStats.userRoles || {};
+                    const listingData = sysStats.listings || {};
+                    const rentData = sysStats.rentContracts || {};
+                    const depositData = sysStats.deposits || {};
+                    const appData = sysStats.appointments || {};
+
+                    const systemOverview = [
+                        { "Hạng mục": "Phân hệ BĐS & Tin đăng", "Chỉ số": "Tổng tin đăng", "Giá trị": listingData.total || 0 },
+                        { "Hạng mục": "Phân hệ BĐS & Tin đăng", "Chỉ số": "Tin đăng đang hoạt động", "Giá trị": listingData.active || 0 },
+                        { "Hạng mục": "Phân hệ BĐS & Tin đăng", "Chỉ số": "Tin đăng đã chốt thuê", "Giá trị": listingData.rented || 0 },
+                        { "Hạng mục": "Phân hệ BĐS & Tin đăng", "Chỉ số": "Tổng lượt xem tin", "Giá trị": listingData.views || 0 },
+                        
+                        { "Hạng mục": "Hợp đồng & Tài chính", "Chỉ số": "Số lượng hợp đồng thuê", "Giá trị": rentData.count || 0 },
+                        { "Hạng mục": "Hợp đồng & Tài chính", "Chỉ số": "Tổng giá trị hợp đồng thuê", "Giá trị": formatCurrency(rentData.value || 0) },
+                        { "Hạng mục": "Hợp đồng & Tài chính", "Chỉ số": "Số lượng giao dịch đặt cọc", "Giá trị": depositData.count || 0 },
+                        { "Hạng mục": "Hợp đồng & Tài chính", "Chỉ số": "Tiền đặt cọc đã đối soát", "Giá trị": formatCurrency(depositData.value || 0) },
+                        
+                        { "Hạng mục": "Lịch hẹn & Tác vụ", "Chỉ số": "Tổng số lịch hẹn", "Giá trị": appData.total || 0 },
+                        { "Hạng mục": "Lịch hẹn & Tác vụ", "Chỉ số": "Lịch khảo sát", "Giá trị": appData.survey || 0 },
+                        { "Hạng mục": "Lịch hẹn & Tác vụ", "Chỉ số": "Lịch dẫn khách xem nhà", "Giá trị": appData.viewing || 0 },
+                        
+                        { "Hạng mục": "Cơ cấu Người dùng", "Chỉ số": "Chủ nhà", "Giá trị": roleData.owner || 0 },
+                        { "Hạng mục": "Cơ cấu Người dùng", "Chỉ số": "Khách thuê", "Giá trị": roleData.tenant || 0 },
+                        { "Hạng mục": "Cơ cấu Người dùng", "Chỉ số": "Môi giới", "Giá trị": roleData.sale || 0 },
+                        { "Hạng mục": "Cơ cấu Người dùng", "Chỉ số": "Ban quản lý (Admin/Manager)", "Giá trị": (roleData.admin || 0) + (roleData.manager || 0) },
+                        { "Hạng mục": "Cơ cấu Người dùng", "Chỉ số": "Pháp lý / Kế toán", "Giá trị": (roleData.legal || 0) + " / " + (roleData.accountant || 0) }
+                    ];
+
+                    const wsSystem = XLSX.utils.json_to_sheet(systemOverview);
+                    XLSX.utils.book_append_sheet(wb, wsSystem, "Thống kê Hệ thống");
+
+                    // Save workbook
+                    XLSX.writeFile(wb, `HomeMatch_BaoCaoThongKe_${new Date().toISOString().split('T')[0]}.xlsx`);
+                    showToast("Xuất báo cáo Excel thành công!");
+                } catch (e) {
+                    console.error(e);
+                    showToast("Lỗi khi xuất file Excel.", "error");
+                }
+            });
+
+            // PDF EXPORT
+            document.getElementById('btn-export-pdf').addEventListener('click', () => {
+                const element = document.getElementById('report-canvas');
+                
+                // Hide header actions temporarily for cleaner print PDF
+                const actions = document.querySelector('#report-canvas > div:first-of-type');
+                const filters = document.querySelector('#report-canvas > div:nth-of-type(2)');
+                if (actions) actions.style.display = 'none';
+                if (filters) filters.style.display = 'none';
+
+                const opt = {
+                    margin:       [10, 10, 10, 10],
+                    filename:     `HomeMatch_BaoCaoThongKe_${new Date().toISOString().split('T')[0]}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                };
+
+                showToast("Đang sinh file PDF báo cáo, vui lòng chờ...");
+                html2pdf().set(opt).from(element).save().then(() => {
+                    if (actions) actions.style.display = '';
+                    if (filters) filters.style.display = '';
+                    showToast("Xuất báo cáo PDF thành công!");
+                }).catch(err => {
+                    console.error(err);
+                    if (actions) actions.style.display = '';
+                    if (filters) filters.style.display = '';
+                    showToast("Lỗi khi xuất file PDF.", "error");
+                });
+            });
+
+            // EMAIL DIALOG CONTROL
+            const emailModal = document.getElementById('email-modal');
+            const emailBox = document.getElementById('email-modal-box');
+            
+            const btnOpenEmail = document.getElementById('btn-open-email');
+            if (btnOpenEmail) {
+                btnOpenEmail.addEventListener('click', () => {
+                    if (user && user.email) {
+                        document.getElementById('email-recipient').value = user.email;
+                    }
+                    emailModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        emailBox.classList.remove('scale-95', 'opacity-0');
+                    }, 50);
+                });
+            }
+
+            function closeEmailModal() {
+                emailBox.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    emailModal.classList.add('hidden');
+                }, 300);
+            }
+
+            document.getElementById('btn-close-email').addEventListener('click', closeEmailModal);
+            document.getElementById('btn-cancel-email').addEventListener('click', closeEmailModal);
+            document.getElementById('email-modal-backdrop').addEventListener('click', closeEmailModal);
+
+            // SEND EMAIL ACTION
+            document.getElementById('btn-submit-email').addEventListener('click', async () => {
+                const email = document.getElementById('email-recipient').value.trim();
+                if (!email) {
+                    showToast('Vui lòng nhập email người nhận.', 'error');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('btn-submit-email');
+                const originalHtml = submitBtn.innerHTML;
+
+                // Loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span>Đang gửi...</span>
+                `;
+
+                try {
+                    // Generate PDF string content for simulation
+                    const element = document.getElementById('report-canvas');
+                    let pdfBase64 = "";
+                    try {
+                        const pdfObj = await html2pdf().set({
+                            margin: [10, 10, 10, 10],
+                            html2canvas: { scale: 1, useCORS: true },
+                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                        }).from(element).outputPdf('datauristring');
+                        pdfBase64 = pdfObj;
+                    } catch (pdfErr) {
+                        console.warn('PDF Base64 generation skipped, using simulated metadata.', pdfErr);
+                    }
+
+                    const resObj = await apiCall('/admin/send-email-report', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            email: email,
+                            reportName: `Báo cáo thống kê định kỳ - Ngày ${new Date().toLocaleDateString('vi-VN')}`,
+                            pdfData: pdfBase64
+                        })
+                    });
+
+                    if (resObj && resObj.previewUrl) {
+                        showToast(`Gửi báo cáo thành công! Đang mở hòm thư test...`);
+                        window.open(resObj.previewUrl, '_blank');
+                    } else {
+                        showToast(`Báo cáo đã gửi tới ${email} thành công!`);
+                    }
+                    closeEmailModal();
+                } catch (e) {
+                    console.error(e);
+                    showToast(e.message || 'Lỗi gửi email báo cáo.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
+                }
+            });
+
+            // Filter button events
+            document.getElementById('btn-apply-filters').addEventListener('click', () => {
+                loadDashboardData();
+            });
+
+            document.getElementById('btn-reset-filters').addEventListener('click', () => {
+                document.getElementById('filter-start-date').value = '';
+                document.getElementById('filter-end-date').value = '';
+                document.getElementById('filter-property-type').value = '';
+                document.getElementById('filter-broker').value = '';
+                loadDashboardData();
+            });
+
+            // Initial load
+            await loadFilterBrokers();
+            await loadDashboardData();
         });
     </script>
 </body>
