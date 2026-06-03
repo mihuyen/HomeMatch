@@ -657,20 +657,21 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
              FROM users u
              LEFT JOIN staff_assignments sa 
                ON sa.sale_broker_id = u.user_id 
-              AND sa.status IN ('chờ xử lý', 'đang hoàn thiện')
+              AND sa.status IN ('chờ xử lý', 'đang xử lý', 'đang hoàn thiện')
              WHERE u.role = 'broker'
              GROUP BY u.user_id
              ORDER BY active_count ASC, u.user_id ASC`
         );
         const suggestedBroker = brokerList[0] || null;
-
         const conditions = [];
         const params = [];
 
-        if (status === 'pending' || status === 'chờ xử lý') {
+        if (status === 'system_assigned' || status === 'chờ xử lý') {
             conditions.push("sa.status = 'chờ xử lý'");
-        } else if (status === 'active' || status === 'đang hoàn thiện') {
-            conditions.push("sa.status = 'đang hoàn thiện'");
+        } else if (status === 'reassigned' || status === 'đang xử lý') {
+            conditions.push("sa.status = 'đang xử lý'");
+        } else if (status === 'pending') {
+            conditions.push("sa.status IN ('chờ xử lý', 'đang xử lý')");
         } else if (status === 'completed' || status === 'hoàn tất') {
             conditions.push("sa.status = 'hoàn tất'");
         } else if (status && status !== 'Tất cả trạng thái' && status !== 'all' && status !== '') {
@@ -694,7 +695,7 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
         const [pendingRows] = await db.query(
             `SELECT COUNT(DISTINCT sa.assignment_id) AS total 
              FROM staff_assignments sa
-             WHERE sa.status = 'chờ xử lý'`
+             WHERE sa.status IN ('chờ xử lý', 'đang xử lý')`
         );
         const totalPending = Number(pendingRows[0]?.total || 0);
 
@@ -719,11 +720,11 @@ router.get('/broker-assignments', requireAuth, requireRole('admin', 'manager'), 
             suggestedBroker,
             items: rows.map(row => {
                 const isBrokerValid = row.sale_broker_id && row.broker_role === 'broker';
-                let assignmentStatus = 'CHỜ XỬ LÝ';
-                if (row.status === 'đang hoàn thiện') {
-                    assignmentStatus = 'ĐANG HOÀN THIỆN';
-                } else if (row.status === 'hoàn tất') {
+                let assignmentStatus = 'HỆ THỐNG ĐÃ PHÂN CÔNG';
+                if (row.status === 'hoàn tất') {
                     assignmentStatus = 'HOÀN TẤT';
+                } else if (row.status === 'đang xử lý' || row.status === 'đang hoàn thiện') {
+                    assignmentStatus = 'ĐÃ PHÂN CÔNG LẠI';
                 }
 
                 return {
@@ -756,7 +757,7 @@ router.get('/brokers', requireAuth, requireRole('admin', 'manager'), async (req,
              FROM users u
              LEFT JOIN staff_assignments sa 
                ON sa.sale_broker_id = u.user_id 
-              AND sa.status IN ('chờ xử lý', 'đang hoàn thiện')
+              AND sa.status IN ('chờ xử lý', 'đang xử lý', 'đang hoàn thiện')
              WHERE u.role = 'broker'
              GROUP BY u.user_id
              ORDER BY active_count ASC, u.user_id ASC`
@@ -785,6 +786,22 @@ router.post('/broker-assignments/:assignmentId', requireAuth, requireRole('admin
             return res.status(400).json({ message: 'Thiếu thông tin môi giới được phân công' });
         }
 
+        // Fetch assignment creation date to verify the 24-hour window
+        const [assignmentRows] = await db.query(
+            `SELECT assigned_at FROM staff_assignments WHERE assignment_id = ?`,
+            [assignmentId]
+        );
+        if (assignmentRows.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy phân công yêu cầu' });
+        }
+
+        const assignedAt = new Date(assignmentRows[0].assigned_at);
+        const timeDiff = Date.now() - assignedAt.getTime();
+        const limitDiff = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        if (timeDiff > limitDiff) {
+            return res.status(400).json({ message: 'Không thể thay đổi phân công môi giới sau 24 giờ kể từ thời điểm gửi yêu cầu.' });
+        }
+
         const [userRows] = await db.query(
             `SELECT user_id, role, full_name FROM users WHERE user_id = ? AND role = 'broker'`,
             [assignedBrokerId]
@@ -795,7 +812,7 @@ router.post('/broker-assignments/:assignmentId', requireAuth, requireRole('admin
 
         await db.query(
             `UPDATE staff_assignments 
-             SET sale_broker_id = ?, status = 'chờ xử lý'
+             SET sale_broker_id = ?, status = 'đang xử lý'
              WHERE assignment_id = ?`,
             [assignedBrokerId, assignmentId]
         );

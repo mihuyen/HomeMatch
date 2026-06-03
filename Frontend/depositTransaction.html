@@ -172,9 +172,6 @@
               <div class="flex flex-col items-center py-8 bg-slate-50 border border-slate-100 rounded-xl shadow-inner space-y-4">
                 <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200 relative group transition-transform duration-300 hover:scale-[1.02]">
                   <img alt="VietQR Payment" class="w-48 h-48 object-contain" src="https://img.vietqr.io/image/BIDV-96247VUONGTHUYLINH-compact.png?amount=10000"/>
-                  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-xl shadow-md border border-slate-100 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-primary text-[24px] icon-filled">payments</span>
-                  </div>
                 </div>
                 <div class="text-center space-y-1">
                   <p class="text-2xl font-black text-primary tracking-tight" id="qr-amount">---</p>
@@ -344,6 +341,62 @@
         return `${parsed.toLocaleString('vi-VN')} VND`;
       };
 
+      const handlePaymentSuccess = () => {
+        // Dừng đếm ngược
+        if (window.timerInterval) {
+          clearInterval(window.timerInterval);
+        }
+        
+        // Cập nhật giao diện lập tức
+        const timerEl = document.getElementById('timer');
+        if (timerEl) timerEl.textContent = 'Hoàn tất';
+
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+          progressBar.style.width = '100%';
+          progressBar.className = 'h-full bg-emerald-500 transition-all duration-500';
+        }
+
+        const syncText = document.querySelector('.italic');
+        if (syncText) {
+          syncText.textContent = 'Giao dịch đã được đối soát & xác thực thành công!';
+          syncText.className = 'text-xs text-emerald-600 font-bold';
+        }
+
+        // Cập nhật các vòng tròn quy trình (Steps) sang trạng thái Hoàn tất rực rỡ
+        const circleProcessing = document.getElementById('circle-processing');
+        const textProcessing = document.getElementById('text-processing');
+        const stepCompleted = document.getElementById('step-completed');
+        const circleCompleted = document.getElementById('circle-completed');
+        const textCompleted = document.getElementById('text-completed');
+        const line1 = document.getElementById('line-1');
+        const line2 = document.getElementById('line-2');
+
+        if (circleProcessing) {
+          circleProcessing.className = 'w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm';
+          circleProcessing.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span>';
+        }
+        if (textProcessing) {
+          textProcessing.textContent = 'Đã xử lý';
+        }
+        if (line1) {
+          line1.className = 'h-0.5 w-6 bg-primary';
+        }
+        if (line2) {
+          line2.className = 'h-0.5 w-6 bg-emerald-500';
+        }
+        if (stepCompleted) {
+          stepCompleted.className = 'flex flex-col items-center gap-1 transition-all duration-500'; // loại bỏ opacity-45
+        }
+        if (circleCompleted) {
+          circleCompleted.className = 'w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-none shadow-sm';
+          circleCompleted.innerHTML = '<span class="material-symbols-outlined text-[16px]">verified</span>';
+        }
+        if (textCompleted) {
+          textCompleted.className = 'text-[9px] font-extrabold text-emerald-600';
+        }
+      };
+
       try {
         const [summary, consignment] = await Promise.all([
           getSaleContractSummary(submissionId),
@@ -387,6 +440,16 @@
         if (qrAmount) qrAmount.textContent = formatVnd(fixedAmount);
         if (paymentMethod) paymentMethod.textContent = displayMethod;
 
+        // Nếu trạng thái giao dịch đã thành công trước đó (do webhook chạy trước hoặc người dùng tải lại trang)
+        if (latestDeposit && (latestDeposit.status === 'Completed' || latestDeposit.status === 'Verified')) {
+          handlePaymentSuccess();
+          showToast('Hệ thống xác thực giao dịch đặt cọc đã hoàn thành trước đó!', 'success');
+          setTimeout(() => {
+            window.location.href = 'saleContracts.html';
+          }, 1500);
+          return;
+        }
+
         // Sinh mã QR VietQR động qua cổng Napas chính thức (img.vietqr.io) theo thông tin tài khoản BIDV của User
         const qrImg = document.querySelector('img[alt="VietQR Payment"]');
         if (qrImg && summary.contract_code) {
@@ -408,59 +471,7 @@
           socket.on('paymentCompleted', (data) => {
             console.log('[Socket.io] Received paymentCompleted event:', data);
             
-            // Dừng đếm ngược
-            if (window.timerInterval) {
-              clearInterval(window.timerInterval);
-            }
-            
-            // Cập nhật giao diện lập tức
-            const timerEl = document.getElementById('timer');
-            if (timerEl) timerEl.textContent = 'Hoàn tất';
-
-            const progressBar = document.getElementById('progress-bar');
-            if (progressBar) {
-              progressBar.style.width = '100%';
-              progressBar.className = 'h-full bg-emerald-500 transition-all duration-500';
-            }
-
-            const syncText = document.querySelector('.italic');
-            if (syncText) {
-              syncText.textContent = 'Giao dịch đã được đối soát & xác thực real-time!';
-              syncText.className = 'text-xs text-emerald-600 font-bold';
-            }
-
-            // Cập nhật các vòng tròn quy trình (Steps) sang trạng thái Hoàn tất rực rỡ
-            const circleProcessing = document.getElementById('circle-processing');
-            const textProcessing = document.getElementById('text-processing');
-            const stepCompleted = document.getElementById('step-completed');
-            const circleCompleted = document.getElementById('circle-completed');
-            const textCompleted = document.getElementById('text-completed');
-            const line1 = document.getElementById('line-1');
-            const line2 = document.getElementById('line-2');
-
-            if (circleProcessing) {
-              circleProcessing.className = 'w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm';
-              circleProcessing.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span>';
-            }
-            if (textProcessing) {
-              textProcessing.textContent = 'Đã xử lý';
-            }
-            if (line1) {
-              line1.className = 'h-0.5 w-6 bg-primary';
-            }
-            if (line2) {
-              line2.className = 'h-0.5 w-6 bg-emerald-500';
-            }
-            if (stepCompleted) {
-              stepCompleted.className = 'flex flex-col items-center gap-1 transition-all duration-500'; // loại bỏ opacity-45
-            }
-            if (circleCompleted) {
-              circleCompleted.className = 'w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-none shadow-sm';
-              circleCompleted.innerHTML = '<span class="material-symbols-outlined text-[16px]">verified</span>';
-            }
-            if (textCompleted) {
-              textCompleted.className = 'text-[9px] font-extrabold text-emerald-600';
-            }
+            handlePaymentSuccess();
 
             showToast('Hệ thống đã nhận được thanh toán 10.000đ từ ngân hàng real-time. Hợp đồng ký gửi đã được kích hoạt thành công!', 'success');
             setTimeout(() => {

@@ -83,25 +83,8 @@
 </head>
 <body class="bg-[#F8FAFC] text-on-surface flex flex-col h-screen overflow-hidden">
     <!-- Top Navigation Bar -->
-    <nav class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50 transition-colors h-[72px]">
-        <div class="flex justify-between items-center w-full px-8 md:px-12 h-full max-w-[1440px] mx-auto">
-            <div class="text-[22px] font-black text-primary cursor-pointer flex items-center gap-3" onclick="window.location.href='brokerHome.html'">
-                <span class="material-symbols-outlined text-[28px] text-primary icon-filled">real_estate_agent</span>
-                <span class="">HomeMatch</span>
-            </div>
-            <div class="hidden md:flex gap-10 h-full items-center">
-                <a class="text-primary border-b-2 border-primary pb-1 transition-colors h-full flex items-center pt-1 text-[15px] font-semibold cursor-pointer" href="brokerHome.html">Trang chủ</a>
-            </div>
-            <div class="flex items-center gap-6">
-                <button class="hidden md:block text-[14px] font-semibold text-error border border-error rounded-full px-6 py-2 hover:bg-error-container transition-colors active:scale-95" onclick="localStorage.removeItem('token'); window.location.href='login.html';">
-                    Đăng xuất
-                </button>
-                <button class="w-11 h-11 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-all">
-                    <img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF5IyIAqH0f939YhH--Z7FKqt49YVt0xLeF7ei_5BsJHAU12kb3GQYgIZDN8-jeqoc1x5V3qul8r7RlfR8W70HcP5EKqTxr-w8ryMppbnbFVUc_eLtjLr2TdMOa_nnKrmF_6fum1Ffi0k1JqagVJTxn7Fpmf7NLCJlLrdGjBUfakEv1HiBGQgGIv2EY0AHIJ-KU16kdAlm63zdIGQG3mw4siiML1YTJSS86-UcRrwqezsAfQI1ZV2BtMULbVJSL5qzBe3eA4MPmY">
-                </button>
-            </div>
-        </div>
-    </nav>
+    <div id="broker-sidebar"></div>
+    <script src="brokerSidebar.js"></script>
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-y-auto w-full">
@@ -160,12 +143,7 @@
                             <span class="material-symbols-outlined text-2xl">key</span>
                         </div>
                     </div>
-                    <div class="w-full">
-                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
-                            <div class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 0%" id="statDealsProgress"></div>
-                        </div>
-                        <span class="text-[10px] text-secondary font-medium">Tiến trình mục tiêu tháng</span>
-                    </div>
+                    <!-- Removed goal progress bar -->
                     <!-- SOTA Sparkline SVG -->
                     <svg class="absolute bottom-0 left-0 w-full h-10 opacity-15 text-emerald-600 pointer-events-none" viewBox="0 0 100 20" preserveAspectRatio="none">
                         <path d="M0,18 Q20,15 40,12 T80,4 T100,1" fill="none" stroke="currentColor" stroke-width="2" />
@@ -275,6 +253,20 @@
                             <div class="p-2 text-secondary text-sm">Đang tải...</div>
                         </div>
                     </div>
+
+                    <!-- Commission Notifications Widget -->
+                    <div class="bg-white border border-outline-variant/60 shadow-sm rounded-3xl p-6">
+                        <div class="flex justify-between items-center mb-4 border-b border-surface-variant pb-3">
+                            <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[20px]">notifications_active</span>
+                                Thông báo hoa hồng
+                            </h3>
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full" id="commissionNotifyCount">0</span>
+                        </div>
+                        <div id="commissionNotificationsContainer" class="flex flex-col gap-4 max-h-[300px] overflow-y-auto custom-scrollbar">
+                            <div class="p-2 text-secondary text-sm text-center">Không có thông báo hoa hồng mới.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -297,15 +289,15 @@
             const totalCount = cachedCustomers.length;
             const pendingCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('chờ') || s.includes('đang xử lý') || s.includes('phân công lại');
+                return s.includes('chờ') || s.includes('phân công lại');
             }).length;
             const activeCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('hoàn thiện') || s.includes('thực hiện') || s.includes('chăm sóc');
+                return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc') || s.includes('kiểm tra') || s.includes('yêu cầu');
             }).length;
             const doneCount = cachedCustomers.filter(item => {
                 const s = String(item.status || '').toLowerCase();
-                return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done');
+                return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('chốt') || s.includes('completed');
             }).length;
 
             document.getElementById('miniTotalCount').innerText = totalCount;
@@ -330,11 +322,11 @@
                 filtered = filtered.filter(item => {
                     const s = String(item.status || '').toLowerCase().trim();
                     if (selectedStatusFilter === 'pending') {
-                        return s.includes('chờ') || s.includes('đang xử lý') || s.includes('phân công lại');
+                        return s.includes('chờ') || s.includes('phân công lại');
                     } else if (selectedStatusFilter === 'active') {
-                        return s.includes('hoàn thiện') || s.includes('đang thực hiện') || s.includes('đang chăm sóc');
+                        return s.includes('hoàn thiện') || s.includes('đang') || s.includes('thực hiện') || s.includes('chăm sóc') || s.includes('kiểm tra') || s.includes('yêu cầu');
                     } else if (selectedStatusFilter === 'done') {
-                        return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('completed');
+                        return s.includes('hoàn tất') || s.includes('hoàn thành') || s.includes('done') || s.includes('completed') || s.includes('chốt');
                     }
                     return true;
                 });
@@ -360,12 +352,14 @@
                 let badgeHtml = '';
                 const normalizedStatus = statusText.toLowerCase().trim();
                 
-                if (normalizedStatus.includes('thành') || normalizedStatus.includes('tất') || normalizedStatus.includes('done') || normalizedStatus.includes('completed')) {
-                    badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Đã hoàn thành</span>`;
+                if (normalizedStatus.includes('thành') || normalizedStatus.includes('tất') || normalizedStatus.includes('done') || normalizedStatus.includes('completed') || normalizedStatus.includes('chốt')) {
+                    badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Đã chốt</span>`;
                 } else if (normalizedStatus.includes('chờ') || normalizedStatus.includes('pending')) {
                     badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Chờ xử lý</span>`;
                 } else if (normalizedStatus.includes('hoàn thiện') || normalizedStatus.includes('đang')) {
                     badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Đang hoàn thiện</span>`;
+                } else if (normalizedStatus.includes('yêu cầu') || normalizedStatus.includes('kiểm tra')) {
+                    badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">Cần kiểm tra lại</span>`;
                 } else {
                     badgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200">${statusText}</span>`;
                 }
@@ -395,7 +389,21 @@
 
         function renderUpcomingAppointments(items) {
             if (!upcomingContainer) return;
-            const upcoming = items.filter(a => !['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes((a.status || '').toLowerCase()));
+            const now = new Date();
+            const upcoming = items.filter(a => {
+                // Exclude past appointments
+                if (new Date(a.scheduled_time) < now) return false;
+                
+                // Exclude closed appointments
+                const status = (a.status || '').toLowerCase();
+                if (['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes(status)) return false;
+                
+                // Exclude appointments of successfully finalized assignments
+                const assignStatus = (a.assignment_status || '').toLowerCase();
+                if (['hoàn thành', 'done', 'completed', 'finished', 'hoàn tất'].includes(assignStatus)) return false;
+                
+                return true;
+            });
             
             window.upcomingAppointmentsList = upcoming;
 
@@ -486,6 +494,10 @@
                 }
             });
 
+            await refreshDashboard();
+        });
+
+        async function refreshDashboard() {
             try {
                 const [assignData, aptData, stats] = await Promise.all([
                     listBrokerAssignments().catch(() => ({ items: [] })),
@@ -518,12 +530,8 @@
 
                     // 2. Closed Deals (Month)
                     const statDealsValue = document.getElementById('statDealsValue');
-                    const statDealsProgress = document.getElementById('statDealsProgress');
                     if (statDealsValue) {
                         statDealsValue.innerText = stats.closedDeals.toString().padStart(2, '0');
-                    }
-                    if (statDealsProgress) {
-                        statDealsProgress.style.width = `${Math.min(Math.max(stats.brokerConversionRate, 0), 100)}%`;
                     }
 
                     // 3. Conversion Rate
@@ -544,15 +552,71 @@
                         `;
                     }
                 }
+                await loadCommissionNotifications();
             } catch (err) {
                 console.error(err);
             }
-        });
+        }
+
+        async function loadCommissionNotifications() {
+            const container = document.getElementById('commissionNotificationsContainer');
+            const countBadge = document.getElementById('commissionNotifyCount');
+            if (!container) return;
+
+            try {
+                const response = await getBrokerCommissionNotifications();
+                const items = Array.isArray(response) ? response : (response.items || []);
+                
+                if (countBadge) {
+                    countBadge.innerText = items.length;
+                    if (items.length === 0) {
+                        countBadge.classList.add('hidden');
+                    } else {
+                        countBadge.classList.remove('hidden');
+                    }
+                }
+
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="py-4 text-center text-secondary text-xs">Không có thông báo hoa hồng mới.</div>';
+                    return;
+                }
+
+                container.innerHTML = items.map(item => {
+                    const dateValue = item.approved_at || item.paid_at;
+                    const dateStr = dateValue ? new Date(dateValue).toLocaleDateString('vi-VN') : '-';
+                    const commissionStr = Number(item.approved_commission || 0).toLocaleString('vi-VN') + ' đ';
+                    return `
+                    <div class="p-3 bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-100 rounded-2xl transition-all duration-300 flex items-start gap-2.5 shadow-sm">
+                        <div class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-emerald-500/20">
+                            <span class="material-symbols-outlined text-[16px] fill-icon">payments</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start gap-2 mb-0.5">
+                                <h4 class="text-xs font-bold text-emerald-800 truncate">Nhận hoa hồng thuê</h4>
+                                <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">${dateStr}</span>
+                            </div>
+                            <p class="text-[10px] text-secondary truncate mb-0.5">Hợp đồng #${String(item.rental_contract_id).padStart(5, '0')} đã được duyệt.</p>
+                            <p class="text-[10px] text-secondary truncate mb-1">Khách: ${item.tenant_name || 'N/A'} | BĐS: ${item.listing_title || 'N/A'}</p>
+                            <div class="text-xs font-extrabold text-emerald-600 flex items-center gap-1">
+                                <span>Hoa hồng: ${commissionStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading commission notifications:', err);
+                container.innerHTML = '<div class="py-4 text-center text-error text-xs">Không thể tải thông báo hoa hồng.</div>';
+            }
+        }
 
         function showAppointmentModalByIndex(index) {
             const upcoming = window.upcomingAppointmentsList || [];
             const apt = upcoming[index];
             if (!apt) return;
+
+            window.currentEditingApt = apt; // cache this globally
+            toggleEditMode(false); // always start in view mode
 
             const modal = document.getElementById('appointmentDetailModal');
             if (!modal) return;
@@ -575,6 +639,105 @@
                 modal.classList.remove('opacity-0');
                 modal.querySelector('div').classList.remove('scale-95');
             }, 10);
+        }
+
+        function toggleEditMode(enabled) {
+            const viewTime = document.getElementById('modalAptTime');
+            const editTime = document.getElementById('editAptTime');
+            const viewLocContainer = document.getElementById('modalAptLocationContainer');
+            const editLoc = document.getElementById('editAptLocation');
+            const viewNotes = document.getElementById('modalAptNotes');
+            const editNotes = document.getElementById('editAptNotes');
+
+            const btnEdit = document.getElementById('btnEditApt');
+            const btnClose = document.getElementById('btnCloseApt');
+            const btnCancel = document.getElementById('btnCancelEditApt');
+            const btnSave = document.getElementById('btnSaveApt');
+
+            if (enabled) {
+                // Populate edit fields from cached appointment
+                if (window.currentEditingApt) {
+                    const d = new Date(window.currentEditingApt.scheduled_time);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const hours = String(d.getHours()).padStart(2, '0');
+                    const minutes = String(d.getMinutes()).padStart(2, '0');
+                    editTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                    editLoc.value = window.currentEditingApt.location || '';
+                    editNotes.value = window.currentEditingApt.result_note || '';
+                }
+
+                // Hide view elements
+                viewTime.classList.add('hidden');
+                viewLocContainer.classList.add('hidden');
+                viewNotes.classList.add('hidden');
+                btnEdit.classList.add('hidden');
+                btnClose.classList.add('hidden');
+
+                // Show edit elements
+                editTime.classList.remove('hidden');
+                editLoc.classList.remove('hidden');
+                editNotes.classList.remove('hidden');
+                btnCancel.classList.remove('hidden');
+                btnSave.classList.remove('hidden');
+            } else {
+                // Hide edit elements
+                editTime.classList.add('hidden');
+                editLoc.classList.add('hidden');
+                editNotes.classList.add('hidden');
+                btnCancel.classList.add('hidden');
+                btnSave.classList.add('hidden');
+
+                // Show view elements
+                viewTime.classList.remove('hidden');
+                viewLocContainer.classList.remove('hidden');
+                viewNotes.classList.remove('hidden');
+                btnEdit.classList.remove('hidden');
+                btnClose.classList.remove('hidden');
+            }
+        }
+
+        async function saveAppointmentChanges() {
+            const editTime = document.getElementById('editAptTime').value;
+            const editLoc = document.getElementById('editAptLocation').value.trim();
+            const editNotes = document.getElementById('editAptNotes').value.trim();
+
+            // 1. Hệ thống kiểm tra dữ liệu mới (Frontend Validation)
+            if (!editTime) {
+                alert('Vui lòng chọn thời gian hẹn.');
+                return;
+            }
+            if (!editLoc) {
+                alert('Vui lòng nhập địa điểm hẹn.');
+                return;
+            }
+
+            const btnSave = document.getElementById('btnSaveApt');
+            btnSave.disabled = true;
+            btnSave.innerText = 'Đang lưu...';
+
+            try {
+                // 2. Hệ thống lưu thay đổi (API Call)
+                await updateAppointment(window.currentEditingApt.appointment_id, {
+                    scheduledTime: editTime,
+                    location: editLoc,
+                    note: editNotes
+                });
+
+                alert('Cập nhật thông tin lịch hẹn thành công!');
+                closeAppointmentModal();
+                
+                // Refresh dashboard dynamically
+                await refreshDashboard();
+            } catch (err) {
+                console.error(err);
+                alert('Có lỗi xảy ra: ' + err.message);
+            } finally {
+                btnSave.disabled = false;
+                btnSave.innerText = 'Lưu thay đổi';
+            }
         }
 
         function closeAppointmentModal() {
@@ -629,26 +792,38 @@
                     <div class="flex flex-col gap-1">
                         <p class="text-xs text-secondary font-medium">Thời gian</p>
                         <p id="modalAptTime" class="text-xs font-semibold text-on-surface">-</p>
+                        <input type="datetime-local" id="editAptTime" class="hidden w-full bg-slate-50 border border-outline-variant text-on-surface rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <p class="text-xs text-secondary font-medium">Địa điểm hẹn</p>
-                    <div class="flex items-start gap-1.5 text-xs text-on-surface">
+                    <div id="modalAptLocationContainer" class="flex items-start gap-1.5 text-xs text-on-surface">
                         <span class="material-symbols-outlined text-secondary text-[16px] mt-0.5">location_on</span>
                         <p id="modalAptLocation" class="leading-relaxed font-semibold">-</p>
                     </div>
+                    <input type="text" id="editAptLocation" class="hidden w-full bg-slate-50 border border-outline-variant text-on-surface rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <p class="text-xs text-secondary font-medium">Ghi chú / Kết quả</p>
                     <p id="modalAptNotes" class="text-xs text-on-surface bg-slate-50 p-3 rounded-xl border border-outline-variant/40 italic">-</p>
+                    <textarea id="editAptNotes" rows="3" class="hidden w-full bg-slate-50 border border-outline-variant text-on-surface rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"></textarea>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3">
-                <button onclick="closeAppointmentModal()" class="px-6 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/95 transition-colors active:scale-95 text-[14px]">
+            <div class="flex justify-end gap-3" id="modalActions">
+                <button id="btnEditApt" onclick="toggleEditMode(true)" class="px-6 py-2 bg-secondary text-primary font-semibold border border-outline-variant rounded-xl hover:bg-slate-100 transition-colors active:scale-95 text-[14px]">
+                    Chỉnh sửa
+                </button>
+                <button id="btnCloseApt" onclick="closeAppointmentModal()" class="px-6 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/95 transition-colors active:scale-95 text-[14px]">
                     Đóng
+                </button>
+                <button id="btnCancelEditApt" onclick="toggleEditMode(false)" class="hidden px-6 py-2 bg-secondary text-primary font-semibold border border-outline-variant rounded-xl hover:bg-slate-100 transition-colors active:scale-95 text-[14px]">
+                    Hủy
+                </button>
+                <button id="btnSaveApt" onclick="saveAppointmentChanges()" class="hidden px-6 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/95 transition-colors active:scale-95 text-[14px]">
+                    Lưu thay đổi
                 </button>
             </div>
         </div>

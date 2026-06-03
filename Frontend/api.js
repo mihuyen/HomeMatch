@@ -64,7 +64,9 @@ async function apiCall(endpoint, options = {}) {
     return data;
 }
 
-// Các hàm cụ thể
+// =====================================
+// AUTH API
+// =====================================
 async function register(payload) {
     return apiCall('/auth/register', {
         method: 'POST',
@@ -95,6 +97,25 @@ async function fetchMe() {
     return apiCall('/auth/me');
 }
 
+// Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
+async function requireLogin() {
+    if (!getToken()) {
+        window.location.href = 'login.html';
+        return null;
+    }
+    try {
+        const data = await fetchMe();
+        return data.user;
+    } catch (e) {
+        clearAuth();
+        window.location.href = 'login.html';
+        return null;
+    }
+}
+
+// =====================================
+// CONSIGNMENT API
+// =====================================
 async function createConsignmentStep1(payload) {
     return apiCall('/consignments/step-1', {
         method: 'POST',
@@ -146,7 +167,9 @@ async function getOwnerTrackingDetail(submissionId) {
     return apiCall(`/consignments/owner/me/tracking/${submissionId}`);
 }
 
-// Sale API helpers
+// =====================================
+// SALE API
+// =====================================
 async function listSaleAssignments(params = {}) {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);
@@ -234,7 +257,10 @@ async function updateSaleDepositTransaction(submissionId, payload) {
 async function getSaleLegalResponse(submissionId) {
     return apiCall(`/sale/contracts/${submissionId}/legal-response`);
 }
-// Legal review API helpers
+
+// =====================================
+// LEGAL REVIEW API
+// =====================================
 async function listLegalApprovals(params = {}) {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);
@@ -256,7 +282,9 @@ async function updateLegalApproval(submissionContractId, payload) {
     });
 }
 
-// Broker API helpers
+// =====================================
+// BROKER API
+// =====================================
 async function listBrokerAssignments() {
     return apiCall('/broker/assignments');
 }
@@ -291,6 +319,24 @@ async function createBrokerAppointment(payload) {
     });
 }
 
+async function getBrokerCommissionNotifications() {
+    return apiCall('/broker/commission-notifications');
+}
+
+async function getAppointmentDetail(appointmentId) {
+    return apiCall(`/appointments/${appointmentId}`);
+}
+
+async function updateAppointment(appointmentId, payload) {
+    return apiCall(`/appointments/${appointmentId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    });
+}
+
+// =====================================
+// ADMIN / IT API
+// =====================================
 // Admin API helpers
 async function getAdminDashboard(params = {}) {
     const query = new URLSearchParams(params);
@@ -337,20 +383,4 @@ async function assignAdminBroker(assignmentId, assignedBrokerId) {
         method: 'POST',
         body: JSON.stringify({ assignedBrokerId })
     });
-}
-
-// Bảo vệ trang (gọi ở đầu mỗi trang cần đăng nhập)
-async function requireLogin() {
-    if (!getToken()) {
-        window.location.href = 'login.html';
-        return null;
-    }
-    try {
-        const data = await fetchMe();
-        return data.user;
-    } catch (e) {
-        clearAuth();
-        window.location.href = 'login.html';
-        return null;
-    }
 }

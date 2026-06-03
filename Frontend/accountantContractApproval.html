@@ -193,6 +193,20 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination Controls -->
+      <div id="pagination-controls" class="px-6 py-4 border-t border-slate-100 flex justify-between items-center bg-slate-50/50 hidden">
+        <span class="text-xs text-secondary font-medium" id="pagination-info">Hiển thị 1-10 của 10 hợp đồng</span>
+        <div class="flex items-center gap-2">
+          <button id="btn-prev-page" class="px-3 py-1.5 border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-slate-700">
+            <span class="material-symbols-outlined text-sm">chevron_left</span> Trước
+          </button>
+          <span class="text-xs font-bold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl" id="current-page-num">1 / 1</span>
+          <button id="btn-next-page" class="px-3 py-1.5 border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-slate-700">
+            Sau <span class="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -363,6 +377,9 @@
       }
     });
 
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
     function setupEvents() {
       document.getElementById('btn-submit-audit').addEventListener('click', submitAuditResult);
       
@@ -370,6 +387,20 @@
       document.getElementById('input-approved-price').addEventListener('input', (e) => {
         const val = Number(e.target.value) || 0;
         document.getElementById('input-approved-commission').value = Math.round(val * 0.1);
+      });
+
+      // Pagination events
+      document.getElementById('btn-prev-page').addEventListener('click', () => {
+        if (currentPage > 1) {
+          renderPage(currentPage - 1);
+        }
+      });
+
+      document.getElementById('btn-next-page').addEventListener('click', () => {
+        const totalPages = Math.ceil(pendingContracts.length / itemsPerPage);
+        if (currentPage < totalPages) {
+          renderPage(currentPage + 1);
+        }
       });
     }
 
@@ -386,6 +417,8 @@
     // Load contracts
     async function loadPendingContracts() {
       const tbody = document.getElementById('contracts-tbody');
+      const paginationControls = document.getElementById('pagination-controls');
+      if (paginationControls) paginationControls.classList.add('hidden');
       tbody.innerHTML = `
         <tr>
           <td colspan="8" class="p-10 text-center text-secondary font-medium">
@@ -401,66 +434,8 @@
         // Build stats dynamically
         updateStats();
 
-        // Build table items
-        tbody.innerHTML = '';
-        if (pendingContracts.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="8" class="p-10 text-center text-secondary font-medium">
-                📂 Hiện tại không có hợp đồng nào chờ phê duyệt từ bộ phận môi giới.
-              </td>
-            </tr>
-          `;
-          return;
-        }
-
-        pendingContracts.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50/50 transition-colors font-medium text-slate-700';
-
-          const signedDate = item.signed_at ? new Date(item.signed_at).toLocaleDateString('vi-VN') : '-';
-          const priceStr = formatCurrency(item.agreed_price);
-
-          let statusBadge = '';
-          if (item.status === 'Đã duyệt') {
-            statusBadge = '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Đã duyệt</span>';
-          } else if (item.status === 'Từ chối') {
-            statusBadge = '<span class="inline-block bg-red-100 text-red-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Từ chối</span>';
-          } else {
-            statusBadge = '<span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Chờ duyệt</span>';
-          }
-
-          const btnText = (item.status === 'Đã duyệt' || item.status === 'Từ chối') ? 'Xem chi tiết' : 'Kiểm duyệt';
-          const btnClass = (item.status === 'Đã duyệt' || item.status === 'Từ chối')
-            ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-            : 'bg-[#4059aa] text-white border-[#4059aa] hover:bg-[#2e4381]';
-
-          tr.innerHTML = `
-            <td class="p-5 font-bold text-[#4059aa] font-mono text-sm">#CTR-${String(item.rental_contract_id).padStart(5, '0')}</td>
-            <td class="p-5">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-800 text-sm">${item.listing_title || 'Mã tin #' + item.listing_id}</span>
-                <span class="text-xs text-secondary mt-0.5">${item.address || ''}</span>
-              </div>
-            </td>
-            <td class="p-5">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-800 text-xs">${item.tenant_name || 'N/A'}</span>
-                <span class="text-[10px] text-secondary mt-0.5">${item.tenant_phone || ''}</span>
-              </div>
-            </td>
-            <td class="p-5 text-sm text-slate-700 font-semibold">${item.broker_name || 'N/A'}</td>
-            <td class="p-5 text-sm font-bold text-slate-800">${priceStr}</td>
-            <td class="p-5 text-xs text-secondary font-semibold">${signedDate}</td>
-            <td class="p-5 text-center">${statusBadge}</td>
-            <td class="p-5 text-center">
-              <button onclick="openAuditModal(${item.rental_contract_id})" class="inline-flex items-center justify-center font-bold text-xs border rounded-xl px-4 py-2 transition-all shadow-sm ${btnClass}">
-                ${btnText}
-              </button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
+        // Render first page
+        renderPage(1);
       } catch (err) {
         console.error(err);
         tbody.innerHTML = `
@@ -471,6 +446,90 @@
           </tr>
         `;
       }
+    }
+
+    function renderPage(page) {
+      const tbody = document.getElementById('contracts-tbody');
+      const paginationControls = document.getElementById('pagination-controls');
+      
+      if (pendingContracts.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-10 text-center text-secondary font-medium">
+              📂 Hiện tại không có hợp đồng nào chờ phê duyệt từ bộ phận môi giới.
+            </td>
+          </tr>
+        `;
+        if (paginationControls) paginationControls.classList.add('hidden');
+        return;
+      }
+      
+      if (paginationControls) paginationControls.classList.remove('hidden');
+
+      const totalPages = Math.ceil(pendingContracts.length / itemsPerPage);
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      currentPage = page;
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = Math.min(startIndex + itemsPerPage, pendingContracts.length);
+      const pageItems = pendingContracts.slice(startIndex, endIndex);
+
+      // Render pagination UI elements
+      document.getElementById('current-page-num').textContent = `${currentPage} / ${totalPages}`;
+      document.getElementById('pagination-info').textContent = `Hiển thị ${startIndex + 1}-${endIndex} của ${pendingContracts.length} hợp đồng`;
+      document.getElementById('btn-prev-page').disabled = currentPage === 1;
+      document.getElementById('btn-next-page').disabled = currentPage === totalPages;
+
+      tbody.innerHTML = '';
+      pageItems.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/50 transition-colors font-medium text-slate-700';
+
+        const signedDate = item.signed_at ? new Date(item.signed_at).toLocaleDateString('vi-VN') : '-';
+        const priceStr = formatCurrency(item.agreed_price);
+
+        let statusBadge = '';
+        if (item.status === 'Đã phê duyệt' || item.status === 'Đã duyệt') {
+          statusBadge = '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Đã phê duyệt</span>';
+        } else if (item.status === 'Yêu cầu kiểm tra lại' || item.status === 'Từ chối') {
+          statusBadge = '<span class="inline-block bg-red-100 text-red-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Yêu cầu kiểm tra lại</span>';
+        } else {
+          statusBadge = '<span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg uppercase tracking-wider ml-2">Chờ kiểm duyệt</span>';
+        }
+
+        const isFinalized = (item.status === 'Đã phê duyệt' || item.status === 'Đã duyệt' || item.status === 'Yêu cầu kiểm tra lại' || item.status === 'Từ chối');
+        const btnText = isFinalized ? 'Xem chi tiết' : 'Kiểm duyệt';
+        const btnClass = isFinalized
+          ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+          : 'bg-[#4059aa] text-white border-[#4059aa] hover:bg-[#2e4381]';
+
+        tr.innerHTML = `
+          <td class="p-5 font-bold text-[#4059aa] font-mono text-sm">#CTR-${String(item.rental_contract_id).padStart(5, '0')}</td>
+          <td class="p-5">
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-800 text-sm">${item.listing_title || 'Mã tin #' + item.listing_id}</span>
+              <span class="text-xs text-secondary mt-0.5">${item.address || ''}</span>
+            </div>
+          </td>
+          <td class="p-5">
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-800 text-xs">${item.tenant_name || 'N/A'}</span>
+              <span class="text-[10px] text-secondary mt-0.5">${item.tenant_phone || ''}</span>
+            </div>
+          </td>
+          <td class="p-5 text-sm text-slate-700 font-semibold">${item.broker_name || 'N/A'}</td>
+          <td class="p-5 text-sm font-bold text-slate-800">${priceStr}</td>
+          <td class="p-5 text-xs text-secondary font-semibold">${signedDate}</td>
+          <td class="p-5 text-center">${statusBadge}</td>
+          <td class="p-5 text-center">
+            <button onclick="openAuditModal(${item.rental_contract_id})" class="inline-flex items-center justify-center font-bold text-xs border rounded-xl px-4 py-2 transition-all shadow-sm ${btnClass}">
+              ${btnText}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
     // Dynamic stats generator
@@ -500,18 +559,18 @@
       document.getElementById('modal-lease-term').textContent = `${selectedContract.lease_term_months || 0} tháng`;
 
       const statusBadge = document.getElementById('modal-contract-status-badge');
-      if (selectedContract.status === 'Đã duyệt') {
+      if (selectedContract.status === 'Đã phê duyệt' || selectedContract.status === 'Đã duyệt') {
         statusBadge.textContent = 'ĐÃ PHÊ DUYỆT';
         statusBadge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-emerald-100 text-emerald-800 py-1 px-2.5 rounded-lg';
-      } else if (selectedContract.status === 'Từ chối') {
-        statusBadge.textContent = 'ĐÃ TỪ CHỐI';
+      } else if (selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối') {
+        statusBadge.textContent = 'YÊU CẦU KIỂM TRA LẠI';
         statusBadge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-red-100 text-red-800 py-1 px-2.5 rounded-lg';
       } else {
         statusBadge.textContent = 'ĐANG CHỜ DUYỆT';
         statusBadge.className = 'text-[10px] font-extrabold tracking-wider uppercase bg-amber-100 text-amber-800 py-1 px-2.5 rounded-lg';
       }
 
-      const isApproved = selectedContract.status === 'Đã duyệt' || selectedContract.status === 'Từ chối';
+      const isFinalized = selectedContract.status === 'Đã phê duyệt' || selectedContract.status === 'Đã duyệt' || selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối';
 
       // Fill Inputs
       const agreedPrice = Number(selectedContract.agreed_price) || 0;
@@ -528,40 +587,40 @@
       document.getElementById('input-rejection-reason').value = selectedContract.rejection_reason || '';
 
       // Enable/disable based on approval status
-      document.getElementById('input-approved-price').disabled = isApproved;
-      document.getElementById('input-reviewer-notes').disabled = isApproved;
-      document.getElementById('input-rejection-reason').disabled = isApproved;
+      document.getElementById('input-approved-price').disabled = isFinalized;
+      document.getElementById('input-reviewer-notes').disabled = isFinalized;
+      document.getElementById('input-rejection-reason').disabled = isFinalized;
 
       // Handle radios
       const radios = document.querySelectorAll('input[name="audit-status-option"]');
       radios.forEach(r => {
-        r.disabled = isApproved;
-        if (selectedContract.status === 'Từ chối' && r.value === 'từ chối') {
+        r.disabled = isFinalized;
+        if ((selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối') && r.value === 'từ chối') {
           r.checked = true;
-        } else if (selectedContract.status === 'Đã duyệt' && r.value === 'duyệt') {
+        } else if ((selectedContract.status === 'Đã phê duyệt' || selectedContract.status === 'Đã duyệt') && r.value === 'duyệt') {
           r.checked = true;
-        } else if (!isApproved && r.value === 'duyệt') {
+        } else if (!isFinalized && r.value === 'duyệt') {
           r.checked = true;
         }
       });
 
       // Show/hide rejection reason based on radio and selected status
-      if (selectedContract.status === 'Từ chối') {
+      if (selectedContract.status === 'Yêu cầu kiểm tra lại' || selectedContract.status === 'Từ chối') {
         toggleRejectionReason(true);
       } else {
-        toggleRejectionReason(!isApproved && document.querySelector('input[name="audit-status-option"]:checked').value === 'từ chối');
+        toggleRejectionReason(!isFinalized && document.querySelector('input[name="audit-status-option"]:checked').value === 'từ chối');
       }
 
       // Hide or show the action button
       const submitBtn = document.getElementById('btn-submit-audit');
-      if (isApproved) {
+      if (isFinalized) {
         submitBtn.classList.add('hidden');
       } else {
         submitBtn.classList.remove('hidden');
       }
 
       // Reset radio and visibility
-      if (!isApproved) {
+      if (!isFinalized) {
         document.querySelector('input[name="audit-status-option"][value="duyệt"]').checked = true;
         toggleRejectionReason(false);
       }

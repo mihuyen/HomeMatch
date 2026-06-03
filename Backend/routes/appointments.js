@@ -4,7 +4,7 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
-const ALLOWED_ROLES = ['sale', 'agent', 'manager'];
+const ALLOWED_ROLES = ['sale', 'agent', 'manager', 'broker'];
 const BROKER_ROLES = ['broker', 'manager'];
 
 function normalizeText(value) {
@@ -24,8 +24,9 @@ async function getAssignedSubmission(submissionId, userId) {
 }
 
 async function getAppointmentForUser(appointmentId, userId) {
-    const [rows] = await db.query(
-        `SELECT ap.appointment_id, ap.submission_id, ap.appointment_type,
+    // 1. Check if it's a sales agent appointment (associated with property_submissions)
+    const [salesRows] = await db.query(
+        `SELECT ap.appointment_id, ap.submission_id, ap.assignment_id, ap.appointment_type,
                 ap.scheduled_time, ap.location, ap.status, ap.result_note, ap.created_at
          FROM appointments ap
          INNER JOIN property_submissions ps ON ps.submission_id = ap.submission_id
@@ -33,7 +34,19 @@ async function getAppointmentForUser(appointmentId, userId) {
          LIMIT 1`,
         [appointmentId, userId]
     );
-    return rows[0] || null;
+    if (salesRows.length > 0) return salesRows[0];
+
+    // 2. Check if it's a broker appointment (associated with staff_assignments)
+    const [brokerRows] = await db.query(
+        `SELECT ap.appointment_id, ap.submission_id, ap.assignment_id, ap.appointment_type,
+                ap.scheduled_time, ap.location, ap.status, ap.result_note, ap.created_at
+         FROM appointments ap
+         INNER JOIN staff_assignments sa ON sa.assignment_id = ap.assignment_id
+         WHERE ap.appointment_id = ? AND sa.sale_broker_id = ?
+         LIMIT 1`,
+        [appointmentId, userId]
+    );
+    return brokerRows[0] || null;
 }
 
 async function getAssignmentForBroker(assignmentId, brokerId) {
@@ -181,6 +194,13 @@ router.patch('/:appointmentId', requireAuth, requireRole(...ALLOWED_ROLES), asyn
         const existing = await getAppointmentForUser(appointmentId, userId);
         if (!existing) {
             return res.status(404).json({ message: 'Không tìm thấy lịch hẹn' });
+        }
+
+        if (scheduledTime !== undefined && !scheduledTime) {
+            return res.status(400).json({ message: 'Thời gian hẹn không được để trống' });
+        }
+        if (location !== undefined && (!location || !location.trim())) {
+            return res.status(400).json({ message: 'Địa điểm hẹn không được để trống' });
         }
 
         await db.query(

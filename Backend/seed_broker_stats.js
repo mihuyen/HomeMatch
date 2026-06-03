@@ -74,12 +74,12 @@ async function seed() {
         console.log('Seeding Broker A payments...');
         await db.query(
             `INSERT INTO BROKER_PAYMENTS (broker_id, amount, payment_method, status, paid_at)
-             VALUES (?, 45000000.00, 'bank_transfer', 'đã chi trả', '2026-05-15 10:00:00')`,
+             VALUES (?, 45000000.00, 'bank_transfer', 'đã chi trả', NOW())`,
             [brokerAId]
         );
         await db.query(
             `INSERT INTO BROKER_PAYMENTS (broker_id, amount, payment_method, status, paid_at)
-             VALUES (?, 39130435.00, 'bank_transfer', 'đã chi trả', '2026-04-15 10:00:00')`,
+             VALUES (?, 39130435.00, 'bank_transfer', 'đã chi trả', DATE_SUB(NOW(), INTERVAL 1 MONTH))`,
             [brokerAId]
         );
 

@@ -338,6 +338,7 @@
       const backBtn = document.getElementById('backBtn');
 
       let pendingFileData = null;
+      let isUploaded = false;
 
       if (typeof requireLogin === 'function') {
         await requireLogin();
@@ -393,6 +394,7 @@
       }
 
       function updateProgressState(hasScan, url) {
+        isUploaded = hasScan;
         if (hasScan) {
           progressSummary.textContent = 'Trạng thái: 1/1 Hoàn thành';
           progressLabel.textContent = 'Đã tải lên';
@@ -511,6 +513,11 @@
               submitBtn.innerHTML = originalContent;
               submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
             }
+            return;
+          }
+
+          if (!isUploaded) {
+            showToast('Vui lòng tải lên ảnh hoặc scan hợp đồng đã ký kết trước khi tiếp tục.', 'warning');
             return;
           }
 
