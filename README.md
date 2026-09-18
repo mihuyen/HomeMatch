@@ -30,12 +30,6 @@ Landlords submit properties; internal staff (sales, legal, accounting, brokers) 
 - **Brokers** — viewings, rental contracts, commission tracking
 - **Admin dashboard** — revenue, conversion and broker stats with Excel/PDF export and email reports
 
-## Screenshots
-
-| Landing | Admin dashboard | Deposit payment |
-| --- | --- | --- |
-| ![](docs/screenshots/landing.png) | ![](docs/screenshots/admin-dashboard.png) | ![](docs/screenshots/deposit.png) |
-
 ## Architecture
 
 ```
